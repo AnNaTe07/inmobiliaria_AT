@@ -1,0 +1,89 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+.navbar-nav .nav-link {
+  color: white !important; /* Cambia el color del texto de los enlaces de navegación */
+}
+.navbar-brand {
+  color: white !important; /* Cambia el color del texto de la marca (Inmobiliaria) */
+}
+.navbar-custom {
+  background-color: #11273f;
+}
+
+.navbar-custom .nav-link {
+  color: rgb(226, 212, 212);
+  margin-right: 15px; /* Espaciado entre los elementos del menú */
+}
+
+.navbar-custom .nav-link:hover {
+  color: #f8f9fa;
+}
+
+/* Estilos para el footer */
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #11273f;
+  color: white;
+  padding: 10px 0;
+  text-align: center;
+}
+
+.footer a {
+  color: white;
+}
+
+/* Estilos para que el contenedor principal ocupe toda la altura de la página */
+html,
+body {
+  height: 100%;
+}
+
+.content-wrapper {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-fill {
+  flex: 1;
+}
+
+.modal-content {
+  background-color: white; /* Cambia el fondo del contenido del modal a blanco */
+  border-radius: 0.3rem; /* Opcional: agrega bordes redondeados */
+  border: 1px solid #dee2e6; /* Opcional: agrega un borde */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Opcional: agrega una sombra */
+}
+
+.form-group-spacing {
+  margin-bottom: 1.5rem; /* Ajusta el valor según sea necesario */
+}
+.btn-custom {
+  width: 80px;
+}
