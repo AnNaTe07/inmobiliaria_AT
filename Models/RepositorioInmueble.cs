@@ -87,10 +87,13 @@ public class RepositorioInmueble
         int res = -1;
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
         {
-var query=$@"INSERT INTO inmueble ({nameof(Inmueble.Uso)}, {nameof(Inmueble.Direccion)}, {nameof(Inmueble.Tipo)}, {nameof(Inmueble.Ambientes)},{nameof(Inmueble.Latitud)}, {nameof(Inmueble.Longitud)}, {nameof(Inmueble.Precio)}) VALUES (@uso, @direccion, @tipo, @ambientes, @latitud,@longitud, @precio); SELECT LAST_INSERT_ID();";
+            var usoString = inmueble.Uso.ToString();
+
+            var query=$@"INSERT INTO inmueble ({nameof(Inmueble.Uso)}, {nameof(Inmueble.Direccion)}, {nameof(Inmueble.Tipo)}, {nameof(Inmueble.Ambientes)},{nameof(Inmueble.Latitud)}, {nameof(Inmueble.Longitud)}, {nameof(Inmueble.Precio)}) VALUES (@uso, @direccion, @tipo, @ambientes, @latitud,@longitud, @precio); SELECT LAST_INSERT_ID();";
+
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@uso", inmueble.Uso);
+                command.Parameters.AddWithValue("@uso", usoString);
                 command.Parameters.AddWithValue("@direccion", inmueble.Direccion);
                 command.Parameters.AddWithValue("@tipo", inmueble.Tipo);
                 command.Parameters.AddWithValue("@ambientes", inmueble.Ambientes);
