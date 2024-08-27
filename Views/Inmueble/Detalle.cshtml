@@ -1,0 +1,58 @@
+@model inmobiliaria_AT.Models.Inmueble
+
+@{
+    ViewData["Title"] = "Listado de Inmueble";
+    int id = Model == null ? 0 : Model.Id;
+}
+
+<h4>Inmueble</h4>
+<hr>
+    <div class="col-md-12">
+        <div asp-asp-validation-asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" name="Id" value="@id">
+        <div class="row">
+            <div class="form-group col-md-6 form-group-spacing">
+                <label asp-for="Uso" class="control-label"></label>
+                <input asp-for="Uso" class="form-control" readonly>
+                <span asp-validation-for="Uso" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6 form-group-spacing">
+                <label asp-for="Direccion" class="control-label" readonly></label>
+                <input asp-for="Direccion" class="form-control" readonly>
+                <span asp-validation-for="Direccion" class="text-danger"></span>
+            </div>
+        </div>
+         <div class="row ">  
+             <div class="form-group col-md-6 form-group-spacing">
+                <label asp-for="Tipo" class="control-label"></label>
+                <input asp-for="Tipo" class="form-control" readonly>
+                <span asp-validation-for="Tipo" class="text-danger"></span>          
+            </div>
+            <div class="form-group col-md-6 form-group-spacing">
+                <label asp-for="Ambientes" class="control-label"></label>
+                <input asp-for="Ambientes" class="form-control" readonly>
+                <span asp-validation-for="Ambientes" class="text-danger"></span>          
+            </div>
+            <div class="form-group col-md-6 form-group-spacing">
+                <label asp-for="Latitud" class="control-label"></label>
+                 <input asp-for="Latitud" class="form-control" readonly />
+               <span asp-validation-for="Latitud" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6 form-group-spacing">
+                <label asp-for="Longitud" class="control-label"></label>
+                <input asp-for="Longitud" class="form-control" readonly/>
+                <span asp-validation-for="Longitud" class="text-danger"></span>
+            </div>
+        </div>                    
+            <div class="form-group col-md-6 form-group-spacing">
+                <label asp-for="Precio" class="control-label"></label>
+                <input asp-for="Precio" class="form-control" readonly>
+                <span asp-validation-for="Precio" class="text-danger"></span>          
+            </div>
+        <div class="form-group-spacing">
+             <a asp-action="Index" title="Volver">
+             <i class="fa-solid fa-undo"></i>
+             </a>
+        </div>   
+    </div>
+</div>
