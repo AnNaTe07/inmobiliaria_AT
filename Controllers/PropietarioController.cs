@@ -47,12 +47,12 @@ namespace inmobiliaria_AT.Controllers
             if (propietario.Id == 0)
             {
                 _repo.Alta(propietario);
-                TempData["SuccessMessage"] = "Propietario guardado correctamente.";
+                TempData["SuccessMessage"] = "Propietario generado correctamente.";
             }
             else
             {
                 _repo.Modificar(propietario);
-                TempData["SuccessMessage"] = "Propietario guardado correctamente.";
+                TempData["SuccessMessage"] = "Datos de propietario guardados correctamente.";
             }
             return RedirectToAction(nameof(Index));
         }
@@ -60,7 +60,7 @@ namespace inmobiliaria_AT.Controllers
         public IActionResult Eliminar(int id)
         {
             _repo.Baja(id);
-            TempData["SuccessMessage"] = "Propietario eliminado correctamente.";
+            TempData["SuccessMessage"] = "Datos de propietario eliminados correctamente.";
             return RedirectToAction(nameof(Index));
         }
     }

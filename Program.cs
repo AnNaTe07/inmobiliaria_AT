@@ -14,7 +14,11 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // Configure services
 builder.Services.AddScoped<RepositorioPropietario>(provider => new RepositorioPropietario(connectionString));
 builder.Services.AddScoped<RepositorioInquilino>(provider => new RepositorioInquilino(connectionString));
+
 builder.Services.AddScoped<RepositorioContrato>(provider => new RepositorioContrato(connectionString));
+
+builder.Services.AddScoped<RepositorioInmueble>(provider => new RepositorioInmueble(connectionString));
+
 
 // Add controllers with views
 builder.Services.AddControllersWithViews();
