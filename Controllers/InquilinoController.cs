@@ -47,19 +47,19 @@ namespace inmobiliaria_AT.Controllers
             if (inquilino.Id == 0)
             {
                 _repo.Alta(inquilino);                
-                TempData["SuccessMessage"] = "Inquilino guardado correctamente.";
+                TempData["SuccessMessage"] = "Inquilino generado correctamente.";
             }
             else
             {
                 _repo.Modificar(inquilino);
-                TempData["SuccessMessage"] = "Inquilino guardado correctamente.";
+                TempData["SuccessMessage"] = "Datos de inquilino modificados correctamente.";
             }
             return RedirectToAction("Index");
         }
         public IActionResult Eliminar(int id)
         {
             _repo.Baja(id);            
-            TempData["SuccessMessage"] = "Inquilino eliminado correctamente.";
+            TempData["SuccessMessage"] = "Datos de inquilino eliminados correctamente.";
             return RedirectToAction(nameof(Index));
         }
     }
