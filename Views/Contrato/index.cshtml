@@ -1,6 +1,6 @@
 @model IEnumerable<inmobiliaria_AT.Models.Contrato>
 @{
-    ViewData["Title"]= "Contratos";
+    ViewData["Title"] = "Contratos";
 
 }
 <div class="text-center">
@@ -9,7 +9,155 @@
 <table class="table">
     <thead>
         <th>Id del Contrato</th>
-        
+       
+        <th>
+            @Html.DisplayNameFor(model => model.FechaInicio)
+
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FechaFin)
+
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Monto)
+
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Tipo)
+
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Plazo)
+
+        </th>
     </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaInicio)
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaFin)
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Monto)
+                    
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Tipo)
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Plazo)
+
+                </td>
+                <td>
+                    <a href="/Contrato/Editar/@item.Id"></a>
+                    <form action="@Url.Action("Editar", new{id=item.Id})" method="get" style="display: inline;">
+                        <button type="submit" class="btn btn-warning btn-custom" title="Editar">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                    </form>
+                    <a href="/Contrato/Detalle/@item.Id"></a>
+                    <form action="@Url.Action("Detalle", new{id=item.Id})" method="get" style="display: inline;">
+                        <button type="submit" class="btn btn-info btn-custom" title="Detalles">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </button>
+                    </form>
+                    <button type="submit" class="btn btn-danger btn-custom"
+                        onclick="eliminar(@item.Id, `@item.FechaInicio`, `@item.FechaFin`, `@item.Monto`, `@item.Tipo`, `@item.Plazo`)"
+                        title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+        <td>
+            <button type="button" class="btn btn-ligth">
+                <a href="/Contrato/Editar" title="Agregar Contrato">
+                    <i class="fa-duotone fa-solid fa-plus"></i>
+                </a>
+            </button>
+            </tr>
+
+            
+
+
+    </tbody>
 
 </table>
+
+<div class="modal fade" id="modal_eliminar_contrato" tabindex="-1" aria-labelledby="modal_eliminar_contratoLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_eliminar_contratoLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-action="Eliminar" id="form_eliminar_contrato">
+                <div class="modal-body">
+                    <input type="hidden" name="Id" value="" id="contrato_eliminar_id">
+                    <p> <span id="contrato_eliminar_inicio"></span> <span id="contrato_eliminar_fin"></span> <span
+                            id="contrato_eliminar_tipo"><span id="contrato_eliminar_plazo"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger"> Confirmar</i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@TempData["SuccessMessage"]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Muestro el modal de éxito si existe un mensaje en TempData
+            if ($('#modal_success_message').length) {
+                $('#modal_success_message').modal('show');
+                // Oculto el modal después de 3 segundos
+                setTimeout(function () {
+                    $('#modal_success_message').modal('hide');
+                }, 3000);
+            }
+        });
+
+        function eliminar(id, tipo, direccion, precio) { //inicio, fin, monto, tipo, plazo
+            document.querySelector("#contrato_eliminar_id").value = id;
+            document.querySelector("#contrato_eliminar_FechaInicio").innerText = FechaInicio + ", ";
+            document.querySelector("#contrato_eliminar_FechaFin").innerText = FechaFin + ", Precio: ";
+            document.querySelector("#contrato_eliminar_Monto").innerText = Monto;
+            document.querySelector("#contrato_eliminar_Tipo").innerText = Tipo;
+            document.querySelector("#contrato_eliminar_Plazo").innerText = Plazo;
+
+            $("#modal_eliminar_contrato").modal("show");
+        }
+    </script>
+}

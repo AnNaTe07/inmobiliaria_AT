@@ -1,0 +1,125 @@
+@model inmobiliaria_AT.Models.Contrato
+
+@{
+    ViewData["Title"] = "Listado de Contratos";
+    int id = Model == null ? 0 : Model.Id;
+}
+
+<h4>Contrato</h4>
+<hr>
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Guardar">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" name="Id" value="@id">
+            <div class="row">
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Inqui" class="control-label"></label>
+                    <select asp-for="Inqui.Id" class="form-control" asp-items="ViewBag.Inquilinos"></select>
+                    <span asp-validation-for="Inqui" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Inmu.Id" class="control-label"></label>
+                    <select asp-for="Inmu.Id" class="form-control" asp-items="ViewBag.Inmuebles"></select>
+                    <span asp-validation-for="Inmu" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Prop.Id" class="control-label"></label>
+                    <select asp-for="Prop.Id" class="form-control" asp-items="ViewBag.Propietarios"></select>
+                    <span asp-validation-for="Prop" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="FechaInicio" class="control-label"></label>
+                    <input asp-for="FechaInicio" class="form-control">
+                    <span asp-validation-for="FechaInicio" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="FechaFin" class="control-label"></label>
+                    <input asp-for="FechaFin" class="form-control">
+                    <span asp-validation-for="FechaFin" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Monto" class="control-label"></label>
+                    <input asp-for="Monto" class="form-control">
+                    <span asp-validation-for="Monto" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Estado" class="control-label"></label>
+                    <input asp-for="Estado" class="form-control">
+                    <span asp-validation-for="Estado" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Tipo" class="control-label"></label>
+                    <select asp-for="Tipo" class="form-control">
+                        <option value="compraventa">Compraventa</option>
+                        <option value="arrendamiento">Arrendamiento</option>
+                        <option value="permuta">Permuta</option>
+                    </select>
+                    <span asp-validation-for="Tipo" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Descripcion" class="control-label"></label>
+                    <input asp-for="Descripcion" class="form-control">
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Plazo" class="control-label"></label>
+                    <input asp-for="Plazo" class="form-control">
+                    <span asp-validation-for="Plazo" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="PorcentajeActualizacion" class="control-label"></label>
+                    <input asp-for="PorcentajeActualizacion" class="form-control">
+                    <span asp-validation-for="PorcentajeActualizacion" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="PeriodoActualizacion" class="control-label"></label>
+                    <input asp-for="PeriodoActualizacion" class="form-control">
+                    <span asp-validation-for="PeriodoActualizacion" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Observaciones" class="control-label"></label>
+                    <input asp-for="Observaciones" class="form-control">
+                    <span asp-validation-for="Observaciones" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group col-md-6 form-group-spacing">
+                <input type="submit" value="Guardar" class="btn btn-success" />
+            </div>
+        </form>
+        <div class="form-group-spacing">
+            <a asp-action="Index" title="Volver">
+                <i class="fa-solid fa-undo"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@TempData["SuccessMessage"]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
