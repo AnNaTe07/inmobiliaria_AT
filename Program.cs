@@ -16,6 +16,7 @@ builder.Services.AddScoped<RepositorioPropietario>(provider => new RepositorioPr
 builder.Services.AddScoped<RepositorioInquilino>(provider => new RepositorioInquilino(connectionString));
 
 builder.Services.AddScoped<RepositorioContrato>(provider => new RepositorioContrato(connectionString));
+builder.Services.AddScoped<RepositorioTipo>(provider => new RepositorioTipo(connectionString));
 
 builder.Services.AddScoped<RepositorioInmueble>(provider => new RepositorioInmueble(connectionString));
 

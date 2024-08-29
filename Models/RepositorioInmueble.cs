@@ -17,7 +17,23 @@ public class RepositorioInmueble
         List<Inmueble> inmueble = new List<Inmueble>();
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
         {
-            var query = $@"SELECT {nameof(Inmueble.Id)}, {nameof(Inmueble.Uso)}, {nameof(Inmueble.Direccion)}, {nameof(Inmueble.Tipo)}, {nameof(Inmueble.Ambientes)},{nameof(Inmueble.Latitud)}, {nameof(Inmueble.Longitud)}, {nameof(Inmueble.Precio)}, {nameof(Inmueble.IdPropietario)} FROM inmueble;";
+           var query = $@"
+            SELECT 
+                i.{nameof(Inmueble.Id)} AS InmuebleId, 
+                i.{nameof(Inmueble.Uso)}, 
+                i.{nameof(Inmueble.Direccion)}, 
+                i.{nameof(Inmueble.TipoId)}, 
+                t.{nameof(Tipo.Descripcion)} AS TipoDescripcion, 
+                i.{nameof(Inmueble.Ambientes)}, 
+                i.{nameof(Inmueble.Latitud)}, 
+                i.{nameof(Inmueble.Longitud)}, 
+                i.{nameof(Inmueble.Precio)}, 
+                i.{nameof(Inmueble.IdPropietario)}
+            FROM 
+                inmueble i
+            JOIN 
+                tipo t ON i.{nameof(Inmueble.TipoId)} = t.{nameof(Tipo.Id)};
+        ";
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {
                 connection.Open();
@@ -33,10 +49,11 @@ public class RepositorioInmueble
                          }
                         inmueble.Add(new Inmueble
                         {
-                            Id = reader.GetInt32(nameof(Inmueble.Id)),
+                            Id = reader.GetInt32("InmuebleId"),
                             Uso = uso,
                             Direccion = reader.GetString(nameof(Inmueble.Direccion)),
-                            Tipo = reader.GetString(nameof(Inmueble.Tipo)),
+                            TipoId = reader.GetInt32(nameof(Inmueble.TipoId)),
+                            TipoDescripcion = reader.GetString(reader.GetOrdinal("TipoDescripcion")),
                             Ambientes = reader.GetInt32(nameof(Inmueble.Ambientes)),
                             Latitud = reader.GetDecimal(nameof(Inmueble.Latitud)),
                             Longitud = reader.GetDecimal(nameof(Inmueble.Longitud)),
@@ -55,7 +72,26 @@ public class RepositorioInmueble
         Inmueble? res = null;
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
         {
-            var query = $@"SELECT  {nameof(Inmueble.Id)}, {nameof(Inmueble.Uso)}, {nameof(Inmueble.Direccion)}, {nameof(Inmueble.Tipo)}, {nameof(Inmueble.Ambientes)}, {nameof(Inmueble.Latitud)}, {nameof(Inmueble.Longitud)},  {nameof(Inmueble.Precio)}, {nameof(Inmueble.IdPropietario)} FROM inmueble WHERE {nameof(Inmueble.Id)} = @id;";
+             var query = $@"
+            SELECT 
+                i.{nameof(Inmueble.Id)}, 
+                i.{nameof(Inmueble.Uso)}, 
+                i.{nameof(Inmueble.Direccion)}, 
+                i.{nameof(Inmueble.TipoId)},
+                t.{nameof(Tipo.Descripcion)} AS TipoDescripcion, 
+                i.{nameof(Inmueble.Ambientes)},
+                i.{nameof(Inmueble.Latitud)}, 
+                i.{nameof(Inmueble.Longitud)}, 
+                i.{nameof(Inmueble.Precio)}, 
+                i.{nameof(Inmueble.IdPropietario)}
+            FROM 
+                inmueble i
+            JOIN 
+                tipo t ON i.{nameof(Inmueble.TipoId)} = t.{nameof(Tipo.Id)}
+            WHERE 
+                i.{nameof(Inmueble.Id)} = @id;
+        ";
+
             using (MySqlCommand command= new MySqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@id", id);
@@ -68,7 +104,8 @@ public class RepositorioInmueble
                         Id = reader.GetInt32(nameof(Inmueble.Id)),
                         Uso = (UsoInmueble)Enum.Parse(typeof(UsoInmueble), reader.GetString(nameof(Inmueble.Uso))),
                         Direccion = reader.GetString(nameof(Inmueble.Direccion)),
-                        Tipo = reader.GetString(nameof(Inmueble.Tipo)),
+                        TipoId = reader.GetInt32(nameof(Inmueble.TipoId)),
+                        TipoDescripcion= reader.GetString(reader.GetOrdinal("TipoDescripcion")),
                         Ambientes = reader.GetInt32(nameof(Inmueble.Ambientes)),
                         Latitud = reader.GetDecimal(nameof(Inmueble.Latitud)),
                         Longitud = reader.GetDecimal(nameof(Inmueble.Longitud)),
@@ -89,13 +126,13 @@ public class RepositorioInmueble
         {
             var usoString = inmueble.Uso.ToString();
 
-            var query=$@"INSERT INTO inmueble ({nameof(Inmueble.Uso)}, {nameof(Inmueble.Direccion)}, {nameof(Inmueble.Tipo)}, {nameof(Inmueble.Ambientes)},{nameof(Inmueble.Latitud)}, {nameof(Inmueble.Longitud)}, {nameof(Inmueble.Precio)}) VALUES (@uso, @direccion, @tipo, @ambientes, @latitud,@longitud, @precio); SELECT LAST_INSERT_ID();";
+            var query=$@"INSERT INTO inmueble ({nameof(Inmueble.Uso)}, {nameof(Inmueble.Direccion)}, {nameof(Inmueble.TipoId)}, {nameof(Inmueble.Ambientes)},{nameof(Inmueble.Latitud)}, {nameof(Inmueble.Longitud)}, {nameof(Inmueble.Precio)}) VALUES (@uso, @direccion, @tipo, @ambientes, @latitud,@longitud, @precio); SELECT LAST_INSERT_ID();";
 
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@uso", usoString);
                 command.Parameters.AddWithValue("@direccion", inmueble.Direccion);
-                command.Parameters.AddWithValue("@tipo", inmueble.Tipo);
+                command.Parameters.AddWithValue("@tipo", inmueble.TipoId);
                 command.Parameters.AddWithValue("@ambientes", inmueble.Ambientes);
                 command.Parameters.AddWithValue("@latitud", inmueble.Latitud);
                 command.Parameters.AddWithValue("@longitud", inmueble.Longitud);
@@ -116,12 +153,12 @@ public class RepositorioInmueble
             // Convierto el valor del enum a string
             var usoString = inmueble.Uso.ToString();
 
-            var query=$@"UPDATE inmueble SET {nameof(Inmueble.Uso)} =@uso, {nameof(Inmueble.Direccion)}=@direccion, {nameof(Inmueble.Tipo)}=@tipo, {nameof(Inmueble.Ambientes)}=@ambientes, {nameof(Inmueble.Latitud)}=@latitud, {nameof(Inmueble.Longitud)}=@longitud, {nameof(Inmueble.Precio)}=@precio WHERE {nameof(Inmueble.Id)} = @id;";
+            var query=$@"UPDATE inmueble SET {nameof(Inmueble.Uso)} =@uso, {nameof(Inmueble.Direccion)}=@direccion, {nameof(Inmueble.TipoId)}=@tipo, {nameof(Inmueble.Ambientes)}=@ambientes, {nameof(Inmueble.Latitud)}=@latitud, {nameof(Inmueble.Longitud)}=@longitud, {nameof(Inmueble.Precio)}=@precio WHERE {nameof(Inmueble.Id)} = @id;";
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@uso", usoString);
                 command.Parameters.AddWithValue("@direccion", inmueble.Direccion);
-                command.Parameters.AddWithValue("@tipo", inmueble.Tipo);
+                command.Parameters.AddWithValue("@tipo", inmueble.TipoId);
                 command.Parameters.AddWithValue("@ambientes", inmueble.Ambientes); 
                 command.Parameters.AddWithValue("@latitud", inmueble.Latitud);
                 command.Parameters.AddWithValue("@longitud", inmueble.Longitud);

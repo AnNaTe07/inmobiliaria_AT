@@ -1,25 +1,25 @@
 @model IEnumerable<inmobiliaria_AT.Models.Inquilino>
 @{
     ViewData["Title"] = "Listado de Inquilinos";
- }
- <div class="text-center">
+}
+<div class="text-center">
     <h1 class="display-4">Lista de Inquilinos</h1>
- </div>   
- <table class="table">
-    <thead>        
-            <th>
-                Código
-            </th>
-            <th>
-                @Html.DisplayNameFor(model =>model.Nombre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Apellido)
-            </th>
+</div>
+<table class="table text-center">
+    <thead>
+        <th>
+            Código
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Apellido)
+        </th>
     </thead>
     <tbody>
         @foreach (var item in Model)
-         {
+        {
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.Id)
@@ -32,33 +32,35 @@
                 </td>
                 <td>
                     <a href="/Propietario/Editar/@item.Id"></a>
-                     <form action="@Url.Action("Editar", new{id = item.Id})" method="get" style="display:inline;">
-                        <button type="submit" class="btn btn-warning btn-custom" title="Editar"> 
+                    <form action="@Url.Action("Editar", new{id = item.Id})" method="get" style="display:inline;">
+                        <button type="submit" class="btn btn-warning btn-custom" title="Editar">
                             <i class="fa-solid fa-pen"></i>
                         </button>
                     </form>
                     <a href="/Propietario/Detalle/@item.Id"></a>
-                     <form action="@Url.Action("Detalle", new{id = item.Id})" method="get" style="display:inline;">
+                    <form action="@Url.Action("Detalle", new{id = item.Id})" method="get" style="display:inline;">
                         <button type="submit" class="btn btn-info btn-custom" title="Detalles">
                             <i class="fa-solid fa-circle-info"></i>
                         </button>
                     </form>
-                    <button type="submit" class="btn btn-danger btn-custom" onclick="eliminar(@item.Id, `@item.Nombre`, `@item.Apellido`)" title="Eliminar">
+                    <button type="submit" class="btn btn-danger btn-custom"
+                        onclick="eliminar(@item.Id, `@item.Nombre`, `@item.Apellido`)" title="Eliminar">
                         <i class="fas fa-trash"></i>
                     </button>
                 </td>
-            </tr>           
+            </tr>
         }
-        <td>    
+        <td>
             <button type="button" class="btn btn-ligth">
                 <a href="/Inquilino/Editar" title="Agregar Inquilino">
-                <i class="fa-duotone fa-solid fa-plus"></i>
+                    <i class="fa-duotone fa-solid fa-plus"></i>
                 </a>
-            </button>                           
+            </button>
         </td>
     </tbody>
- </table>
-<div class="modal fade" id="modal_eliminar_inquilino" tabindex="-1" aria-labelledby="modal_eliminar_inquilinoLabel" aria-hidden="true">
+</table>
+<div class="modal fade" id="modal_eliminar_inquilino" tabindex="-1" aria-labelledby="modal_eliminar_inquilinoLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -68,7 +70,8 @@
             <form method="post" asp-action="Eliminar" id="form_eliminar_inquilino">
                 <div class="modal-body">
                     <input type="hidden" name="Id" value="" id="inquilino_eliminar_id">
-                    <p>Propietario: <span id="inquilino_eliminar_nombre"></span> <span id="inquilino_eliminar_apellido"></span></p>
+                    <p>Propietario: <span id="inquilino_eliminar_nombre"></span> <span
+                            id="inquilino_eliminar_apellido"></span></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -81,7 +84,8 @@
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel" aria-hidden="true">
+    <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -95,24 +99,24 @@
     </div>
 }
 
- @section Scripts{
+@section Scripts {
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Muestro el modal de éxito si existe un mensaje en TempData
             if ($('#modal_success_message').length) {
                 $('#modal_success_message').modal('show');
                 // Oculto el modal después de 3 segundos
-                setTimeout(function() {
+                setTimeout(function () {
                     $('#modal_success_message').modal('hide');
                 }, 3000);
             }
         });
 
-        function eliminar(id, nombre, apellido){
-            document.querySelector("#inquilino_eliminar_id").value=id;
-            document.querySelector("#inquilino_eliminar_nombre").innerText=nombre;
-            document.querySelector("#inquilino_eliminar_apellido").innerText=apellido;
+        function eliminar(id, nombre, apellido) {
+            document.querySelector("#inquilino_eliminar_id").value = id;
+            document.querySelector("#inquilino_eliminar_nombre").innerText = nombre;
+            document.querySelector("#inquilino_eliminar_apellido").innerText = apellido;
             $("#modal_eliminar_inquilino").modal("show");
         }
     </script>
- }
+}

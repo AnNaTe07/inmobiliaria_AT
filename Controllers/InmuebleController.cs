@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using inmobiliaria_AT.Models;
 
 namespace inmobiliaria_AT.Controllers
@@ -8,46 +9,94 @@ namespace inmobiliaria_AT.Controllers
     {
         private readonly ILogger<InmuebleController> _logger;
         private readonly RepositorioInmueble _repo;
-        public InmuebleController(ILogger<InmuebleController> logger, RepositorioInmueble repo)
+        private readonly RepositorioTipo _repositorioTipo;
+        public InmuebleController(ILogger<InmuebleController> logger, RepositorioInmueble repo, RepositorioTipo repositorioTipo)
         {
             _logger = logger;
             _repo = repo;
+            _repositorioTipo = repositorioTipo;
         }
+
+        public IActionResult Crear()
+        {
+            //obtengo la lista de tipos
+            var tipos = _repositorioTipo.ObtenerTodos();
+
+            //uso viewBag para pasar los tipos a la vista
+            ViewBag.Tipos = tipos;
+
+            //creo una instancia de inmueble para la vista
+            var inmueble = new Inmueble();
+
+            return View(inmueble);
+        }
+
+        public IActionResult EditarTipo(int id)
+        {
+            // Obtiene el inmueble a editar
+            var inmueble = _repo.ObtenerPorId(id);
+
+            // Obtiene la lista de tipos de inmuebles
+            var tipos = _repositorioTipo.ObtenerTodos();
+
+            // Usa ViewBag para pasar los tipos a la vista
+            ViewBag.Tipos = tipos;
+
+            return View(inmueble);
+        }
+
+
         public IActionResult Index()
         {
-            var inmuebles=_repo.ObtenerTodos();
+            var inmuebles = _repo.ObtenerTodos();
             return View(inmuebles);
         }
 
         public IActionResult Editar(int id)
         {
-            if(id==0)
-            return View(new Inmueble());
+            if (id == 0)
+                return View(new Inmueble());
             else
             {
-                var inmueble=_repo.ObtenerPorId(id);
-                 if (inmueble == null)
-        {
-            // Si el inmueble no se encuentra, devuelve una vista de error o una página de "No Encontrado".
-            return NotFound();
-        }
+                var inmueble = _repo.ObtenerPorId(id);
+                if (inmueble == null)
+                {
+                    // Si el inmueble no se encuentra, devuelve una vista de error (página de "No Encontrado")
+                    return NotFound();
+                }
+                // obtengo los tipos de inmueble para llenar el dropdown
+                var tipos = _repositorioTipo.ObtenerTodos();
+
+                // Crea un SelectList y establece el valor seleccionado
+                ViewBag.Tipo = new SelectList(tipos, "Id", "Descripcion", inmueble.TipoId);
+
+                // Prepara la lista de SelectListItem y marca la opción seleccionada
+                // var tipoItems = tipos.Select(t => new SelectListItem
+                // {
+                //     Value = t.Id.ToString(),
+                //     Text = t.Descripcion,
+                //     Selected = t.Id == inmueble.TipoId // Marca la opción como seleccionada
+                // }).ToList();
+                //
+                // ViewBag.Tipo = tipoItems;
+
                 return View(inmueble);
             }
         }
         public IActionResult Detalle(int id)
         {
-            if(id==0)
-            return View();
+            if (id == 0)
+                return View();
             else
             {
-                var inmueble=_repo.ObtenerPorId(id);
+                var inmueble = _repo.ObtenerPorId(id);
                 return View(inmueble);
             }
         }
         [HttpPost]
         public IActionResult Guardar(Inmueble inmueble)
-        {            
-            if(inmueble.Id==0)
+        {
+            if (inmueble.Id == 0)
             {
                 _repo.Alta(inmueble);
                 TempData["SuccessMessage"] = "Inmueble generado correctamente.";
