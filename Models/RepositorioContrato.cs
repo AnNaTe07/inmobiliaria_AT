@@ -95,7 +95,7 @@ public class RepositorioContrato
             var sql = $@"SELECT {nameof(Contrato.Id)},{nameof(Contrato.Inqui)},{nameof(Contrato.Inmu)},{nameof(Contrato.Prop)}
             ,{nameof(Contrato.FechaInicio)},{nameof(Contrato.FechaFin)},{nameof(Contrato.Monto)},{nameof(Contrato.Estado)}
             ,{nameof(Contrato.Descripcion)},{nameof(Contrato.Plazo)},{nameof(Contrato.PorcentajeActualizacion)},
-            {nameof(Contrato.PeriodoActualizacion)},{nameof(Contrato.Observaciones)},{nameof(Contrato.Tipo)} FROM contrato WHERE {nameof(Contrato.Id)} = @id;";
+            {nameof(Contrato.PeriodoActualizacion)},{nameof(Contrato.Observaciones)},{nameof(Contrato.Tipo)} FROM contrato WHERE {nameof(Contrato.Id)} = {id};";
             using (MySqlCommand command = new MySqlCommand(sql, connection))
             {
                 connection.Open();
