@@ -19,7 +19,7 @@
 
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Monto)
+            Inquilino
 
         </th>
 
@@ -41,14 +41,18 @@
                     @Html.DisplayFor(modelItem => item.Id)
 
                 </td>
+                
                 <td>
+
                     @(item.Inmu.Direccion)
                 </td>
+
                 <td>
                     @(item.Prop.NombreCompleto)
                 </td>
+
                 <td>
-                    $ @Html.DisplayFor(modelItem => item.Monto)
+                    @(item.Inqui.NombreCompleto)
 
                 </td>
 

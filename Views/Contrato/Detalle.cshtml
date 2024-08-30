@@ -12,29 +12,27 @@
     <input type="hidden" name="Id" value="@id">
     <div class="row">
         <div class="form-group col-md-6 form-group-spacing">
-            <label asp-for="Inqui" class="control-label"></label>
-            <input asp-for="Inqui" class="form-control" readonly>
-            <span asp-validation-for="Inqui" class="text-danger"></span>
+            <label asp-for="Inqui" class="control-label">Inquilino</label>
+            <input asp-for="Inqui.NombreCompleto" class="form-control" readonly>
+            <span asp-validation-for="Inqui.NombreCompleto" class="text-danger"></span>
         </div>
         <div class="form-group col-md-6 form-group-spacing">
-            <label asp-for="Inmu" class="control-label"></label>
-            <input asp-for="Inmu" class="form-control" readonly>
-            <span asp-validation-for="Inmu" class="text-danger"></span>
+            <label asp-for="Inmu" class="control-label">Inmueble</label>
+            <input asp-for="Inmu.Direccion" class="form-control" readonly>
+            <span asp-validation-for="Inmu.Direccion" class="text-danger"></span>
         </div>
-    </div>
-    <div class="row">
         <div class="form-group col-md-6 form-group-spacing">
             <label asp-for="Prop" class="control-label"></label>
-            <input asp-for="Prop" class="form-control" readonly>
-            <span asp-validation-for="Prop" class="text-danger"></span>
+            <input asp-for="Prop.NombreCompleto" class="form-control" readonly>
+            <span asp-validation-for="Prop.NombreCompleto" class="text-danger"></span>
         </div>
         <div class="form-group col-md-6 form-group-spacing">
-            <label asp-for="FechaInicio" class="control-label"></label>
+            <label asp-for="FechaInicio" class="control-label">Fecha inicio</label>
             <input asp-for="FechaInicio" class="form-control" readonly>
             <span asp-validation-for="FechaInicio" class="text-danger"></span>
         </div>
         <div class="form-group col-md-6 form-group-spacing">
-            <label asp-for="FechaFin" class="control-label"></label>
+            <label asp-for="FechaFin" class="control-label">Fecha fin</label>
             <input asp-for="FechaFin" class="form-control" readonly />
             <span asp-validation-for="FechaFin" class="text-danger"></span>
         </div>
@@ -44,45 +42,51 @@
             <span asp-validation-for="Monto" class="text-danger"></span>
         </div>
     </div>
-    <div class="form-group col-md-6 form-group-spacing">
+    <div class="row">
+
+
+
+        @*<div class="form-group col-md-6 form-group-spacing">
         <label asp-for="Estado" class="control-label"></label>
         <input asp-for="Estado" class="form-control" readonly />
         <span asp-validation-for="Estado" class="text-danger"></span>
-    </div>
-    @*<div class="form-group col-md-6 form-group-spacing">
-        <label asp-for="Tipo" class="control-label"></label>
-        <input asp-for="Tipo" class="form-control" readonly>
-        <span asp-validation-for="Tipo" class="text-danger"></span>
-    </div>*@
-    <div class="form-group col-md-6 form-group-spacing">
-        <label asp-for="Descripcion" class="control-label"></label>
-        <input asp-for="Descripcion" class="form-control" readonly>
-        <span asp-validation-for="Descripcion" class="text-danger"></span>
-    </div>
-    <div class="form-group col-md-6 form-group-spacing">
-        <label asp-for="Plazo" class="control-label"></label>
-        <input asp-for="Plazo" class="form-control" readonly>
-        <span asp-validation-for="Plazo" class="text-danger"></span>
-    </div>
-    <div class="form-group col-md-6 form-group-spacing">
-        <label asp-for="PorcentajeActualizacion" class="control-label"></label>
-        <input asp-for="PorcentajeActualizacion" class="form-control" readonly>
-        <span asp-validation-for="PorcentajeActualizacion" class="text-danger"></span>
-    </div>
-    <div class="form-group col-md-6 form-group-spacing">
-        <label asp-for="PeriodoActualizacion" class="control-label"></label>
-        <input asp-for="PeriodoActualizacion" class="form-control" readonly>
-        <span asp-validation-for="PeriodoActualizacion" class="text-danger"></span>
-    </div>
-    <div class="form-group col-md-6 form-group-spacing">
-        <label asp-for="Observaciones" class="control-label"></label>
-        <input asp-for="Observaciones" class="form-control" readonly>
-        <span asp-validation-for="Observaciones" class="text-danger"></span>
+        </div>*@
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="Tipo" class="control-label"></label>
+            <input asp-for="Tipo" class="form-control" readonly>
+            <span asp-validation-for="Tipo" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="Descripcion" class="control-label"></label>
+            <input asp-for="Descripcion" class="form-control" readonly>
+            <span asp-validation-for="Descripcion" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="Plazo" class="control-label"></label>
+            <input asp-for="Plazo" class="form-control" readonly>
+            <span asp-validation-for="Plazo" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="PorcentajeActualizacion" class="control-label">% actualización</label>
+            <input asp-for="PorcentajeActualizacion" class="form-control" readonly>
+            <span asp-validation-for="PorcentajeActualizacion" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="PeriodoActualizacion" class="control-label">Periodo actualización</label>
+            <input asp-for="PeriodoActualizacion" class="form-control" readonly>
+            <span asp-validation-for="PeriodoActualizacion" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="Observaciones" class="control-label"></label>
+            <input asp-for="Observaciones" class="form-control" readonly>
+            <span asp-validation-for="Observaciones" class="text-danger"></span>
+        </div>
+
+        <div class="form-group-spacing">
+            <a asp-action="Index" title="Volver">
+                <i class="fa-solid fa-undo"></i>
+            </a>
+        </div>
     </div>
 
-    <div class="form-group-spacing">
-        <a asp-action="Index" title="Volver">
-            <i class="fa-solid fa-undo"></i>
-        </a>
-    </div>
 </div>

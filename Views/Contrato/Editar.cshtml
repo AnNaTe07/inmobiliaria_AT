@@ -15,47 +15,41 @@
             <div class="row">
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="Inqui" class="control-label">Inquilino</label>
-                    <select asp-for="Inqui" class="form-control" asp-items="ViewBag.Inquilinos"></select>
+                    <select asp-for="Inqui.Id" class="form-control" asp-items="ViewBag.Inquilinos"></select>
                     <span asp-validation-for="Inqui" class="text-danger"></span>
                 </div>
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="Inmu" class="control-label">Inmueble</label>
-                    <select asp-for="Inmu" class="form-control" asp-items="ViewBag.Inmuebles"></select>
+                    @*-----EL asp-for en el select asigna el id del inmueble a la opcion y el ViewBag recibe la lista de inmuebles desde el controlador*@
+                    <select asp-for="Inmu.Id" class="form-control" asp-items="ViewBag.Inmuebles"></select>
                     <span asp-validation-for="Inmu" class="text-danger"></span>
                 </div>
             </div>
             <div class="row">
-                <div class="form-group col-md-6 form-group-spacing">
+                @*<div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="Prop" class="control-label">Popietario</label>
                     <select asp-for="Prop" class="form-control" asp-items="ViewBag.Propietarios"></select>
                     <span asp-validation-for="Prop" class="text-danger"></span>
-                </div>
+                </div>*@
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="FechaInicio" class="control-label"> Fecha de inicio</label>
                     <input asp-for="FechaInicio" class="form-control">
                     <span asp-validation-for="FechaInicio" class="text-danger"></span>
                 </div>
-            </div>
-            <div class="row">
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="FechaFin" class="control-label">Fecha de finalización</label>
                     <input asp-for="FechaFin" class="form-control">
                     <span asp-validation-for="FechaFin" class="text-danger"></span>
                 </div>
+            </div>
+            <div class="row">
+                
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="Monto" class="control-label">Monto</label>
                     <input asp-for="Monto" class="form-control">
                     <span asp-validation-for="Monto" class="text-danger"></span>
                 </div>
-            </div>
-            <div class="row">
                 <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="Estado" class="control-label">Estado</label>
-                    <input asp-for="Estado" class="form-control">
-                    <span asp-validation-for="Estado" class="text-danger"></span>
-                </div>
-                 <div class="form-group col-md-6 form-group-spacing">
-
                    <label asp-for="Tipo" class="control-label">Tipo de contrato</label>
                     
                     <select asp-for="Tipo" class="form-control">
@@ -65,36 +59,47 @@
                     </select>
                     <span asp-validation-for="Tipo" class="text-danger"></span>
                 </div>
+
             </div>
+            
+
             <div class="row">
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="Descripcion" class="control-label">Descripción</label>
-                    <input asp-for="Descripcion" class="form-control">
-                    <span asp-validation-for="Descripcion" class="text-danger"></span>
-                </div>
+                
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="Plazo" class="control-label">Plazo</label>
                     <input asp-for="Plazo" class="form-control">
                     <span asp-validation-for="Plazo" class="text-danger"></span>
                 </div>
-            </div>
-            <div class="row">
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="PorcentajeActualizacion" class="control-label">Porcentaje de actualización</label>
                     <input asp-for="PorcentajeActualizacion" class="form-control">
                     <span asp-validation-for="PorcentajeActualizacion" class="text-danger"></span>
                 </div>
+            </div>
+            <div class="row">
+                
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="PeriodoActualizacion" class="control-label">Periodo de actualización</label>
                     <input asp-for="PeriodoActualizacion" class="form-control">
                     <span asp-validation-for="PeriodoActualizacion" class="text-danger"></span>
                 </div>
-            </div>
-            <div class="row">
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="Observaciones" class="control-label">Observaciones</label>
                     <input asp-for="Observaciones" class="form-control">
                     <span asp-validation-for="Observaciones" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                @*<div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Estado" class="control-label">Estado</label>
+                    <input asp-for="Estado" class="form-control">
+                    <span asp-validation-for="Estado" class="text-danger"></span>
+                </div>*@
+                 
+                <div class="form-group col-md-12 form-group-spacing">
+                    <label asp-for="Descripcion" class="control-label">Descripción</label>
+                    <input asp-for="Descripcion" class="form-control">
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group col-md-6 form-group-spacing">
