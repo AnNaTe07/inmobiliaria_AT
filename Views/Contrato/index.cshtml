@@ -22,10 +22,11 @@
             @Html.DisplayNameFor(model => model.Monto)
 
         </th>
+        @*
         <th>
             @Html.DisplayNameFor(model => model.Tipo)
 
-        </th>
+        </th>*@
         <th>
             @Html.DisplayNameFor(model => model.Plazo)
 
@@ -52,10 +53,12 @@
                     @Html.DisplayFor(modelItem => item.Monto)
                     
                 </td>
-                <td>
+
+                @*<td>
                     @Html.DisplayFor(modelItem => item.Tipo)
 
-                </td>
+                </td>*@
+
                 <td>
                     @Html.DisplayFor(modelItem => item.Plazo)
 
@@ -72,9 +75,9 @@
                         <button type="submit" class="btn btn-info btn-custom" title="Detalles">
                             <i class="fa-solid fa-circle-info"></i>
                         </button>
-                    </form>
+                    </form> @*                                               AGREGAR @item.Tipo                        *@
                     <button type="submit" class="btn btn-danger btn-custom"
-                        onclick="eliminar(@item.Id, `@item.FechaInicio`, `@item.FechaFin`, `@item.Monto`, `@item.Tipo`, `@item.Plazo`)"
+                        onclick="eliminar(@item.Id, `@item.FechaInicio`, `@item.FechaFin`, `@item.Monto`, `@item.Plazo`)"
                         title="Eliminar">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -154,7 +157,7 @@
             document.querySelector("#contrato_eliminar_FechaInicio").innerText = FechaInicio + ", ";
             document.querySelector("#contrato_eliminar_FechaFin").innerText = FechaFin + ", Precio: ";
             document.querySelector("#contrato_eliminar_Monto").innerText = Monto;
-            document.querySelector("#contrato_eliminar_Tipo").innerText = Tipo;
+            //document.querySelector("#contrato_eliminar_Tipo").innerText = Tipo;
             document.querySelector("#contrato_eliminar_Plazo").innerText = Plazo;
 
             $("#modal_eliminar_contrato").modal("show");

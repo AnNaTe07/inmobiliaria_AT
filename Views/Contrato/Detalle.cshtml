@@ -8,7 +8,7 @@
 <h4>Contrato</h4>
 <hr>
 <div class="col-md-12">
-    <div asp-asp-validation-asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" name="Id" value="@id">
     <div class="row">
         <div class="form-group col-md-6 form-group-spacing">
@@ -17,12 +17,12 @@
             <span asp-validation-for="Inqui" class="text-danger"></span>
         </div>
         <div class="form-group col-md-6 form-group-spacing">
-            <label asp-for="Inmu" class="control-label" readonly></label>
+            <label asp-for="Inmu" class="control-label"></label>
             <input asp-for="Inmu" class="form-control" readonly>
             <span asp-validation-for="Inmu" class="text-danger"></span>
         </div>
     </div>
-    <div class="row ">
+    <div class="row">
         <div class="form-group col-md-6 form-group-spacing">
             <label asp-for="Prop" class="control-label"></label>
             <input asp-for="Prop" class="form-control" readonly>
@@ -45,15 +45,15 @@
         </div>
     </div>
     <div class="form-group col-md-6 form-group-spacing">
-            <label asp-for="Estado" class="control-label"></label>
-            <input asp-for="Estado" class="form-control" readonly />
-            <span asp-validation-for="Estado" class="text-danger"></span>
-        </div>
-    <div class="form-group col-md-6 form-group-spacing">
+        <label asp-for="Estado" class="control-label"></label>
+        <input asp-for="Estado" class="form-control" readonly />
+        <span asp-validation-for="Estado" class="text-danger"></span>
+    </div>
+    @*<div class="form-group col-md-6 form-group-spacing">
         <label asp-for="Tipo" class="control-label"></label>
         <input asp-for="Tipo" class="form-control" readonly>
         <span asp-validation-for="Tipo" class="text-danger"></span>
-    </div>
+    </div>*@
     <div class="form-group col-md-6 form-group-spacing">
         <label asp-for="Descripcion" class="control-label"></label>
         <input asp-for="Descripcion" class="form-control" readonly>
@@ -85,5 +85,4 @@
             <i class="fa-solid fa-undo"></i>
         </a>
     </div>
-</div>
 </div>
