@@ -22,7 +22,7 @@ public class RepositorioContrato
             var sql = $@"SELECT {nameof(Contrato.Id)},{nameof(Contrato.Inqui)},{nameof(Contrato.Inmu)},{nameof(Contrato.Prop)}
             ,{nameof(Contrato.FechaInicio)},{nameof(Contrato.FechaFin)},{nameof(Contrato.Monto)},{nameof(Contrato.Estado)}
             ,{nameof(Contrato.Descripcion)},{nameof(Contrato.Plazo)},{nameof(Contrato.PorcentajeActualizacion)},
-            {nameof(Contrato.PeriodoActualizacion)},{nameof(Contrato.Observaciones)} FROM contrato;";
+            {nameof(Contrato.PeriodoActualizacion)},{nameof(Contrato.Observaciones)}, {nameof(Contrato.Tipo)} FROM contrato;";
 
             using (MySqlCommand command = new MySqlCommand(sql, connection))
             {
@@ -50,12 +50,12 @@ public class RepositorioContrato
                             // Manejar el caso en que alguno de los objetos sea null
                             continue; // O lanzar una excepción
                         }
-                        /*var tipoStr = reader.GetString(reader.GetOrdinal("Tipo"));
+                        var tipoStr = reader.GetString(reader.GetOrdinal("Tipo"));
 
                        if (!Enum.TryParse(tipoStr, ignoreCase: true, out TipoContrato tipo))
                        {
                            tipo = TipoContrato.Arrendamiento;
-                       }*/
+                       }
 
 
                         contrato.Add(new Contrato
@@ -73,6 +73,7 @@ public class RepositorioContrato
                             PorcentajeActualizacion = reader.GetDecimal("PorcentajeActualizacion"),
                             PeriodoActualizacion = reader.GetInt32("PeriodoActualizacion"),
                             Observaciones = reader.GetString("Observaciones")
+                            , Tipo = tipo
 
                         });
                     }
@@ -94,7 +95,7 @@ public class RepositorioContrato
             var sql = $@"SELECT {nameof(Contrato.Id)},{nameof(Contrato.Inqui)},{nameof(Contrato.Inmu)},{nameof(Contrato.Prop)}
             ,{nameof(Contrato.FechaInicio)},{nameof(Contrato.FechaFin)},{nameof(Contrato.Monto)},{nameof(Contrato.Estado)}
             ,{nameof(Contrato.Descripcion)},{nameof(Contrato.Plazo)},{nameof(Contrato.PorcentajeActualizacion)},
-            {nameof(Contrato.PeriodoActualizacion)},{nameof(Contrato.Observaciones)} FROM contrato WHERE {nameof(Contrato.Id)} = @id;";
+            {nameof(Contrato.PeriodoActualizacion)},{nameof(Contrato.Observaciones)},{nameof(Contrato.Tipo)} FROM contrato WHERE {nameof(Contrato.Id)} = @id;";
             using (MySqlCommand command = new MySqlCommand(sql, connection))
             {
                 connection.Open();
@@ -136,7 +137,8 @@ public class RepositorioContrato
                             Plazo = reader.GetInt32(nameof(Contrato.Plazo)),
                             PorcentajeActualizacion = reader.GetDecimal(nameof(Contrato.PorcentajeActualizacion)),
                             PeriodoActualizacion = reader.GetInt32(nameof(Contrato.PeriodoActualizacion)),
-                            Observaciones = reader.GetString(nameof(Contrato.Observaciones))
+                            Observaciones = reader.GetString(nameof(Contrato.Observaciones)),
+                            Tipo = (TipoContrato)Enum.Parse(typeof(TipoContrato), reader.GetString(nameof(Contrato.Tipo)))
 
                         };
                     }
@@ -158,9 +160,9 @@ public class RepositorioContrato
             ({nameof(Contrato.Inqui)}, {nameof(Contrato.Inmu)}, {nameof(Contrato.Prop)}, {nameof(Contrato.FechaInicio)}, 
             {nameof(Contrato.FechaFin)}, {nameof(Contrato.Monto)}, {nameof(Contrato.Estado)}, 
             {nameof(Contrato.Descripcion)}, {nameof(Contrato.Plazo)}, {nameof(Contrato.PorcentajeActualizacion)}, 
-            {nameof(Contrato.PeriodoActualizacion)}, {nameof(Contrato.Observaciones)}) 
+            {nameof(Contrato.PeriodoActualizacion)}, {nameof(Contrato.Observaciones)}, {nameof(Contrato.Tipo)}) 
             VALUES (@idInquilino, @idInmueble, @idPropietario, @fechaInicio, @fechaFin, @monto, @estado, @descripcion, 
-            @plazo, @porcentajeActualizacion, @periodoActualizacion, @observaciones); 
+            @plazo, @porcentajeActualizacion, @periodoActualizacion, @observaciones, @tipo); 
             SELECT LAST_INSERT_ID();";
             using (MySqlCommand command = new MySqlCommand(sql, conn))
             {
@@ -176,6 +178,7 @@ public class RepositorioContrato
                 command.Parameters.AddWithValue("@porcentajeActualizacion", contrato.PorcentajeActualizacion);
                 command.Parameters.AddWithValue("@periodoActualizacion", contrato.PeriodoActualizacion);
                 command.Parameters.AddWithValue("@observaciones", contrato.Observaciones);
+                command.Parameters.AddWithValue("@tipo", contrato.Tipo.ToString());
                 conn.Open();
                 res = Convert.ToInt32(command.ExecuteScalar());
             }
@@ -216,7 +219,7 @@ public class RepositorioContrato
              {nameof(Contrato.Prop)} = @idPropietario,{nameof(contrato.FechaInicio)} = @fechaInicio,{nameof(contrato.FechaFin)} = @fechaFin,
              {nameof(contrato.Monto)} = @monto,{nameof(contrato.Estado)} = @estado ,{nameof(contrato.Descripcion)} = @descripcion,
              {nameof(contrato.Plazo)} = @plazo,{nameof(contrato.PorcentajeActualizacion)} = @porcentajeActualizacion,{nameof(contrato.PeriodoActualizacion)} = @periodoActualizacion,
-             {nameof(contrato.Observaciones)} = @observaciones WHERE {nameof(Contrato.Id)} = @id;";
+             {nameof(contrato.Observaciones)} = @observaciones, {contrato.Tipo} = @tipo WHERE {nameof(Contrato.Id)} = @id;";
             using (MySqlCommand command = new MySqlCommand(query, conn))
             {
                 command.Parameters.AddWithValue("@idInquilino", contrato.Inqui.Id);
@@ -231,6 +234,7 @@ public class RepositorioContrato
                 command.Parameters.AddWithValue("@porcentajeActualizacion", contrato.PorcentajeActualizacion);
                 command.Parameters.AddWithValue("@periodoActualizacion", contrato.PeriodoActualizacion);
                 command.Parameters.AddWithValue("@observaciones", contrato.Observaciones);
+                command.Parameters.AddWithValue("@tipo", contrato.Tipo.ToString());
                 conn.Open();
                 res = Convert.ToInt32(command.ExecuteNonQuery());
                 conn.Close();
