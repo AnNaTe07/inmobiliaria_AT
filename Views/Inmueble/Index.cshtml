@@ -22,6 +22,9 @@
         <th>
             @Html.DisplayNameFor(model => model.Precio)
         </th>
+        <th>
+            Propietario
+        </th>
     </thead>
     <tbody>
         @foreach (var item in Model)
@@ -43,6 +46,9 @@
                     @Html.DisplayFor(modelItem => item.Precio)
                 </td>
                 <td>
+                    @(item.PropietarioInmueble.NombreCompleto)
+                </td>
+                <td>
                     <a href="/Inmueble/Editar/@item.Id"></a>
                     <form action="@Url.Action("Editar", new{id=item.Id})" method="get" style="display: inline;">
                         <button type="submit" class="btn btn-warning btn-custom" title="Editar">
@@ -56,7 +62,7 @@
                         </button>
                     </form>
                     <button type="submit" class="btn btn-danger btn-custom"
-                        onclick="eliminar(@item.Id, `@item.TipoDescripcion`, `@item.Direccion`, `@item.Precio`)"
+                        onclick="eliminar(@item.Id, `@item.TipoDescripcion`, `@item.Direccion`, `@item.Precio`, `@item.PropietarioInmueble.NombreCompleto`)"
                         title="Eliminar">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -84,8 +90,10 @@
             <form method="post" asp-action="Eliminar" id="form_eliminar_inmueble">
                 <div class="modal-body">
                     <input type="hidden" name="Id" value="" id="inmueble_eliminar_id">
-                    <p> <span id="inmueble_eliminar_tipoDescripcion"></span> <span
-                            id="inmueble_eliminar_direccion"></span> <span id="inmueble_eliminar_precio"></span></p>
+                    <p>Inmueble: <span id="inmueble_eliminar_tipo"></span> <span
+                            id="inmueble_eliminar_direccion"></span> <span id="inmueble_eliminar_precio"></span>
+                        <span id="inmueble_eliminar_propietario"></span>
+                    </p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -126,11 +134,12 @@
             }
         });
 
-        function eliminar(id, tipoDescripcion, direccion, precio) {//direccion, uso, tipo
+        function eliminar(id, tipo, direccion, precio, propietarioInmuebleNombreCompleto) {
             document.querySelector("#inmueble_eliminar_id").value = id;
-            document.querySelector("#inmueble_eliminar_tipoDescripcion").innerText = tipoDescripcion + ", ";
-            document.querySelector("#inmueble_eliminar_direccion").innerText = direccion + ", Precio: ";
-            document.querySelector("#inmueble_eliminar_precio").innerText = precio;
+            document.querySelector("#inmueble_eliminar_tipo").innerText = tipo + ", ";
+            document.querySelector("#inmueble_eliminar_direccion").innerText = direccion;
+            document.querySelector("#inmueble_eliminar_precio").innerHTML = "<br> Precio: " + precio;
+            document.querySelector("#inmueble_eliminar_propietario").innerHTML = "<br> Propietario: " + propietarioInmuebleNombreCompleto;
             $("#modal_eliminar_inmueble").modal("show");
         }
     </script>
