@@ -1,6 +1,7 @@
 namespace inmobiliaria_AT.Models;
 
-public enum UsoInmueble{
+public enum UsoInmueble
+{
     Comercial,
     Residencial
 }
@@ -14,6 +15,8 @@ public class Inmueble
     public int Ambientes { get; set; }
     public decimal Latitud { get; set; }
     public decimal Longitud { get; set; }
+    public decimal Superficie { get; set; }
     public decimal Precio { get; set; }
     public int IdPropietario { get; set; }
+    public Propietario PropietarioInmueble { get; set; }
 }

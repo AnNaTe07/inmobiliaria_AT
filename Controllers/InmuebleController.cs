@@ -10,11 +10,13 @@ namespace inmobiliaria_AT.Controllers
         private readonly ILogger<InmuebleController> _logger;
         private readonly RepositorioInmueble _repo;
         private readonly RepositorioTipo _repositorioTipo;
-        public InmuebleController(ILogger<InmuebleController> logger, RepositorioInmueble repo, RepositorioTipo repositorioTipo)
+        private readonly RepositorioPropietario _repoPropietario;
+        public InmuebleController(ILogger<InmuebleController> logger, RepositorioInmueble repo, RepositorioTipo repositorioTipo, RepositorioPropietario repoPropietario)
         {
             _logger = logger;
             _repo = repo;
             _repositorioTipo = repositorioTipo;
+            _repoPropietario = repoPropietario;
         }
 
         public IActionResult Crear()
@@ -54,8 +56,23 @@ namespace inmobiliaria_AT.Controllers
 
         public IActionResult Editar(int id)
         {
+            // obtengo los tipos de inmueble
+            var tipos = _repositorioTipo.ObtenerTodos();
+
+            // creo un SelectList y selecciono el valor del tipo de inmueble a modificar
+            ViewBag.Tipo = new SelectList(tipos, "Id", "Descripcion");
+
+
+            // obtengo la lista de propietarios
+            var propietarios = _repoPropietario.ObtenerTodos();
+
+            // creo un SelectList y selecciono el propietario a modificar
+            ViewBag.Propietario = new SelectList(propietarios, "Id", "NombreCompleto");
+
             if (id == 0)
+            {
                 return View(new Inmueble());
+            }
             else
             {
                 var inmueble = _repo.ObtenerPorId(id);
@@ -64,11 +81,10 @@ namespace inmobiliaria_AT.Controllers
                     // Si el inmueble no se encuentra, devuelve una vista de error (página de "No Encontrado")
                     return NotFound();
                 }
-                // obtengo los tipos de inmueble para llenar el dropdown
-                var tipos = _repositorioTipo.ObtenerTodos();
-
                 // Crea un SelectList y establece el valor seleccionado
                 ViewBag.Tipo = new SelectList(tipos, "Id", "Descripcion", inmueble.TipoId);
+                ViewBag.Propietario = new SelectList(propietarios, "Id", "NombreCompleto", inmueble.IdPropietario);
+
 
                 // Prepara la lista de SelectListItem y marca la opción seleccionada
                 // var tipoItems = tipos.Select(t => new SelectListItem
@@ -79,7 +95,6 @@ namespace inmobiliaria_AT.Controllers
                 // }).ToList();
                 //
                 // ViewBag.Tipo = tipoItems;
-
                 return View(inmueble);
             }
         }
@@ -108,7 +123,7 @@ namespace inmobiliaria_AT.Controllers
             }
             return RedirectToAction("Index");
         }
-        public IActionResult Baja(int id)
+        public IActionResult Eliminar(int id)
         {
             _repo.Baja(id);
             TempData["SuccessMessage"] = "Datos de inmueble eliminados correctamente.";

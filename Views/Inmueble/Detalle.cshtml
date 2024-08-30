@@ -33,6 +33,8 @@
             <input asp-for="Ambientes" class="form-control" readonly>
             <span asp-validation-for="Ambientes" class="text-danger"></span>
         </div>
+    </div>
+    <div class="row ">
         <div class="form-group col-md-6 form-group-spacing">
             <label asp-for="Latitud" class="control-label"></label>
             <input asp-for="Latitud" class="form-control" readonly />
@@ -44,15 +46,31 @@
             <span asp-validation-for="Longitud" class="text-danger"></span>
         </div>
     </div>
-    <div class="form-group col-md-6 form-group-spacing">
-        <label asp-for="Precio" class="control-label"></label>
-        <input asp-for="Precio" class="form-control" readonly>
-        <span asp-validation-for="Precio" class="text-danger"></span>
+    <div class="row ">
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="Superficie" class="control-label"></label>
+            <input asp-for="Superficie" class="form-control" readonly />
+            <span asp-validation-for="Superficie" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="Precio" class="control-label"></label>
+            <input asp-for="Precio" class="form-control" readonly>
+            <span asp-validation-for="Precio" class="text-danger"></span>
+        </div>
     </div>
-    <div class="form-group-spacing">
-        <a asp-action="Index" title="Volver">
-            <i class="fa-solid fa-undo"></i>
-        </a>
+    <div class="row">
+        <div class="form-group col-md-6 form-group-spacing">
+            <label class="control-label">Propietario</label>
+            <input asp-for="PropietarioInmueble.NombreCompleto" class="form-control" readonly>
+            <span asp-validation-for="PropietarioInmueble.NombreCompleto" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="volver">
+        <div class="form-group-spacing">
+            <a asp-action="Index" title="Volver">
+                <i class="fa-solid fa-undo"></i>
+            </a>
+        </div>
     </div>
 </div>
 </div>
