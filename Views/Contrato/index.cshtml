@@ -41,7 +41,7 @@
                     @Html.DisplayFor(modelItem => item.Id)
 
                 </td>
-                
+
                 <td>
 
                     @(item.Inmu.Direccion)
@@ -65,6 +65,8 @@
                     @Html.DisplayFor(modelItem => item.Plazo)
 
                 </td>
+
+                @*--------ICONOS PARA EDITAR, DETALLE Y ELIMINAR -------------*@
                 <td>
                     <a href="/Contrato/Editar/@item.Id"></a>
                     <form action="@Url.Action("Editar", new{id=item.Id})" method="get" style="display: inline;">
@@ -72,6 +74,7 @@
                             <i class="fa-solid fa-pen"></i>
                         </button>
                     </form>
+                    
                     <a href="/Contrato/Detalle/@item.Id"></a>
                     <form action="@Url.Action("Detalle", new{id=item.Id})" method="get" style="display: inline;">
                         <button type="submit" class="btn btn-info btn-custom" title="Detalles">
@@ -79,7 +82,7 @@
                         </button>
                     </form> @* AGREGAR @item.Tipo *@
                     <button type="submit" class="btn btn-danger btn-custom"
-                        onclick="eliminar(@item.Id, `@item.FechaInicio`, `@item.FechaFin`, `@item.Monto`, `@item.Plazo`)"
+                        onclick="eliminar(@item.Id, '@item.Inmu.Direccion', '@item.Prop.NombreCompleto', '@item.Inqui.NombreCompleto', '@item.Tipo', '@item.Plazo')"
                         title="Eliminar">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -112,8 +115,13 @@
             <form method="post" asp-action="Eliminar" id="form_eliminar_contrato">
                 <div class="modal-body">
                     <input type="hidden" name="Id" value="" id="contrato_eliminar_id">
-                    <p> <span id="contrato_eliminar_inicio"></span> <span id="contrato_eliminar_fin"></span> <span
-                            id="contrato_eliminar_tipo"><span id="contrato_eliminar_plazo"></span></p>
+                    <p> 
+                        <span id="contrato_eliminar_direccion"></span><br>
+                        <span id="contrato_eliminar_propietario"></span><br>
+                        <span id="contrato_eliminar_inquilino"></span><br>
+                        <span id="contrato_eliminar_tipo"></span><br>
+                        <span id="contrato_eliminar_plazo"></span>
+                    </p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -154,14 +162,13 @@
             }
         });
 
-        function eliminar(id, tipo, direccion, precio) { //inicio, fin, monto, tipo, plazo
+        function eliminar(id, direccion, propietario, inquilino, tipo, plazo) {
             document.querySelector("#contrato_eliminar_id").value = id;
-            document.querySelector("#contrato_eliminar_FechaInicio").innerText = FechaInicio + ", ";
-            document.querySelector("#contrato_eliminar_FechaFin").innerText = FechaFin + ", Precio: ";
-            document.querySelector("#contrato_eliminar_Monto").innerText = Monto;
-            //document.querySelector("#contrato_eliminar_Tipo").innerText = Tipo;
-            document.querySelector("#contrato_eliminar_Plazo").innerText = Plazo;
-
+            document.querySelector("#contrato_eliminar_direccion").innerText = "Dirección: " + direccion;
+            document.querySelector("#contrato_eliminar_propietario").innerText = "Propietario: " + propietario;
+            document.querySelector("#contrato_eliminar_inquilino").innerText = "Inquilino: " + inquilino;
+            document.querySelector("#contrato_eliminar_tipo").innerText = "Tipo: " + tipo;
+            document.querySelector("#contrato_eliminar_plazo").innerText = "Plazo: " + plazo;
             $("#modal_eliminar_contrato").modal("show");
         }
     </script>

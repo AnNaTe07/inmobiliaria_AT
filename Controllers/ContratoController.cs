@@ -97,7 +97,7 @@ public class ContratoController : Controller
     public IActionResult Eliminar(int id)
     {
         _repo.Baja(id);
-        TempData["SuccessMessage"] = "Datos de propietario eliminados correctamente.";
+        TempData["SuccessMessage"] = "Datos de contrato eliminados correctamente.";
         return RedirectToAction(nameof(Index));
     }
 
