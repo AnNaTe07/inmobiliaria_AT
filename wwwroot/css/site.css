@@ -90,3 +90,12 @@ body {
 .volver {
   margin-bottom: 30px;
 }
+#propietarioSelect {
+  height: 2.5rem; /* Ajusta la altura según el diseño general */
+  padding: 0.375rem 0.75rem; /* Ajusta el padding */
+  font-size: 1rem; /* Tamaño de fuente */
+  line-height: 1.5; /* Altura de línea */
+  border-radius: 0.25rem; /* Radio del borde para esquinas redondeadas */
+  border: 1px solid #ced4da; /* Ajusta el color del borde */
+  box-shadow: none; /* Elimina el box-shadow si no es necesario */
+}

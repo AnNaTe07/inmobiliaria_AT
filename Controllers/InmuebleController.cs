@@ -19,34 +19,34 @@ namespace inmobiliaria_AT.Controllers
             _repoPropietario = repoPropietario;
         }
 
-        public IActionResult Crear()
-        {
-            //obtengo la lista de tipos
-            var tipos = _repositorioTipo.ObtenerTodos();
+        /*   public IActionResult Crear()
+          {
+              //obtengo la lista de tipos
+              var tipos = _repositorioTipo.ObtenerTodos();
 
-            //uso viewBag para pasar los tipos a la vista
-            ViewBag.Tipos = tipos;
+              //uso viewBag para pasar los tipos a la vista
+              ViewBag.Tipos = tipos;
 
-            //creo una instancia de inmueble para la vista
-            var inmueble = new Inmueble();
+              //creo una instancia de inmueble para la vista
+              var inmueble = new Inmueble();
 
-            return View(inmueble);
-        }
+              return View(inmueble);
+          }
 
-        public IActionResult EditarTipo(int id)
-        {
-            // Obtiene el inmueble a editar
-            var inmueble = _repo.ObtenerPorId(id);
+          public IActionResult EditarTipo(int id)
+          {
+              // obtengo el inmueble a editar
+              var inmueble = _repo.ObtenerPorId(id);
 
-            // Obtiene la lista de tipos de inmuebles
-            var tipos = _repositorioTipo.ObtenerTodos();
+              // obtengo la lista de tipos de inmuebles
+              var tipos = _repositorioTipo.ObtenerTodos();
 
-            // Usa ViewBag para pasar los tipos a la vista
-            ViewBag.Tipos = tipos;
+              // uso ViewBag para pasar los tipos a la vista
+              ViewBag.Tipos = tipos;
 
-            return View(inmueble);
-        }
-
+              return View(inmueble);
+          }
+   */
 
         public IActionResult Index()
         {
@@ -56,21 +56,63 @@ namespace inmobiliaria_AT.Controllers
 
         public IActionResult Editar(int id)
         {
+            // Configuración de opciones para el uso del inmueble
+            var usos = Enum.GetValues(typeof(UsoInmueble))
+                            .Cast<UsoInmueble>()
+                            .Select(u => new SelectListItem
+                            {
+                                Value = u.ToString(),
+                                Text = u.ToString()
+                            }).ToList();
+
+            // Agregar la opción "Seleccione uso de inmueble"
+            usos.Insert(0, new SelectListItem
+            {
+                Value = "",
+                Text = "Seleccione uso de inmueble"
+            });
+
             // obtengo los tipos de inmueble
             var tipos = _repositorioTipo.ObtenerTodos();
 
             // creo un SelectList y selecciono el valor del tipo de inmueble a modificar
-            ViewBag.Tipo = new SelectList(tipos, "Id", "Descripcion");
+            //ViewBag.Tipo = new SelectList(tipos, "Id", "Descripcion");
+            // Crear una lista con la opción por defecto para Tipo
+            var listaTipos = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "", Text = "Seleccione tipo de inmueble" }
+    };
+
+            listaTipos.AddRange(tipos.Select(t => new SelectListItem
+            {
+                Value = t.Id.ToString(),
+                Text = t.Descripcion
+            }));
 
 
             // obtengo la lista de propietarios
             var propietarios = _repoPropietario.ObtenerTodos();
 
-            // creo un SelectList y selecciono el propietario a modificar
-            ViewBag.Propietario = new SelectList(propietarios, "Id", "NombreCompleto");
+
+            // Crear una lista con la opción por defecto
+            var listaPropietarios = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "", Text = "Seleccione propietario" }
+    };
+
+            listaPropietarios.AddRange(propietarios.Select(p => new SelectListItem
+            {
+                Value = p.Id.ToString(),
+                Text = p.NombreCompleto
+            }));
 
             if (id == 0)
             {
+                ViewBag.Usos = new SelectList(usos, "Value", "Text");
+
+                // Para un nuevo inmueble, la opción por defecto es la inicial
+                ViewBag.Tipo = new SelectList(listaTipos, "Value", "Text");
+                ViewBag.Propietario = new SelectList(listaPropietarios, "Value", "Text");
                 return View(new Inmueble());
             }
             else
@@ -81,20 +123,12 @@ namespace inmobiliaria_AT.Controllers
                     // Si el inmueble no se encuentra, devuelve una vista de error (página de "No Encontrado")
                     return NotFound();
                 }
+                ViewBag.Usos = new SelectList(usos, "Value", "Text", inmueble.Uso.ToString());
                 // Crea un SelectList y establece el valor seleccionado
-                ViewBag.Tipo = new SelectList(tipos, "Id", "Descripcion", inmueble.TipoId);
-                ViewBag.Propietario = new SelectList(propietarios, "Id", "NombreCompleto", inmueble.IdPropietario);
+                ViewBag.Tipo = new SelectList(listaTipos, "Value", "Text", inmueble.TipoId.ToString());
+                // creo un SelectList y selecciono el propietario a modificar
+                ViewBag.Propietario = new SelectList(listaPropietarios, "Value", "Text", inmueble.IdPropietario.ToString());
 
-
-                // Prepara la lista de SelectListItem y marca la opción seleccionada
-                // var tipoItems = tipos.Select(t => new SelectListItem
-                // {
-                //     Value = t.Id.ToString(),
-                //     Text = t.Descripcion,
-                //     Selected = t.Id == inmueble.TipoId // Marca la opción como seleccionada
-                // }).ToList();
-                //
-                // ViewBag.Tipo = tipoItems;
                 return View(inmueble);
             }
         }
