@@ -18,16 +18,20 @@ public class ContratoController : Controller
         _repoInmueble = repoInmueble;
         _repoProp = repoProp;
         _repoInquilino = repoInquilino;
+        if (!_repo.TestConnection())
+    {
+        // Manejo del error si la conexión falla
+        _logger.LogError("No se pudo conectar a la base de datos.");
+    }
 
     }
-    public IActionResult Index()
-    {
-        var contratos = _repo.ObtenerTodos(); //obtiene todos los contratos desde el repositorio
-        
-        
-        
-        return View(contratos);  //devuelve a la vista con la lista de contratos 
-    }
+public IActionResult Index()
+{
+    Console.WriteLine("Ejecutando Index...");
+    var contratos = _repo.ObtenerTodos();
+    Console.WriteLine($"Número de contratos recuperados: {contratos.Count} : {contratos[0].Prop.Id}");
+    return View(contratos);
+}
 
 
 

@@ -1,4 +1,6 @@
 @model IEnumerable<inmobiliaria_AT.Models.Contrato>
+@*@model List<inmobiliaria_AT.Models.Contrato>*@
+
 @{
     ViewData["Title"] = "Contratos";
 
@@ -33,61 +35,70 @@
         </th>
     </thead>
     <tbody>
-
-        @foreach (var item in Model)
+        @if (Model == null || !Model.Any())
         {
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-
-                </td>
-
-                <td>
-
-                    @(item.Inmu.Direccion)
-                </td>
-
-                <td>
-                    @(item.Prop.NombreCompleto)
-                </td>
-
-                <td>
-                    @(item.Inqui.NombreCompleto)
-
-                </td>
-
-                <td>
-                    @Html.DisplayFor(modelItem => item.Tipo)
-
-                </td>
-
-                <td>
-                    @Html.DisplayFor(modelItem => item.Plazo)
-
-                </td>
-
-                @*--------ICONOS PARA EDITAR, DETALLE Y ELIMINAR -------------*@
-                <td>
-                    <a href="/Contrato/Editar/@item.Id"></a>
-                    <form action="@Url.Action("Editar", new{id=item.Id})" method="get" style="display: inline;">
-                        <button type="submit" class="btn btn-warning btn-custom" title="Editar">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                    </form>
-                    
-                    <a href="/Contrato/Detalle/@item.Id"></a>
-                    <form action="@Url.Action("Detalle", new{id=item.Id})" method="get" style="display: inline;">
-                        <button type="submit" class="btn btn-info btn-custom" title="Detalles">
-                            <i class="fa-solid fa-circle-info"></i>
-                        </button>
-                    </form> @* AGREGAR @item.Tipo *@
-                    <button type="submit" class="btn btn-danger btn-custom"
-                        onclick="eliminar(@item.Id, '@item.Inmu.Direccion', '@item.Prop.NombreCompleto', '@item.Inqui.NombreCompleto', '@item.Tipo', '@item.Plazo')"
-                        title="Eliminar">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
+                <td colspan="6" class="text-center">No se encontraron contratos.</td>
             </tr>
+        }
+        else
+        {
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+
+                    </td>
+
+                    <td>
+
+                        @(item.Inmu.Direccion)
+                    </td>
+
+                    <td>
+                        @(item.Prop.NombreCompleto)
+                    </td>
+
+                    <td>
+                        @(item.Inqui.NombreCompleto)
+
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Tipo)
+
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Plazo)
+
+                    </td>
+
+                    @*--------ICONOS PARA EDITAR, DETALLE Y ELIMINAR -------------*@
+                    <td>
+                        <a href="/Contrato/Editar/@item.Id"></a>
+                        <form action="@Url.Action("Editar", new{id=item.Id})" method="get" style="display: inline;">
+                            <button type="submit" class="btn btn-warning btn-custom" title="Editar">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                        </form>
+
+                        <a href="/Contrato/Detalle/@item.Id"></a>
+                        <form action="@Url.Action("Detalle", new{id=item.Id})" method="get" style="display: inline;">
+                            <button type="submit" class="btn btn-info btn-custom" title="Detalles">
+                                <i class="fa-solid fa-circle-info"></i>
+                            </button>
+                        </form> @* AGREGAR @item.Tipo *@
+                        <button type="submit" class="btn btn-danger btn-custom"
+                            onclick="eliminar(@item.Id, '@item.Inmu.Direccion', '@item.Prop.NombreCompleto', '@item.Inqui.NombreCompleto', '@item.Tipo', '@item.Plazo')"
+                            title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
         }
         <td>
             <button type="button" class="btn btn-ligth">
@@ -115,7 +126,7 @@
             <form method="post" asp-action="Eliminar" id="form_eliminar_contrato">
                 <div class="modal-body">
                     <input type="hidden" name="Id" value="" id="contrato_eliminar_id">
-                    <p> 
+                    <p>
                         <span id="contrato_eliminar_direccion"></span><br>
                         <span id="contrato_eliminar_propietario"></span><br>
                         <span id="contrato_eliminar_inquilino"></span><br>
