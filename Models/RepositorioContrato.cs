@@ -250,7 +250,7 @@ public class RepositorioContrato
     {
         var repo_Inm = new RepositorioInmueble(_connectionString);
         var id_prop = repo_Inm.ObtenerPorId(contrato.Inmu.Id).IdPropietario;
-        
+
         if (contrato.Inqui == null)
         {
             throw new ArgumentNullException(nameof(contrato.Inqui), "El inquilino no puede ser null.");
@@ -319,6 +319,9 @@ public class RepositorioContrato
 
     public int Modificar(Contrato contrato)
     {
+        var repo_Inm = new RepositorioInmueble(_connectionString);
+        var id_prop = repo_Inm.ObtenerPorId(contrato.Inmu.Id).IdPropietario;
+
         if (contrato == null)
         {
             throw new ArgumentNullException(nameof(contrato), "El contrato no puede ser null.");
@@ -350,7 +353,7 @@ public class RepositorioContrato
             {nameof(Contrato.PeriodoActualizacion)} = @periodoActualizacion,
             {nameof(Contrato.Observaciones)} = @observaciones,
             {nameof(Contrato.Tipo)} = @tipo,
-            {nameof(Contrato.Prop)} = @prop
+            {nameof(Contrato.Prop)} = @Prop
 
             WHERE {nameof(Contrato.Id)} = @id;";
 
@@ -368,8 +371,8 @@ public class RepositorioContrato
                 command.Parameters.AddWithValue("@periodoActualizacion", contrato.PeriodoActualizacion);
                 command.Parameters.AddWithValue("@observaciones", contrato.Observaciones);
                 command.Parameters.AddWithValue("@tipo", contrato.Tipo.ToString());
-                command.Parameters.AddWithValue("@id", contrato.Id);  // Asegúrate de añadir el parámetro para la cláusula WHERE
-                command.Parameters.AddWithValue("@prop", contrato.Prop.Id);
+                command.Parameters.AddWithValue("@id", contrato.Id);  
+                command.Parameters.AddWithValue("@Prop", id_prop);
                 conn.Open();
                 res = command.ExecuteNonQuery();
                 conn.Close();
