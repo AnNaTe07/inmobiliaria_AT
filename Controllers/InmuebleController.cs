@@ -66,12 +66,12 @@ namespace inmobiliaria_AT.Controllers
                             }).ToList();
 
             // Agregar la opción "Seleccione uso de inmueble"
-            usos.Insert(0, new SelectListItem
-            {
-                Value = "",
-                Text = "Seleccione uso de inmueble"
-            });
-
+            /*    usos.Insert(0, new SelectListItem
+               {
+                   Value = "",
+                   Text = "Seleccione uso de inmueble"
+               });
+    */
             // obtengo los tipos de inmueble
             var tipos = _repositorioTipo.ObtenerTodos();
 
