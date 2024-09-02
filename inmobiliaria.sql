@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-08-2024 a las 04:38:10
+-- Tiempo de generación: 02-09-2024 a las 01:11:12
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,6 +20,40 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `inmobiliaria`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `contrato`
+--
+
+CREATE TABLE `contrato` (
+  `Id` int(11) NOT NULL,
+  `Inqui` int(11) NOT NULL,
+  `Inmu` int(11) NOT NULL,
+  `FechaInicio` datetime NOT NULL,
+  `FechaFin` datetime NOT NULL,
+  `Monto` decimal(10,0) NOT NULL,
+  `Estado` tinyint(1) NOT NULL,
+  `Descripcion` varchar(350) NOT NULL,
+  `Plazo` int(11) NOT NULL,
+  `PorcentajeActualizacion` decimal(10,0) NOT NULL,
+  `PeriodoActualizacion` int(11) NOT NULL,
+  `Observaciones` varchar(350) NOT NULL,
+  `Tipo` enum('Compraventa','Arrendamiento','Permuta','') NOT NULL,
+  `Prop` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `contrato`
+--
+
+INSERT INTO `contrato` (`Id`, `Inqui`, `Inmu`, `FechaInicio`, `FechaFin`, `Monto`, `Estado`, `Descripcion`, `Plazo`, `PorcentajeActualizacion`, `PeriodoActualizacion`, `Observaciones`, `Tipo`, `Prop`) VALUES
+(4, 1, 2, '2342-03-12 01:01:00', '4333-04-23 01:01:00', 234, 1, 'fdsf', 23, 32, 23, 'vcfsd', 'Compraventa', 3),
+(5, 1, 1, '2024-08-31 20:04:00', '2024-09-03 20:04:00', 3434324, 1, '324dfsfsd', 234234234, 324, 32, '324', 'Compraventa', 2),
+(6, 1, 5, '2024-08-31 21:37:00', '2024-09-07 21:37:00', 12344, 1, 'cxvfdbdfhfdg  fdg dfg dfg', 214, 124, 412, '412', 'Permuta', 2),
+(23, 1, 3, '2024-08-31 23:29:00', '2024-09-08 23:29:00', 124, 1, 'y45yerdsfxdfxb ', 56, 65, 45745, '547', 'Arrendamiento', 1),
+(25, 4, 4, '2024-08-31 23:29:00', '2024-09-08 23:29:00', 124, 1, 'y45yerdsfxdfxb ', 56, 65, 45745, '547', 'Compraventa', 4);
 
 -- --------------------------------------------------------
 
@@ -48,8 +82,8 @@ INSERT INTO `inmueble` (`Id`, `Direccion`, `Uso`, `TipoId`, `Ambientes`, `Latitu
 (1, 'Las Heras 222', 'Residencial', 4, 2, 11.11, 22.22, 75, 222222.00, 1),
 (2, 'Comechingones 333', 'Comercial', 1, 2, 11.22, 22.11, 80, 333333.10, 2),
 (3, 'calle 098', 'Comercial', 1, 3, 25.1, 42.47, 110, 444444.00, 3),
-(4, 'mi casa 777', 'Residencial', 4, 5, 111.11, 333.33, 150, 777777.00, 4),
-(5, 'Casa Quinta ', 'Residencial', 5, 7, 11.11, 99.99, 223, 999999.00, 1);
+(5, 'Casa Quinta ', 'Residencial', 5, 7, 11.11, 99.99, 223, 999999.00, 1),
+(10, 'e', 'Comercial', 3, 7, 11.11, 55.55, 265, 515515151551.00, 0);
 
 -- --------------------------------------------------------
 
@@ -112,19 +146,21 @@ INSERT INTO `propietario` (`Id`, `Nombre`, `Apellido`, `Documento`, `Telefono`, 
 
 CREATE TABLE `tipo` (
   `Id` int(11) NOT NULL,
-  `Descripcion` varchar(100) NOT NULL
+  `Descripcion` varchar(100) NOT NULL,
+  `Activo` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `tipo`
 --
 
-INSERT INTO `tipo` (`Id`, `Descripcion`) VALUES
-(4, 'Casa'),
-(3, 'Departamento'),
-(2, 'Depósito'),
-(1, 'Local'),
-(5, 'Quinta');
+INSERT INTO `tipo` (`Id`, `Descripcion`, `Activo`) VALUES
+(1, 'Local', 1),
+(2, 'Depósito', 1),
+(3, 'Departamento', 1),
+(4, 'Casa', 1),
+(5, 'Quinta', 1),
+(21, 'rere', 0);
 
 --
 -- Índices para tablas volcadas
@@ -168,7 +204,7 @@ ALTER TABLE `tipo`
 -- AUTO_INCREMENT de la tabla `inmueble`
 --
 ALTER TABLE `inmueble`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `inquilino`
@@ -186,7 +222,7 @@ ALTER TABLE `propietario`
 -- AUTO_INCREMENT de la tabla `tipo`
 --
 ALTER TABLE `tipo`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- Restricciones para tablas volcadas
