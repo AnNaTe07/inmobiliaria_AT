@@ -7,7 +7,7 @@ public class ContratoController : Controller
 {
     private readonly ILogger<ContratoController> _logger;
     private readonly RepositorioContrato _repo;
-    private readonly RepositorioPropietario  _repoProp;
+    private readonly RepositorioPropietario _repoProp;
     private readonly RepositorioInmueble _repoInmueble;
     private readonly RepositorioInquilino _repoInquilino;
 
@@ -18,20 +18,14 @@ public class ContratoController : Controller
         _repoInmueble = repoInmueble;
         _repoProp = repoProp;
         _repoInquilino = repoInquilino;
-        if (!_repo.TestConnection())
-    {
-        // Manejo del error si la conexión falla
-        _logger.LogError("No se pudo conectar a la base de datos.");
-    }
 
     }
-public IActionResult Index()
-{
-    Console.WriteLine("Ejecutando Index...");
-    var contratos = _repo.ObtenerTodos();
-    Console.WriteLine($"Número de contratos recuperados: {contratos.Count} : {contratos[0].Prop.Id}");
-    return View(contratos);
-}
+    public IActionResult Index()
+    {
+        Console.WriteLine("Ejecutando Index...");
+        var contratos = _repo.ObtenerTodos();
+        return View(contratos);
+    }
 
 
 
@@ -41,13 +35,25 @@ public IActionResult Index()
 
         //obtengo la lista de propietarios
         var propietarios = _repoProp.ObtenerTodos();
-        var inmuebles = _repoInmueble.ObtenerTodos();
+        var inmuebles = _repoInmueble.ObtenerDispo();
         var inquilinos = _repoInquilino.ObtenerTodos();
 
+        if (id > 0)
+        {
+            //Obtengo el inmueble que esta en el contrato 
+
+            Contrato cont = _repo.ObtenerPorId(id);
+            Inmueble inmuContra = _repoInmueble.ObtenerPorId(cont.Inmu.Id);
+
+            //Agrego el inmueble que ya tiene el contrato, porque si no solo traigo los no alguilados
+            inmuebles.Add(inmuContra);
+
+        }
+
         ViewBag.Propietarios = new SelectList(propietarios, "Id", "NombreCompleto");
-        ViewBag.Inmuebles = new SelectList(inmuebles,"Id","Direccion" );
+        ViewBag.Inmuebles = new SelectList(inmuebles, "Id", "Direccion");
         ViewBag.Inquilinos = new SelectList(inquilinos, "Id", "NombreCompleto");
-        
+
         if (id == 0)
         {
             return View();
@@ -78,7 +84,7 @@ public IActionResult Index()
         }
     }
 
-    
+
     [HttpPost]
     public IActionResult Guardar(Contrato contrato)
     {
