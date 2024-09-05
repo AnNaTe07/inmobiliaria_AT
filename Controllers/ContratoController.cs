@@ -18,16 +18,15 @@ public class ContratoController : Controller
         _repoInmueble = repoInmueble;
         _repoProp = repoProp;
         _repoInquilino = repoInquilino;
+        
+        _repo.vigenciaContrato();
 
     }
     public IActionResult Index()
     {
-        Console.WriteLine("Ejecutando Index...");
         var contratos = _repo.ObtenerTodos();
         return View(contratos);
     }
-
-
 
 
     public IActionResult Editar(int id)
@@ -65,9 +64,6 @@ public class ContratoController : Controller
             return View(contrato);
         }
     }
-
-
-
 
     public IActionResult Detalle(int id)
     {

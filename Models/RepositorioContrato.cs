@@ -1,5 +1,6 @@
 using System.ComponentModel.Design;
-using MySql.Data.MySqlClient; //Importa la biblioteca de MySQL
+using System.Transactions;
+using MySql.Data.MySqlClient;
 
 
 namespace inmobiliaria_AT.Models;
@@ -19,7 +20,8 @@ public class RepositorioContrato
         List<Contrato> contratos = new List<Contrato>();
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
         {
-            var sql = $@"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Monto, Estado, Descripcion, Plazo, PorcentajeActualizacion, PeriodoActualizacion, Observaciones, Tipo FROM contrato;";
+            var sql = $@"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Monto, Estado, Descripcion, Plazo, PorcentajeActualizacion, PeriodoActualizacion, Observaciones, Tipo FROM contrato
+            WHERE estado = 1;";
 
             using (MySqlCommand command = new MySqlCommand(sql, connection))
             {
@@ -31,16 +33,10 @@ public class RepositorioContrato
                     int idInquilino = reader.GetInt32("Inqui");
                     int idInmueble = reader.GetInt32("Inmu");
                     int idPropietario = reader.GetInt32("Prop");
-
-                    Console.WriteLine($"Leyendo contrato: Id={reader.GetInt32("Id")}, Inqui={idInquilino}, Inmu={idInmueble}, Prop={idPropietario}");
-
-                    // Obtén inquilino, inmueble y propietario
                     var inquilino = new RepositorioInquilino(_connectionString).ObtenerPorId(idInquilino);
                     var inmueble = new RepositorioInmueble(_connectionString).ObtenerPorId(idInmueble);
                     var propietario = new RepositorioPropietario(_connectionString).ObtenerPorId(idPropietario);
 
-                    // Mostrar los datos obtenidos
-                    Console.WriteLine($"Inquilino: {inquilino?.NombreCompleto}, Inmueble: {inmueble?.Direccion}, Propietario: {propietario?.NombreCompleto}");
 
                     if (inquilino == null || inmueble == null || propietario == null)
                     {
@@ -72,9 +68,9 @@ public class RepositorioContrato
                 connection.Close();
             }
         }
-        Console.WriteLine($"Número de contratos recuperados: {contratos.Count}");
         return contratos;
     }
+
 
     public Contrato? ObtenerPorId(int id)
     {//AGREGAR TIPO
@@ -104,7 +100,6 @@ public class RepositorioContrato
                     if (inquilino == null || inmueble == null || propietario == null)
                     {
                         // Manejar el caso en que alguno de los objetos sea null
-                        // O lanzar una excepción   {nameof(Contrato.Tipo)}
                         return null;
 
                     }
@@ -136,6 +131,7 @@ public class RepositorioContrato
             return cont;
         }
     }
+
 
     public int Alta(Contrato contrato)
 
@@ -307,20 +303,21 @@ public class RepositorioContrato
                     var sqlEstado = $@"UPDATE inmueble SET estado = '0' WHERE id = @Inmu ";
 
                     //transaccion asegura que esta consulta sea parte de la mismo
-                    using (MySqlCommand command = new MySqlCommand(sqlEstado, conn, transaction)) 
+                    using (MySqlCommand command = new MySqlCommand(sqlEstado, conn, transaction))
                     {
                         command.Parameters.AddWithValue("@Inmu", contrato.Inmu.Id);
                         command.ExecuteNonQuery();
                     }
 
                     //SI QUIERO MODIFICAR EL INMUEBLE DEL CONTRATO, AL INMUEBLE QUE ESTABA ANTES, LO VUELVO A DEJAR DISPONIBLE PARA ALQUILAR
-                    if(id_inmu != contrato.Inmu.Id){
-                        var inmuAnt = $@"UPDATE inmueble SET estado = '1' WHERE id = @Inmu ";
-                    using (MySqlCommand command = new MySqlCommand(inmuAnt, conn, transaction)) 
+                    if (id_inmu != contrato.Inmu.Id)
                     {
-                        command.Parameters.AddWithValue("@Inmu", id_inmu);
-                        command.ExecuteNonQuery();
-                    }
+                        var inmuAnt = $@"UPDATE inmueble SET estado = '1' WHERE id = @Inmu ";
+                        using (MySqlCommand command = new MySqlCommand(inmuAnt, conn, transaction))
+                        {
+                            command.Parameters.AddWithValue("@Inmu", id_inmu);
+                            command.ExecuteNonQuery();
+                        }
 
                     }
                     transaction.Commit();
@@ -337,5 +334,174 @@ public class RepositorioContrato
         }
         return res;
     }
+
+
+
+    //COMPARA FECHAS DE LOS CONTRATOS Y SI SE VENCE EL CONTRATO, CAMBIO EL ESTADO A 0
+    public void vigenciaContrato()
+    {
+
+        List<Contrato> contratos = ObtenerTodos();
+        using (MySqlConnection conn = new MySqlConnection(_connectionString))
+        {
+            foreach (var item in contratos)
+            {
+                conn.Open();
+                using (MySqlTransaction transaction = conn.BeginTransaction())
+                {
+                    try
+                    {
+
+                        if (item.FechaFin <= DateTime.Now)
+                        {
+
+                            // BAJA LOGICA DEL CONTRATO DE ACUERDO A LA FECHA DE VENCIMIENTO Y LA ACTUAL
+                            var estadoContrato = $@"UPDATE contrato SET estado = '0' WHERE id = @id;";
+                            using (MySqlCommand command = new MySqlCommand(estadoContrato, conn, transaction))
+                            {
+                                command.Parameters.AddWithValue("@id", item.Id);
+                                command.ExecuteNonQuery();
+                            }
+
+                            //EL INMUEBLE DEL CONTRATO VUELVE A QUEDAR DISPONIBLE
+                            var estadoInmueble = $@"UPDATE inmueble SET estado = '1' WHERE id = @Inmu;";
+                            using (MySqlCommand command = new MySqlCommand(estadoInmueble, conn, transaction))
+                            {
+
+                                command.Parameters.AddWithValue("@Inmu", item.Inmu.Id);
+                                command.ExecuteNonQuery();
+                            }
+
+                            transaction.Commit();
+
+                        }
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        conn.Close();
+                        throw;
+                    }
+                }
+            }
+        }
+
+    }
+
+
+   public List<Contrato> PorFechaTodos(DateTime desde, DateTime hasta)
+{
+    List<Contrato> contratos = new List<Contrato>();
+    using (MySqlConnection connection = new MySqlConnection(_connectionString))
+    {
+        var sql = @"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Monto, Estado, Descripcion, Plazo,
+                    PorcentajeActualizacion, PeriodoActualizacion, Observaciones, Tipo 
+                    FROM contrato 
+                    WHERE DATE(FechaFin) BETWEEN @desde AND @hasta;";
+
+        using (MySqlCommand command = new MySqlCommand(sql, connection))
+        {
+            command.Parameters.AddWithValue("@desde", desde.ToString("yyyy-MM-dd"));
+            command.Parameters.AddWithValue("@hasta", hasta.ToString("yyyy-MM-dd"));
+
+            connection.Open();
+            var reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                int idInquilino = reader.GetInt32("Inqui");
+                int idInmueble = reader.GetInt32("Inmu");
+                int idPropietario = reader.GetInt32("Prop");
+                var inquilino = new RepositorioInquilino(_connectionString).ObtenerPorId(idInquilino);
+                var inmueble = new RepositorioInmueble(_connectionString).ObtenerPorId(idInmueble);
+                var propietario = new RepositorioPropietario(_connectionString).ObtenerPorId(idPropietario);
+
+
+                // Crear el contrato
+                var contrato = new Contrato
+                {
+                    Id = reader.GetInt32("Id"),
+                    Inqui = inquilino,
+                    Inmu = inmueble,
+                    Prop = propietario,
+                    FechaInicio = reader.GetDateTime("FechaInicio"),
+                    FechaFin = reader.GetDateTime("FechaFin"),
+                    Monto = reader.GetDecimal("Monto"),
+                    Estado = reader.GetBoolean("Estado"),
+                    Descripcion = reader.GetString("Descripcion"),
+                    Plazo = reader.GetInt32("Plazo"),
+                    PorcentajeActualizacion = reader.GetDecimal("PorcentajeActualizacion"),
+                    PeriodoActualizacion = reader.GetInt32("PeriodoActualizacion"),
+                    Observaciones = reader.GetString("Observaciones"),
+                    Tipo = (TipoContrato)Enum.Parse(typeof(TipoContrato), reader.GetString("Tipo"))
+                };
+
+                contratos.Add(contrato);
+            }
+            connection.Close();
+        }
+    }
+    return contratos;
+}
+
+
+public Contrato PorFechaId(DateTime desde, DateTime hasta, int id)
+{
+    Contrato contrato = null; 
+    using (MySqlConnection connection = new MySqlConnection(_connectionString))
+    {
+        var sql = @"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Monto, Estado, Descripcion, Plazo,
+                    PorcentajeActualizacion, PeriodoActualizacion, Observaciones, Tipo 
+                    FROM contrato 
+                    WHERE Id = @id AND DATE(FechaFin) BETWEEN @desde AND @hasta;";
+
+        using (MySqlCommand command = new MySqlCommand(sql, connection))
+        {
+            command.Parameters.AddWithValue("@id", id);
+            command.Parameters.AddWithValue("@desde", desde.ToString("yyyy-MM-dd"));
+            command.Parameters.AddWithValue("@hasta", hasta.ToString("yyyy-MM-dd"));
+
+            connection.Open();
+            var reader = command.ExecuteReader();
+
+            if (reader.Read())
+            {
+                int idInquilino = reader.GetInt32("Inqui");
+                int idInmueble = reader.GetInt32("Inmu");
+                int idPropietario = reader.GetInt32("Prop");
+                var inquilino = new RepositorioInquilino(_connectionString).ObtenerPorId(idInquilino);
+                var inmueble = new RepositorioInmueble(_connectionString).ObtenerPorId(idInmueble);
+                var propietario = new RepositorioPropietario(_connectionString).ObtenerPorId(idPropietario);
+
+            
+                contrato = new Contrato
+                {
+                    Id = reader.GetInt32("Id"),
+                    Inqui = inquilino,
+                    Inmu = inmueble,
+                    Prop = propietario,
+                    FechaInicio = reader.GetDateTime("FechaInicio"),
+                    FechaFin = reader.GetDateTime("FechaFin"),
+                    Monto = reader.GetDecimal("Monto"),
+                    Estado = reader.GetBoolean("Estado"),
+                    Descripcion = reader.GetString("Descripcion"),
+                    Plazo = reader.GetInt32("Plazo"),
+                    PorcentajeActualizacion = reader.GetDecimal("PorcentajeActualizacion"),
+                    PeriodoActualizacion = reader.GetInt32("PeriodoActualizacion"),
+                    Observaciones = reader.GetString("Observaciones"),
+                    Tipo = (TipoContrato)Enum.Parse(typeof(TipoContrato), reader.GetString("Tipo"))
+                };
+            }
+            connection.Close();
+        }
+    }
+    return contrato;
+}
+
+
+
+
+
+
 
 }
