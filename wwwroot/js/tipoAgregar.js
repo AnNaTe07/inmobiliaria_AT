@@ -6,9 +6,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const modalAgregar = new bootstrap.Modal(
     document.getElementById("modalAgregarTipo")
   );
-  const modalError = new bootstrap.Modal(
-    document.getElementById("modal_message")
-  );
 
   // Mostrar el modal de agregar tipo al hacer clic en el botón
   if (botonAgregar) {
@@ -33,24 +30,43 @@ document.addEventListener("DOMContentLoaded", function () {
         body: new URLSearchParams({ descripcion: descripcion }),
       })
         .then((respuesta) => {
-          if (respuesta.ok) {
+          return respuesta
+            .text()
+            .then((text) => ({ status: respuesta.status, text }));
+        })
+        .then(({ status, text }) => {
+          if (status === 200) {
             // Mostrar mensaje de éxito
             document.getElementById("message_text").textContent =
               "Tipo agregado exitosamente";
             modalAgregar.hide(); // Ocultar el modal de agregar tipo
-            setTimeout(() => location.reload(), 2000); // Recargar la página después de 2 segundos
-          } else if (respuesta.status === 409) {
+            setTimeout(() => location.reload(), 1000); // Recargar la página después de ocultar el modal
+          } else if (status === 409) {
             // Mostrar mensaje de conflicto
-            respuesta.text().then((text) => {
-              document.getElementById("message_text").textContent =
-                text || "El tipo ya existe.";
-              modalError.show();
-            });
+            document.getElementById("message_text").textContent =
+              text || "El tipo ya existe.";
+            const modalError = new bootstrap.Modal(
+              document.getElementById("modal_message")
+            );
+            modalError.show(); // Mostrar el modal
+
+            // Ocultar el modal después de 1'
+            setTimeout(() => {
+              modalError.hide();
+            }, 1000);
           } else {
             // Mostrar mensaje de error para otros códigos de error
             document.getElementById("message_text").textContent =
-              "Error al agregar el tipo";
-            modalError.show();
+              text || "Error al agregar el tipo";
+            const modalError = new bootstrap.Modal(
+              document.getElementById("modal_message")
+            );
+            modalError.show(); // Mostrar el modal
+
+            // Ocultar el modal después de 1'
+            setTimeout(() => {
+              modalError.hide();
+            }, 1000);
           }
         })
         .catch((error) => {
@@ -58,7 +74,15 @@ document.addEventListener("DOMContentLoaded", function () {
           // Mostrar mensaje de error en caso de excepción
           document.getElementById("message_text").textContent =
             "Error al agregar el tipo";
-          modalError.show();
+          const modalError = new bootstrap.Modal(
+            document.getElementById("modal_message")
+          );
+          modalError.show(); // Mostrar el modal de mensaje
+
+          // Ocultar el modal después de 1'
+          setTimeout(() => {
+            modalError.hide();
+          }, 1000);
         });
     });
   }

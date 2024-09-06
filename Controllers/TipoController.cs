@@ -7,17 +7,17 @@ namespace inmobiliaria_AT.Controllers
     public class TipoController : Controller
     {
         private readonly ILogger<TipoController> _logger;
-        private readonly RepositorioTipo _repo;
+        private readonly RepositorioTipo _repoTipo;
 
         public TipoController(ILogger<TipoController> logger, RepositorioTipo repo)
         {
             _logger = logger;
-            _repo = repo;
+            _repoTipo = repo;
         }
 
         public IActionResult Index()
         {
-            var tipo = _repo.ObtenerTodos();
+            var tipo = _repoTipo.ObtenerTodos();
             return View(tipo);
         }
 
@@ -36,63 +36,83 @@ namespace inmobiliaria_AT.Controllers
                     Descripcion = descripcion
                 };
 
-                var resultado = _repo.Alta(nuevoTipo);
+                var resultado = _repoTipo.Alta(nuevoTipo);
 
                 if (resultado > 0)
                 {
-                    return Ok(); // Tipo agregado exitosamente
+                    TempData["SuccessMessage"] = "Tipo de inmueble agregado exitosamente.";
+                    return Ok();
                 }
                 else
                 {
-                    return Conflict("El tipo de inmueble ya existe."); // Conflicto: el tipo ya existe
+                    //TempData["ErrorMessage"] = "El tipo de inmueble ya existe.";
+                    //return RedirectToAction("Editar", "Inmueble");
+                    return Conflict("El tipo de inmueble ya existe.");
                 }
             }
             catch (Exception ex)
             {
+                TempData["ErrorMessage"] = "Error interno del servidor.";
                 // Manejo de excepciones generales
                 return StatusCode(500, "Error interno del servidor.");
             }
         }
 
 
-        public IActionResult Detalle(int id)
-        {
-            if (id == 0)
-                return View();
-            else
-            {
-                var tipo = _repo.ObtenerPorId(id);
-                return View(tipo);
-            }
-        }
-
-        public IActionResult Editar(int id)
-        {
-            if (id == 0)
-                return View();
-            else
-            {
-                var tipo = _repo.ObtenerPorId(id);
-                TempData["CurrentId"] = id; // Guarda el ID actual en TempData
-                return View(tipo);
-            }
-        }
-
         [HttpPost]
-        public IActionResult Guardar(Tipo tipo)
+        public IActionResult Modificar(Tipo tipo)
         {
-            if (tipo.Id == 0)
+            try
+
+
             {
-                _repo.Alta(tipo);
-                TempData["SuccessMessage"] = "Tipo de inmueble generado correctamente.";
+                if (tipo == null || string.IsNullOrEmpty(tipo.Descripcion))
+                {
+                    TempData["ErrorMessage"] = "Datos inválidos.";
+                    return RedirectToAction("Editar", "Inmueble");
+                }
+
+                // Verifica si el tipo existe
+                Tipo tipoExistente = _repoTipo.ObtenerPorId(tipo.Id);
+                if (tipoExistente == null)
+                {
+                    TempData["ErrorMessage"] = "Tipo de inmueble no encontrado.";
+                    return RedirectToAction("Editar", "Inmueble");
+                }
+
+
+
+
+
+                // Verifica si ya existe otro tipo con la misma descripción
+                bool existeTipoConDescripcion = _repoTipo.ExisteTipo(tipo.Descripcion);
+                if (existeTipoConDescripcion && tipoExistente.Descripcion != tipo.Descripcion)
+                {
+                    TempData["ErrorMessage"] = "El tipo de inmueble ya existe.";
+                    return RedirectToAction("Editar", "Inmueble");
+                }
+
+                // Intenta modificar el tipo existente
+                int resultado = _repoTipo.Modificar(tipo);
+                if (resultado > 0)
+                {
+                    TempData["SuccessMessage"] = "Tipo de inmueble modificado correctamente.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "No se pudo modificar el tipo de inmueble.";
+                }
+                return RedirectToAction("Editar", "Inmueble");
             }
-            else
+            catch (Exception ex)
             {
-                _repo.Modificar(tipo);
-                TempData["SuccessMessage"] = "Datos de tipo de inmueble modificados correctamente.";
+                Console.WriteLine(ex.Message);
+                TempData["ErrorMessage"] = "Error interno del servidor.";
+                return RedirectToAction("Editar", "Inmueble");
             }
-            return RedirectToAction("Index");
+
         }
+
         [HttpPost]
         public IActionResult Eliminar(int Id, int InmuebleId)
         {
@@ -105,7 +125,7 @@ namespace inmobiliaria_AT.Controllers
 
             try
             {
-                _repo.Baja(Id);
+                _repoTipo.Baja(Id);
                 TempData["SuccessMessage"] = "Tipo de inmueble eliminado correctamente.";
             }
             catch (Exception ex)

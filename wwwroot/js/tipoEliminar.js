@@ -19,8 +19,15 @@ document.addEventListener("DOMContentLoaded", function () {
         modalEliminar.show(); // Muestro el modal de eliminación
       } else {
         if (modalMsg) {
-          msgText.textContent = "Por favor, selecciona un tipo para eliminar."; // Configuro el mensaje
-          new bootstrap.Modal(modalMsg).show(); // Muestro el modal de mensaje de error
+          msgText.textContent =
+            "Por favor, selecciona un tipo de inmueble para eliminar.";
+          const modalInstance = new bootstrap.Modal(modalMsg);
+          modalInstance.show(); // Muestro el modal de mensaje de error
+
+          // Oculto el modal
+          setTimeout(() => {
+            modalInstance.hide();
+          }, 1000);
         } else {
           console.error("El modal para mensajes no está en el DOM.");
         }

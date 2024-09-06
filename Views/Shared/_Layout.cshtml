@@ -25,21 +25,73 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Propietario"
-                                asp-action="Index">Propietarios</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">Contratos</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Contrato"
+                                        asp-action="Editar">Crear contrato</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Contrato"
+                                        asp-action="Detalle">Detalle</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Contrato"
+                                        asp-action="Index">Lista de Contratos</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Inquilino"
-                                asp-action="Index">Inquilinos</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">Inmuebles</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
+                                        asp-action="BuscarPorFecha">Busqueda de inmueble disponible
+                                        por fecha</a>
+                                </li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
+                                        asp-action="ListaPorPropietario">Inmuebles por Propietario</a>
+                                </li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
+                                        asp-action="Index">Listado de inmuebles</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
+                                        asp-action="Editar">Nuevo Inmueble</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Inmueble"
-                                asp-action="Index">Inmuebles</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">Inquilinos</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Inquilino"
+                                        asp-action="Index">Lista de Inquilinos</a>
+                                </li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Inquilino"
+                                        asp-action="Editar">Nuevo Inquilino</a>
+                                </li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Inquilino"
+                                        asp-action=""></a>otra opción</li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Contrato"
-                                asp-action="Index">Contratos</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">Propietarios</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Propietario"
+                                        asp-action="Index"></a>Listado de Propietarios</li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Propietario"
+                                        asp-action="Editar"></a>Nuevo Propietario</li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Propietario"
+                                        asp-action=""></a>otra opción</li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">Usuarios
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Usuario"
+                                        asp-action="Index">Lista de Usuarios</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Usuario"
+                                        asp-action="Crear">Nuevo Usuario</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Usuario" asp-action="">otra
+                                        opción</a></li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -62,14 +114,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<<<<<<< Updated upstream
     <script src="~/js/tipoAgregar.js"></script>
     <script src="~/js/tipoEliminar.js"></script>
-=======
     <script src="~/lib/jquery/jquery.min.js"></script>
     <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
->>>>>>> Stashed changes
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)

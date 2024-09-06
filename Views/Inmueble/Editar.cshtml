@@ -26,13 +26,15 @@
                 <div class="form-group col-md-6 form-group-spacing">
                     <label class="control-label">Tipo de inmueble</label>
                     <div class="input-group">
-                        <select asp-for="TipoId" class="form-control" asp-items="ViewBag.Tipo">
+                        <select id="tipoSelect" asp-for="TipoId" class="form-control" asp-items="ViewBag.Tipo">
                             <!--las opciones se manejan desde el controlador -->
                         </select>
                         <div class="input-group-append">
-                            <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#modalAgregarTipo" title="Agregar tipo de inmueble">+</button>
-
+                            <button type="button" class="btn btn-warning" title="Modificar tipo de inmueble">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
                             <button type="button" class="btn btn-danger" id="removeTipo"
                                 title="Eliminar tipo de inmueble">-</button>
                         </div>
@@ -40,148 +42,187 @@
                     <span asp-validation-for="TipoId" class="text-danger"></span>
                 </div>
                 <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="Ambientes" class="control-label"></label>
-                    <input asp-for="Ambientes" class="form-control">
-                    <span asp-validation-for="Ambientes" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="Latitud" class="control-label"></label>
-                    <input asp-for="Latitud" class="form-control" />
-                    <span asp-validation-for="Latitud" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="Longitud" class="control-label"></label>
-                    <input asp-for="Longitud" class="form-control" />
-                    <span asp-validation-for="Longitud" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="Superficie" class="control-label"></label>
-                    <input asp-for="Superficie" class="form-control" />
-                    <span asp-validation-for="Superficie" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="Precio" class="control-label"></label>
-                    <input asp-for="Precio" class="form-control">
-                    <span asp-validation-for="Precio" class="text-danger"></span>
-                </div>
-
-                @* <div class="row">
-                <div class="form-group col-md-6 form-group-spacing">
-                <label class="control-label">Propietario</label>
-                <select asp-for="IdPropietario" class="form-control" asp-items="ViewBag.Propietario"></select>
-                <span asp-validation-for="IdPropietario" class="text-danger"></span>
-                </div>
-                </div> *@
-
-                <div class="row">
+                    <span asp-validation-for="TipoId" class="text-danger"></span>
                     <div class="form-group col-md-6 form-group-spacing">
-                        <label class="control-label">Propietario</label>
-                        <select asp-for="IdPropietario" class="form-control" asp-items="ViewBag.Propietario"
-                            id="propietarioSelect">
-                        </select>
-                        <span asp-validation-for="IdPropietario" class="text-danger"></span>
+                        <label asp-for="Ambientes" class="control-label"></label>
+                        <input asp-for="Ambientes" class="form-control">
+                        <span asp-validation-for="Ambientes" class="text-danger"></span>
                     </div>
-                </div>
-
-                <div class="row">
                     <div class="form-group col-md-6 form-group-spacing">
-                        <input type="submit" value="Guardar" class="btn btn-success" />
+                        <label asp-for="Latitud" class="control-label"></label>
+                        <input asp-for="Latitud" class="form-control" />
+                        <span asp-validation-for="Latitud" class="text-danger"></span>
                     </div>
-                </div>
+                    <div class="form-group col-md-6 form-group-spacing">
+                        <label asp-for="Longitud" class="control-label"></label>
+                        <input asp-for="Longitud" class="form-control" />
+                        <span asp-validation-for="Longitud" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-6 form-group-spacing">
+                        <label asp-for="Superficie" class="control-label"></label>
+                        <input asp-for="Superficie" class="form-control" />
+                        <span asp-validation-for="Superficie" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-6 form-group-spacing">
+                        <label asp-for="Precio" class="control-label"></label>
+                        <input asp-for="Precio" class="form-control">
+                        <span asp-validation-for="Precio" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-md-6 form-group-spacing">
+                            <label class="control-label">Propietario</label>
+                            <select asp-for="IdPropietario" class="form-control" asp-items="ViewBag.Propietario"
+                                id="propietarioSelect">
+                            </select>
+                            <span asp-validation-for="IdPropietario" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-md-6 form-group-spacing">
+                            <input type="submit" value="Guardar" class="btn btn-success" />
+
+                        </div>
+                    </div>
 
         </form>
         <div class="volver">
-            <div class="form-group-spacing">
-                <a asp-action="Index" title="Volver">
-                    <i class="fa-solid fa-undo"></i>
-                </a>
+
+        </div>
+    </div>
+
+    <!-- Modal para Modificar Tipo de Inmueble -->
+    <div class="modal fade" id="modalModificar" tabindex="-1" aria-labelledby="modalTipoLabelModificar"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTipoLabelModificar">Modificar Tipo de Inmueble</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formModificar" method="post" action="/Tipo/Modificar">
+                    <input type="hidden" id="tipoIdModificar" name="Id" />
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="tipoDescripcionModificar" class="form-label">Descripción del Tipo</label>
+                            <input type="text" class="form-control" id="tipoDescripcionModificar" name="Descripcion"
+                                required />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</div>
-
-<!-- Modal para agregar un nuevo tipo de inmueble -->
-<div class="modal fade" id="modalAgregarTipo" tabindex="-1" aria-labelledby="modalAgregarTipoLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalAgregarTipoLabel">Agregar Tipo de Inmueble</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Modal para agregar un nuevo tipo de inmueble -->
+    <div class="modal fade" id="modalAgregarTipo" tabindex="-1" aria-labelledby="modalAgregarTipoLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAgregarTipoLabel">Agregar Tipo de Inmueble</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formAgregarTipo" method="post" action="/Tipo/AgregarTipo">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nuevoTipoDescripcion" class="form-label">Descripción del Tipo</label>
+                            <input type="text" class="form-control" id="nuevoTipoDescripcion" name="descripcion"
+                                required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Agregar</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
             </div>
-            <form id="formAgregarTipo" method="post" action="/Tipo/AgregarTipo">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="nuevoTipoDescripcion" class="form-label">Descripción del Tipo</label>
-                        <input type="text" class="form-control" id="nuevoTipoDescripcion" name="descripcion" required>
+        </div>
+    </div>
+
+
+    <!-- Modal para eliminar un tipo de inmueble -->
+    <div class="modal fade" id="modal_eliminar_inmueble" tabindex="-1" aria-labelledby="modal_eliminar_inmuebleLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal_eliminar_inmuebleLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="/Tipo/Eliminar" id="form_eliminar_inmueble">
+                    <div class="modal-body">
+                        <!-- Incluye el ID del tipo de inmueble y el ID del inmueble -->
+                        <input type="hidden" name="Id" id="inmueble_eliminar_id">
+                        <input type="hidden" name="InmuebleId" id="inmueble_id" value="@Model.Id">
+                        <p>¿Estás seguro de que quieres eliminar el tipo seleccionado?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Confirmar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Modal para mostrar mensaje de éxito -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalMessageLabel">Mensaje</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>@TempData["SuccessMessage"]</p>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Agregar</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-
-<!-- Modal para eliminar un tipo de inmueble -->
-<div class="modal fade" id="modal_eliminar_inmueble" tabindex="-1" aria-labelledby="modal_eliminar_inmuebleLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modal_eliminar_inmuebleLabel">Confirmar Eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="post" action="/Tipo/Eliminar" id="form_eliminar_inmueble">
-                <div class="modal-body">
-                    <!-- Incluye el ID del tipo de inmueble y el ID del inmueble -->
-                    <input type="hidden" name="Id" id="inmueble_eliminar_id">
-                    <input type="hidden" name="InmuebleId" id="inmueble_id" value="@Model.Id">
-                    <p>¿Estás seguro de que quieres eliminar el tipo seleccionado?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger">Confirmar</button>
-                </div>
-            </form>
         </div>
-    </div>
-</div>
-
-
-
-<!-- Modal para mostrar mensaje de éxito -->
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>@TempData["SuccessMessage"]</p>
+    }
+    <!-- Modal para mostrar mensaje de error -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="modal fade" id="modal_error_message" tabindex="-1" aria-labelledby="modalErrorMessageLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalErrorMessageLabel">Error</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>@TempData["ErrorMessage"]</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-}
-<!-- Modal para mostrar mensaje de error -->
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="modal fade" id="modal_error_message" tabindex="-1" aria-labelledby="modalErrorMessageLabel"
-        aria-hidden="true">
+    }
+
+    <!-- Modal para Mensajes Generales -->
+    <div class="modal fade" id="modal_message" tabindex="-1" aria-labelledby="modalMessageLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalErrorMessageLabel">Error</h5>
+                    <h5 class="modal-title" id="modalMessageLabel">Mensaje</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <span aria-hidden="true">&times;</span>
                 </div>
                 <div class="modal-body">
-                    <p>@TempData["ErrorMessage"]</p>
+                    <p id="message_text">Mensaje predeterminado.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -189,52 +230,37 @@
             </div>
         </div>
     </div>
-}
-
-<!-- Modal para Mensajes Generales -->
-<div class="modal fade" id="modal_message" tabindex="-1" aria-labelledby="modalMessageLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalMessageLabel">Mensaje</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p id="message_text">Mensaje predeterminado.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            $('#propietarioSelect').select2({
-                placeholder: "Seleccione un propietario",
-                allowClear: true,
-                width: 'resolve'
+    @section Scripts {
+        <script>
+            $(document).ready(function () {
+                $('#propietarioSelect').select2({
+                    placeholder: "Seleccione un propietario",
+                    allowClear: true,
+                    width: 'resolve'
+                });
             });
-        });
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Mostrar el modal de éxito si hay un mensaje en TempData
-            const successMessage = '@TempData["SuccessMessage"]';
-            if (successMessage) {
-                new bootstrap.Modal(document.getElementById('modal_success_message')).show();
-            }
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Mostrar el modal de éxito si hay un mensaje en TempData
+                const successMessage = '@TempData["SuccessMessage"]';
+                if (successMessage) {
+                    const modalExito = new bootstrap.Modal(document.getElementById('modal_success_message'));
+                    modalExito.show();
+                    setTimeout(() => modalExito.hide(), 2000);
+                }
 
-            // Mostrar el modal de error si hay un mensaje en TempData
-            const errorMessage = '@TempData["ErrorMessage"]';
-            if (errorMessage) {
-                new bootstrap.Modal(document.getElementById('modal_error_message')).show();
-            }
-        });
-    </script>
+                // Mostrar el modal de error si hay un mensaje en TempData
+                const errorMessage = '@TempData["ErrorMessage"]';
+                if (errorMessage) {
+                    const modalError = new bootstrap.Modal(document.getElementById('modal_error_message'));
+                    modalError.show();
+                    setTimeout(() => modalError.hide(), 2000);
+                }
+            });
+        </script>
 
-}
+    }
