@@ -30,11 +30,19 @@
                                 data-bs-toggle="dropdown" aria-expanded="false">Contratos</a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Contrato"
+                                        asp-action="Index">Principal</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Contrato"
                                         asp-action="Editar">Crear contrato</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Contrato"
-                                        asp-action="Detalle">Detalle</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Contrato"
-                                        asp-action="Index">Lista de Contratos</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">Pagos</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Pago"
+                                        asp-action="Index">Principal</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Pago"
+                                        asp-action="Nuevo">Nuevo Pago</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">

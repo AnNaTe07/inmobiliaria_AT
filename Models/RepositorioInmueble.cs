@@ -249,7 +249,7 @@ public class RepositorioInmueble
         JOIN 
             tipo t ON i.{nameof(Inmueble.TipoId)} = t.{nameof(Tipo.Id)}
         INNER JOIN 
-            Propietario p ON i.{nameof(Inmueble.IdPropietario)} = p.{nameof(Propietario.Id)} WHERE estado = true;
+            Propietario p ON i.{nameof(Inmueble.IdPropietario)} = p.{nameof(Propietario.Id)} WHERE i.Estado = true;
         ";
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {

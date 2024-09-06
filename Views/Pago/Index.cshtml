@@ -1,0 +1,169 @@
+@model IEnumerable<inmobiliaria_AT.Models.Pago>
+@{
+    ViewData["Title"] = "Pagos";
+
+}
+<div class="text-center">
+    <h1 class="display-4">Listado de pagos</h1>
+</div>
+<table class="table">
+    <thead>
+        <th>
+            Código
+        </th>
+        <th>
+            Fecha
+        </th>
+        <th>
+            Inmueble
+        </th>
+        <th>
+            Monto
+
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Concepto)
+
+        </th>
+    </thead>
+    <tbody>
+        @if (Model == null || !Model.Any())
+        {
+            <tr>
+                <td colspan="6" class="text-center">No se encontraron Pagos.</td>
+            </tr>
+        }
+        else
+        {
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+
+                    </td>
+
+                    <td>
+
+                        @(item.Fecha)
+                    </td>
+
+                    <td>
+                        @(item.Contrato.Inmu.Direccion)
+                    </td>
+
+
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Monto)
+
+                    </td>
+
+                    <td>
+                        @(item.Concepto.Nombre)
+
+                    </td>
+
+                    @*--------ICONOS PARA Nuevo, DETALLE Y ELIMINAR -------------*@
+                    <td>
+                        <a href="/Pago/Nuevo/@item.Id"></a>
+                        <form action="@Url.Action("Nuevo", new{id=item.Id})" method="get" style="display: inline;">
+                            <button type="submit" class="btn btn-warning btn-custom" title="Nuevo">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                        </form>
+
+                        <a href="/Pago/Detalle/@item.Id"></a>
+                        <form action="@Url.Action("Detalle", new{id=item.Id})" method="get" style="display: inline;">
+                            <button type="submit" class="btn btn-info btn-custom" title="Detalles">
+                                <i class="fa-solid fa-circle-info"></i>
+                            </button>
+                        </form>
+                        <button type="submit" class="btn btn-danger btn-custom"
+                            onclick="eliminar(@item.Id, '@item.Fecha', '@item.Contrato.Inmu.Direccion', '@item.Monto', '@item.Concepto.Nombre')"
+                            title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        <td>
+            <button type="button" class="btn btn-ligth">
+                <a href="/Pago/Nuevo" title="Agregar pago">
+                    <i class="fa-duotone fa-solid fa-plus"></i>
+                </a>
+            </button>
+        </td>
+
+    </tbody>
+
+</table>
+
+<div class="modal fade" id="modal_eliminar_pago" tabindex="-1" aria-labelledby="modal_eliminar_pagoLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_eliminar_pagoLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-action="Eliminar" id="form_eliminar_pago">
+                <div class="modal-body">
+                    <input type="hidden" name="Id" value="" id="pago_eliminar_id">
+                    <p>
+                        <span id="pago_eliminar_fecha"></span><br>
+                        <span id="pago_eliminar_direccion"></span><br>
+                        <span id="pago_eliminar_monto"></span><br>
+                        <span id="pago_eliminar_concepto"></span><br>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger"> Confirmar</i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@TempData["SuccessMessage"]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Muestro el modal de éxito si existe un mensaje en TempData
+            if ($('#modal_success_message').length) {
+                $('#modal_success_message').modal('show');
+                // Oculto el modal después de 3 segundos
+                setTimeout(function () {
+                    $('#modal_success_message').modal('hide');
+                }, 3000);
+            }
+        });
+
+        function eliminar(id, fecha, direccion, Monto, tipo, plazo) {
+            document.querySelector("#pago_eliminar_id").value = id;
+            document.querySelector("#pago_eliminar_fecha").innerText = "Fecha: " + fecha;
+            document.querySelector("#pago_eliminar_direccion").innerText = "direccion: " + direccion;
+            document.querySelector("#pago_eliminar_monto").innerText = "Monto: " + Monto;
+            $("#modal_eliminar_pago").modal("show");
+        }
+    </script>
+}
