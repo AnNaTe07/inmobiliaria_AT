@@ -23,8 +23,8 @@ public class Usuario
     [Required]
     public string PasswordHash { get; set; }
     public string Salt { get; set; }
-    public string Avatar { get; set; }
-    public IFormFile AvatarFile { get; set; }
+    public string Avatar { get; set; } = "";
+    public IFormFile? AvatarFile { get; set; }// para que pueda ser nulo
     public Rol Rol { get; set; }
     public string RolNombre => Rol.ToString();
 

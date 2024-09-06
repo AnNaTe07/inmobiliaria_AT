@@ -9,7 +9,7 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="Guardar">
+        <form asp-action="Alta" enctype="multipart/form-data">@* para enviar los datos *@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" name="Id" value="@id">
             <div class="row ">

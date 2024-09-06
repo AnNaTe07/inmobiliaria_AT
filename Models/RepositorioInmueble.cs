@@ -28,7 +28,7 @@ public class RepositorioInmueble
             i.{nameof(Inmueble.Latitud)}, 
             i.{nameof(Inmueble.Longitud)}, 
             i.{nameof(Inmueble.Superficie)},
-            i.{nameof(Inmueble.Precio)}, 
+            i.{nameof(Inmueble.Precio)},
             i.{nameof(Inmueble.IdPropietario)},
             i.{nameof(Inmueble.Estado)},
             p.{nameof(Propietario.Nombre)} AS PropietarioNombre, 
@@ -241,13 +241,13 @@ public class RepositorioInmueble
             i.{nameof(Inmueble.Superficie)},
             i.{nameof(Inmueble.Precio)}, 
             i.{nameof(Inmueble.IdPropietario)},
+            i.{nameof(Inmueble.Estado)}, 
             p.{nameof(Propietario.Nombre)} AS PropietarioNombre, 
             p.{nameof(Propietario.Apellido)} AS PropietarioApellido
         FROM 
             inmueble i
         JOIN 
             tipo t ON i.{nameof(Inmueble.TipoId)} = t.{nameof(Tipo.Id)}
-              Propietario p ON i.{nameof(Inmueble.IdPropietario)} = p.{nameof(Propietario.Id)} WHERE estado = 1;
         INNER JOIN 
             Propietario p ON i.{nameof(Inmueble.IdPropietario)} = p.{nameof(Propietario.Id)} WHERE estado = true;
         ";
@@ -277,6 +277,7 @@ public class RepositorioInmueble
                             Superficie = reader.GetDecimal(reader.GetOrdinal(nameof(Inmueble.Superficie))),
                             Precio = reader.GetDecimal(reader.GetOrdinal(nameof(Inmueble.Precio))),
                             IdPropietario = reader.GetInt32(reader.GetOrdinal(nameof(Inmueble.IdPropietario))),
+                            Estado = reader.GetInt32(reader.GetOrdinal(nameof(Inmueble.Estado))) == 1,
                             PropietarioInmueble = new Propietario
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
@@ -311,6 +312,7 @@ public class RepositorioInmueble
             i.{nameof(Inmueble.Superficie)},
             i.{nameof(Inmueble.Precio)}, 
             i.{nameof(Inmueble.IdPropietario)},
+            i.{nameof(Inmueble.Estado)},
             p.{nameof(Propietario.Nombre)} AS PropietarioNombre, 
             p.{nameof(Propietario.Apellido)} AS PropietarioApellido
         FROM 
@@ -346,6 +348,7 @@ public class RepositorioInmueble
                         Superficie = reader.GetDecimal(reader.GetOrdinal(nameof(Inmueble.Superficie))),
                         Precio = reader.GetDecimal(reader.GetOrdinal(nameof(Inmueble.Precio))),
                         IdPropietario = reader.GetInt32(reader.GetOrdinal(nameof(Inmueble.IdPropietario))),
+                        Estado = reader.GetBoolean(reader.GetOrdinal(nameof(Inmueble.Estado))),
                         PropietarioInmueble = new Propietario
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
