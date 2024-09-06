@@ -84,7 +84,7 @@ public class RepositorioTipo
 
                     if (activo)
                     {
-                        // Si el tipo ya está activo, no hacer nada
+                        // Si el tipo ya está activo
                         return 0; // Indicar que el tipo ya existe y está activo
                     }
                     else
@@ -135,6 +135,23 @@ public class RepositorioTipo
         return res;
     }
 
+
+    public bool ExisteTipo(string descripcion)
+    {
+        using (MySqlConnection connection = new MySqlConnection(_connectionString))
+        {
+            connection.Open();
+
+            var query = "SELECT COUNT(*) FROM tipo WHERE Descripcion = @descripcion AND Activo = TRUE;";
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@descripcion", descripcion);
+                var count = Convert.ToInt32(command.ExecuteScalar());
+
+                return count > 0; // Devuelve true si existe al menos uno
+            }
+        }
+    }
     public void Baja(int id)
     {
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
