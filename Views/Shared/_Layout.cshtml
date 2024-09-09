@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -30,19 +30,11 @@
                                 data-bs-toggle="dropdown" aria-expanded="false">Contratos</a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Contrato"
-                                        asp-action="Index">Principal</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Contrato"
                                         asp-action="Editar">Crear contrato</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">Pagos</a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Pago"
-                                        asp-action="Index">Principal</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Pago"
-                                        asp-action="Nuevo">Nuevo Pago</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Contrato"
+                                        asp-action="Detalle">Detalle</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Contrato"
+                                        asp-action="Index">Lista de Contratos</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
@@ -50,12 +42,9 @@
                                 data-bs-toggle="dropdown" aria-expanded="false">Inmuebles</a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
-                                        asp-action="BuscarPorFecha">Busqueda de inmueble disponible
-                                        por fecha</a>
-                                </li>
+                                        asp-action="Disponibles">Inmuebles disponibles</a></li>
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
-                                        asp-action="ListaPorPropietario">Inmuebles por Propietario</a>
-                                </li>
+                                        asp-action="ListaPorPropietario">Inmuebles por Propietario</a></li>
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
                                         asp-action="Index">Listado de inmuebles</a></li>
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
@@ -72,8 +61,18 @@
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Inquilino"
                                         asp-action="Editar">Nuevo Inquilino</a>
                                 </li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Inquilino"
-                                        asp-action=""></a>otra opción</li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Inquilino" asp-action="">otra
+                                        opción</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">Pagos</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Pago"
+                                        asp-action="Index">Principal</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Pago" asp-action="Nuevo">Nuevo
+                                        Pago</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
@@ -81,11 +80,11 @@
                                 data-bs-toggle="dropdown" aria-expanded="false">Propietarios</a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Propietario"
-                                        asp-action="Index"></a>Listado de Propietarios</li>
+                                        asp-action="Index">Listado de Propietarios</a></li>
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Propietario"
-                                        asp-action="Editar"></a>Nuevo Propietario</li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Propietario"
-                                        asp-action=""></a>otra opción</li>
+                                        asp-action="Editar">Nuevo Propietario</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Propietario" asp-action="">otra
+                                        opción</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
