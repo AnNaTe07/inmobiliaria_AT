@@ -14,6 +14,16 @@ document.addEventListener("DOMContentLoaded", function () {
       const tipoSelect = document.getElementById("tipoSelect");
 
       if (tipoSelect && tipoSelect.value) {
+        // Obtener el valor y el texto del tipo seleccionado
+        const tipoId = tipoSelect.value;
+        const tipoDescripcion =
+          tipoSelect.options[tipoSelect.selectedIndex].text;
+
+        // Cargar el valor seleccionado en el modal
+        document.getElementById("tipoIdModificar").value = tipoId;
+        document.getElementById("tipoDescripcionModificar").value =
+          tipoDescripcion;
+
         // Mostrar el modal de modificar
         modalModificar.show();
       } else {
@@ -24,16 +34,16 @@ document.addEventListener("DOMContentLoaded", function () {
             "Por favor, selecciona un tipo de inmueble para modificar.";
           modalMessage.show();
 
-          // Oculto el modal
+          // Ocultar el modal después de 2 segundos
           setTimeout(() => {
             modalMessage.hide();
-          }, 2000); // 1000 milisegundos
+          }, 2000); // 2000 milisegundos
         } else {
           console.error("El elemento de mensaje no se encontró.");
         }
       }
     });
   } else {
-    console.error("Botón de editar no encontrado.");
+    console.error("Botón no encontrado.");
   }
 });

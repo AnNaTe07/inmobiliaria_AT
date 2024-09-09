@@ -105,23 +105,22 @@ public class RepositorioUsuario
                 INSERT INTO Usuario 
 					({nameof(Usuario.Nombre)}, 
                     {nameof(Usuario.Apellido)}, 
-                    {nameof(Usuario.Avatar)},
                     {nameof(Usuario.Email)}, 
-                    {nameof(Usuario.PasswordHash)}, 
-                    {nameof(Usuario.Salt)}, 
+                    {nameof(Usuario.PasswordHash)},                     
                     {nameof(Usuario.Avatar)},
-                    {nameof(Usuario.Rol)}) 
-				VALUES (@nombre, @apellido, @avatar, @email, @password,@salt,@avatar, @rol);
+                    {nameof(Usuario.Rol)},
+                    {nameof(Usuario.Salt)})
+				VALUES (@nombre, @apellido, @email, @passwordHash,@avatar, @rol,@salt);
 				SELECT LAST_INSERT_ID();";//devuelve el id insertado (LAST_INSERT_ID para mysql)
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@nombre", usuario.Nombre);
                 command.Parameters.AddWithValue("@apellido", usuario.Apellido);
                 command.Parameters.AddWithValue("@email", usuario.Email);
-                command.Parameters.AddWithValue("@password", usuario.PasswordHash);
-                command.Parameters.AddWithValue("@salt", usuario.Salt);
+                command.Parameters.AddWithValue("@passwordHash", usuario.PasswordHash);
                 command.Parameters.AddWithValue("@avatar", usuario.Avatar);
-                command.Parameters.AddWithValue("@rol", usuario.Rol);
+                command.Parameters.AddWithValue("@rol", (int)usuario.Rol);
+                command.Parameters.AddWithValue("@salt", usuario.Salt);
                 connection.Open();
                 res = Convert.ToInt32(command.ExecuteScalar());
                 usuario.Id = res;//asigna el id generado
