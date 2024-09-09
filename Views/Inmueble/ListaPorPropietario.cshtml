@@ -1,72 +1,88 @@
 @model IEnumerable<inmobiliaria_AT.Models.Inmueble>
 
 @{
-    ViewData["Title"] = "PorPropietario";
+    var propietarios = ViewBag.Propietarios as IEnumerable<SelectListItem>;
+    var selectedPropietarioId = ViewBag.SelectedPropietarioId as string;
+    var selectedPropietarioNombre = ViewBag.SelectedPropietarioNombre as string;
 }
 
-<h1>Inmuebles por Propietario (@ViewBag.Id)</h1>
-<h2>@ViewBag.Propietario.Nombre @ViewBag.Propietario.Apellido</h2>
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Direccion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ambientes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Superficie)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Latitud)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Longitud)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdPropietario)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Direccion)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Ambientes)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Superficie)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Latitud)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Longitud)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IdPropietario)
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+
+<div class="container mt-6">
+    <!-- Título y nombre del propietario -->
+    <div class="row align-items-center mb-4 mt-3">
+        <div class="col-auto">
+            <h4>Inmuebles por Propietario:</h4>
+        </div>
+        <div class="col">
+            <h5 class="d-inline-block ms-3">@selectedPropietarioNombre</h5>
+        </div>
+    </div>
+    <!-- Formulario para filtrar por propietario -->
+    <div class="row">
+        <div class="col-md-12 form-group">
+            <form asp-action="ListaPorPropietario" method="post">
+                <div class="form-row align-items-center">
+                    <div class="col-md-6 mb-2 mt-3">
+                        <label for="propietarioSelect" class="sr-only">Seleccionar Propietario</label>
+                        <select id="propietarioSelect" name="IdPropietario" class="form-control"
+                            asp-items="ViewBag.Propietarios">
+                            <option value="">Seleccione propietario</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <button type="submit" class="btn btn-primary mt-3 mb-3">Filtrar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Mostrar inmuebles -->
+    @if (Model.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Dirección</th>
+                    <th>Tipo</th>
+                    <th>Ambientes</th>
+                    <th>Precio</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var inmueble in Model)
+                {
+                    <tr>
+                        <td>@inmueble.Id</td>
+                        <td>@inmueble.Direccion</td>
+                        <td>@inmueble.TipoDescripcion</td>
+                        <td>@inmueble.Ambientes</td>
+                        <td>@inmueble.Precio</td>
+                        <td>@(inmueble.Estado ? "Disponible" : "No Disponible")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No hay inmuebles disponibles para el propietario seleccionado.</p>
+    }
+
+    <div class="form-group-spacing volver">
+        <a asp-action="Index" title="Volver">
+            <i class="fa-solid fa-undo"></i>
+        </a>
+    </div>
+    @section Scripts {
+        <script>
+            $(document).ready(function () {
+                $('#propietarioSelect').select2({
+                    placeholder: "Seleccione un propietario",
+                    allowClear: true,
+                    width: 'resolve'
+                });
+            });
+        </script>
+    }

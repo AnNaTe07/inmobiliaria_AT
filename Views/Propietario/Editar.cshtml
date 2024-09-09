@@ -13,57 +13,58 @@
             <div asp-asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" name="Id" value="@id">
             <div class="row ">
-            <div class="form-group col-md-6 form-group-spacing">
+                <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="Nombre" class="control-label"></label>
-                    <input asp-for="Nombre" class="form-control" >
-                    <span asp-validation-for="Nombre" class="text-danger"></span>          
-            </div>
-            <div class="form-group col-md-6 form-group-spacing">
+                    <input asp-for="Nombre" class="form-control">
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="Apellido" class="control-label"></label>
-                    <input asp-for="Apellido" class="form-control" >
-                    <span asp-validation-for="Apellido" class="text-danger"></span>          
+                    <input asp-for="Apellido" class="form-control">
+                    <span asp-validation-for="Apellido" class="text-danger"></span>
+                </div>
             </div>
-        </div>
-        <div class="row ">  
-             <div class="form-group col-md-6 form-group-spacing">
-                <label asp-for="Documento" class="control-label"></label>
-                <input asp-for="Documento" class="form-control" >
-                <span asp-validation-for="Documento" class="text-danger"></span>          
+            <div class="row ">
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Documento" class="control-label"></label>
+                    <input asp-for="Documento" class="form-control">
+                    <span asp-validation-for="Documento" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Telefono" class="control-label"></label>
+                    <input asp-for="Telefono" class="form-control">
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group col-md-6 form-group-spacing">
-                <label asp-for="Telefono" class="control-label"></label>
-                <input asp-for="Telefono" class="form-control" >
-                <span asp-validation-for="Telefono" class="text-danger"></span>          
+            <div class="row ">
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Direccion" class="control-label"></label>
+                    <input asp-for="Direccion" class="form-control">
+                    <span asp-validation-for="Direccion" class="text-danger"></span>
+                </div>
             </div>
-        </div> 
-        <div class="row ">
-            <div class="form-group col-md-6 form-group-spacing">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" >
-                <span asp-validation-for="Email" class="text-danger"></span>          
-            </div>
-            <div class="form-group col-md-6 form-group-spacing">
-                <label asp-for="Direccion" class="control-label"></label>
-                <input asp-for="Direccion" class="form-control" >
-                <span asp-validation-for="Direccion" class="text-danger"></span>          
-            </div>
-        </div>
-        <div>
-            <div class="form-group col-md-6 form-group-spacing">
-                <input type="submit" value="Guardar" class="btn btn-success"/>
-            </div>
+            <div>
+                <div class="form-group col-md-6 form-group-spacing">
+                    <input type="submit" value="Guardar" class="btn btn-success" />
+                </div>
         </form>
-        <div class="form-group-spacing">
-             <a asp-action="Index" title="Volver">
-             <i class="fa-solid fa-undo"></i>
-             </a>
+        <div class="form-group-spacing volver">
+            <a asp-action="Index" title="Volver">
+                <i class="fa-solid fa-undo"></i>
+            </a>
         </div>
     </div>
-</div> 
+</div>
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel" aria-hidden="true">
+    <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

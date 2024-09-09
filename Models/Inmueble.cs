@@ -2,8 +2,8 @@ namespace inmobiliaria_AT.Models;
 
 public enum UsoInmueble
 {
-    Comercial,
-    Residencial
+    Comercial = 1,
+    Residencial = 2
 }
 public class Inmueble
 {

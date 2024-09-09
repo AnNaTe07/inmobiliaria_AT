@@ -19,34 +19,6 @@ namespace inmobiliaria_AT.Controllers
             _repoPropietario = repoPropietario;
         }
 
-        /*   public IActionResult Crear()
-          {
-              //obtengo la lista de tipos
-              var tipos = _repositorioTipo.ObtenerTodos();
-
-              //uso viewBag para pasar los tipos a la vista
-              ViewBag.Tipos = tipos;
-
-              //creo una instancia de inmueble para la vista
-              var inmueble = new Inmueble();
-
-              return View(inmueble);
-          }
-
-          public IActionResult EditarTipo(int id)
-          {
-              // obtengo el inmueble a editar
-              var inmueble = _repo.ObtenerPorId(id);
-
-              // obtengo la lista de tipos de inmuebles
-              var tipos = _repositorioTipo.ObtenerTodos();
-
-              // uso ViewBag para pasar los tipos a la vista
-              ViewBag.Tipos = tipos;
-
-              return View(inmueble);
-          }
-   */
 
         public IActionResult Index()
         {
@@ -54,24 +26,26 @@ namespace inmobiliaria_AT.Controllers
             return View(inmuebles);
         }
 
+
+
         public IActionResult Editar(int id)
         {
             // Configuración de opciones para el uso del inmueble
             var usos = Enum.GetValues(typeof(UsoInmueble))
-                            .Cast<UsoInmueble>()
-                            .Select(u => new SelectListItem
-                            {
-                                Value = u.ToString(),
-                                Text = u.ToString()
-                            }).ToList();
+                    .Cast<UsoInmueble>()
+                    .Select(u => new SelectListItem
+                    {
+                        Value = ((int)u).ToString(), // entero que representa el enum
+                        Text = u.ToString() // texto del enum
+                    }).ToList();
 
-            // Agregar la opción "Seleccione uso de inmueble"
-            /*    usos.Insert(0, new SelectListItem
-               {
-                   Value = "",
-                   Text = "Seleccione uso de inmueble"
-               });
-    */
+            // Agregar la opción "Seleccione uso de inmueble" al principio
+            usos.Insert(0, new SelectListItem
+            {
+                Value = "", // Valor vacío para la opción por defecto
+                Text = "Seleccione uso de inmueble"
+            });
+
             // obtengo los tipos de inmueble
             var tipos = _repositorioTipo.ObtenerTodos();
 
@@ -158,10 +132,75 @@ namespace inmobiliaria_AT.Controllers
             return RedirectToAction("Index");
         }
         public IActionResult Eliminar(int id)
+
         {
             _repo.Baja(id);
             TempData["SuccessMessage"] = "Datos de inmueble eliminados correctamente.";
             return RedirectToAction("Index");
         }
+
+        public IActionResult Disponibles()
+        {
+            var inmuebles = _repo.ObtenerDisponibles();
+            return View(inmuebles);
+        }
+
+
+        [HttpGet]
+        public IActionResult ListaPorPropietario()
+        {
+            // Obtener la lista de propietarios
+            var propietarios = _repoPropietario.ObtenerTodos();
+            var listaPropietarios = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "", Text = "Seleccione propietario" }
+    };
+
+            listaPropietarios.AddRange(propietarios.Select(p => new SelectListItem
+            {
+                Value = p.Id.ToString(),
+                Text = $"{p.Nombre} {p.Apellido}"
+            }));
+
+            // Pasar la lista de propietarios a la vista
+            ViewBag.Propietarios = listaPropietarios;
+            ViewBag.SelectedPropietarioId = null;
+            ViewBag.SelectedPropietarioNombre = null; // Asegúrate de pasar el nombre como null en el GET
+
+            // Pasar una lista vacía de inmuebles
+            var inmuebles = new List<Inmueble>();
+
+            return View(inmuebles);
+        }
+
+        [HttpPost]
+        public IActionResult ListaPorPropietario(int? IdPropietario)
+        {
+            _logger.LogInformation("FiltrarPorPropietario llamado con IdPropietario: {IdPropietario}", IdPropietario);
+
+            var propietarios = _repoPropietario.ObtenerTodos();
+            var listaPropietarios = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "", Text = "Seleccione propietario" }
+    };
+
+            listaPropietarios.AddRange(propietarios.Select(p => new SelectListItem
+            {
+                Value = p.Id.ToString(),
+                Text = $"{p.Nombre} {p.Apellido}"
+            }));
+
+            var inmuebles = IdPropietario.HasValue ? _repo.BuscarPorPropietario(IdPropietario.Value) : new List<Inmueble>();
+            var propietarioSeleccionado = propietarios.FirstOrDefault(p => p.Id == IdPropietario);
+
+            ViewBag.Propietarios = listaPropietarios;
+            ViewBag.SelectedPropietarioId = IdPropietario?.ToString();
+            ViewBag.SelectedPropietarioNombre = propietarioSeleccionado != null ? $"{propietarioSeleccionado.Nombre} {propietarioSeleccionado.Apellido}" : null;
+
+            _logger.LogInformation("Retornando vista ListaPorPropietario con {InmueblesCount} inmuebles", inmuebles.Count);
+
+            return View(inmuebles);
+        }
+
     }
 }

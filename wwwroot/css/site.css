@@ -76,19 +76,20 @@ body {
 
 .modal-content {
   background-color: white; /* Cambia el fondo del contenido del modal a blanco */
-  border-radius: 0.3rem; /* Opcional: agrega bordes redondeados */
-  border: 1px solid #dee2e6; /* Opcional: agrega un borde */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Opcional: agrega una sombra */
+  border-radius: 0.3rem; /* agrega bordes redondeados */
+  border: 1px solid #dee2e6; /* agrega un borde */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /*  agrega una sombra */
 }
 
 .form-group-spacing {
-  margin-bottom: 1.5rem; /* Ajusta el valor según sea necesario */
+  margin-bottom: 1.5rem;
 }
+
 .btn-custom {
   width: 80px;
 }
 .volver {
-  margin-bottom: 30px;
+  margin-bottom: 4rem;
 }
 
 .input-group {
