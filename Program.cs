@@ -22,6 +22,10 @@ builder.Services.AddScoped<RepositorioTipo>(provider => new RepositorioTipo(conn
 builder.Services.AddScoped<RepositorioInmueble>(provider => new RepositorioInmueble(connectionString));
 builder.Services.AddScoped<RepositorioUsuario>(provider => new RepositorioUsuario(connectionString));
 
+builder.Services.AddScoped<RepositorioPago>(provider => new RepositorioPago(connectionString));
+builder.Services.AddScoped<RepositorioConcepto>(provider => new RepositorioConcepto(connectionString));
+
+
 // agrego servicios de autenticación
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

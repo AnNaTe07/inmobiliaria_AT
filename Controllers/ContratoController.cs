@@ -34,7 +34,7 @@ public class ContratoController : Controller
 
         //obtengo la lista de propietarios
         var propietarios = _repoProp.ObtenerTodos();
-        var inmuebles = _repoInmueble.ObtenerDispo();
+        var inmuebles = _repoInmueble.ObtenerDisponibles();
         var inquilinos = _repoInquilino.ObtenerTodos();
 
         if (id > 0)

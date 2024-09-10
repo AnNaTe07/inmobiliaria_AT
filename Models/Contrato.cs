@@ -37,4 +37,6 @@ public class Contrato
 
     public string Observaciones { get; set; } = "";
 
+    public string DireccionInmueble=> $"{Inmu.Direccion}" ;
+
 }
