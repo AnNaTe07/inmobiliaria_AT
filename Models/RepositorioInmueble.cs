@@ -5,10 +5,12 @@ namespace inmobiliaria_AT.Models;
 
 public class RepositorioInmueble
 {
+    private readonly ILogger<RepositorioInmueble> _logger;
     private readonly string _connectionString;
 
-    public RepositorioInmueble(string connectionString)
+    public RepositorioInmueble(ILogger<RepositorioInmueble> logger, string connectionString)
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _connectionString = connectionString;
     }
 
@@ -246,7 +248,7 @@ public class RepositorioInmueble
         }
         return res;
     }
-    public List<Inmueble> ObtenerDisponibles()
+    public List<Inmueble> ObtenerDisponibles(int IdPropietario)
     {
         List<Inmueble> inmuebles = new List<Inmueble>();
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
@@ -274,10 +276,11 @@ public class RepositorioInmueble
             INNER JOIN 
                 Propietario p ON i.IdPropietario = p.Id 
             WHERE 
-                i.Estado = 1;";
+                i.Estado = 1 AND i.IdPropietario = @PropietarioId; ";
 
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {
+                command.Parameters.AddWithValue("@PropietarioId", IdPropietario);//parametro
                 connection.Open();
                 using (var reader = command.ExecuteReader())
                 {
@@ -313,6 +316,155 @@ public class RepositorioInmueble
         return inmuebles;
     }
 
+    public List<Inmueble> ObtenerDisponiblesTotales()
+    {
+        List<Inmueble> inmuebles = new List<Inmueble>();
+        using (MySqlConnection connection = new MySqlConnection(_connectionString))
+        {
+            var query = @"
+            SELECT 
+                i.Id AS InmuebleId, 
+                i.Uso, 
+                i.Direccion, 
+                i.TipoId, 
+                t.Descripcion AS TipoDescripcion, 
+                i.Ambientes, 
+                i.Latitud, 
+                i.Longitud, 
+                i.Superficie,
+                i.Precio, 
+                i.IdPropietario,
+                i.Estado, 
+                i.Suspendido,
+                p.Nombre AS PropietarioNombre, 
+                p.Apellido AS PropietarioApellido
+            FROM 
+                inmueble i
+            JOIN 
+                tipo t ON i.TipoId = t.Id
+            INNER JOIN 
+                Propietario p ON i.IdPropietario = p.Id 
+            WHERE 
+                i.Estado = 1  AND i.Suspendido = 0; ";
+
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var uso = (UsoInmueble)reader.GetInt32(reader.GetOrdinal("Uso"));
+
+                        inmuebles.Add(new Inmueble
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("InmuebleId")),
+                            Uso = uso,
+                            Direccion = reader.GetString(reader.GetOrdinal("Direccion")),
+                            TipoId = reader.GetInt32(reader.GetOrdinal("TipoId")),
+                            TipoDescripcion = reader.GetString(reader.GetOrdinal("TipoDescripcion")),
+                            Ambientes = reader.GetInt32(reader.GetOrdinal("Ambientes")),
+                            Latitud = reader.GetDecimal(reader.GetOrdinal("Latitud")),
+                            Longitud = reader.GetDecimal(reader.GetOrdinal("Longitud")),
+                            Superficie = reader.GetDecimal(reader.GetOrdinal("Superficie")),
+                            Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
+                            IdPropietario = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
+                            Estado = reader.GetInt32(reader.GetOrdinal("Estado")) == 1,
+                            Suspendido = reader.GetInt32(reader.GetOrdinal("Suspendido")) == 1,
+                            PropietarioInmueble = new Propietario
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
+                                Nombre = reader.GetString(reader.GetOrdinal("PropietarioNombre")),
+                                Apellido = reader.GetString(reader.GetOrdinal("PropietarioApellido"))
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        return inmuebles;
+    }
+    public List<Inmueble> ObtenerNoDisponibles(int IdPropietario)
+    {
+        List<Inmueble> inmuebles = new List<Inmueble>();
+        try
+        {
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                var query = @"
+            SELECT 
+                i.Id AS InmuebleId, 
+                i.Uso, 
+                i.Direccion, 
+                i.TipoId, 
+                t.Descripcion AS TipoDescripcion, 
+                i.Ambientes, 
+                i.Latitud, 
+                i.Longitud, 
+                i.Superficie,
+                i.Precio, 
+                i.IdPropietario,
+                i.Estado, 
+                i.Suspendido,
+                p.Nombre AS PropietarioNombre, 
+                p.Apellido AS PropietarioApellido
+            FROM 
+                inmueble i
+            JOIN 
+                tipo t ON i.TipoId = t.Id
+            INNER JOIN 
+                Propietario p ON i.IdPropietario = p.Id 
+            WHERE 
+                i.Estado = 0 AND i.IdPropietario = @PropietarioId;";
+
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@PropietarioId", IdPropietario);
+
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var uso = (UsoInmueble)reader.GetInt32(reader.GetOrdinal("Uso"));
+
+                            inmuebles.Add(new Inmueble
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("InmuebleId")),
+                                Uso = uso,
+                                Direccion = reader.GetString(reader.GetOrdinal("Direccion")),
+                                TipoId = reader.GetInt32(reader.GetOrdinal("TipoId")),
+                                TipoDescripcion = reader.GetString(reader.GetOrdinal("TipoDescripcion")),
+                                Ambientes = reader.GetInt32(reader.GetOrdinal("Ambientes")),
+                                Latitud = reader.GetDecimal(reader.GetOrdinal("Latitud")),
+                                Longitud = reader.GetDecimal(reader.GetOrdinal("Longitud")),
+                                Superficie = reader.GetDecimal(reader.GetOrdinal("Superficie")),
+                                Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
+                                IdPropietario = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
+                                Estado = reader.GetInt32(reader.GetOrdinal("Estado")) == 1,
+                                Suspendido = reader.GetInt32(reader.GetOrdinal("Suspendido")) == 1,
+                                PropietarioInmueble = new Propietario
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
+                                    Nombre = reader.GetString(reader.GetOrdinal("PropietarioNombre")),
+                                    Apellido = reader.GetString(reader.GetOrdinal("PropietarioApellido"))
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // Manejar la excepción adecuadamente
+            _logger.LogError(ex, "Error al obtener inmuebles no disponibles.");
+            throw; // Re-lanzar la excepción para que pueda ser manejada en el controlador
+        }
+        return inmuebles;
+    }
+
+
     public List<Inmueble> BuscarPorPropietario(int idPropietario)
     {
         List<Inmueble> inmuebles = new List<Inmueble>();
@@ -332,6 +484,7 @@ public class RepositorioInmueble
             i.Precio, 
             i.IdPropietario,
             i.Estado,
+            i.Suspendido,
             p.Nombre AS PropietarioNombre, 
             p.Apellido AS PropietarioApellido
         FROM 
@@ -367,7 +520,8 @@ public class RepositorioInmueble
                             Superficie = reader.GetDecimal(reader.GetOrdinal("Superficie")),
                             Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
                             IdPropietario = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
-                            Estado = reader.GetBoolean(reader.GetOrdinal("Estado")), 
+                            Estado = reader.GetBoolean(reader.GetOrdinal("Estado")),
+                            Suspendido = reader.GetBoolean(reader.GetOrdinal("Suspendido")),
                             PropietarioInmueble = new Propietario
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
@@ -380,5 +534,44 @@ public class RepositorioInmueble
             }
         }
         return inmuebles;
+    }
+    public bool SuspenderInmueble(int id)
+    {
+        using (MySqlConnection connection = new MySqlConnection(_connectionString))
+        {
+            var query = @"
+            UPDATE inmueble
+            SET Suspendido = true
+            WHERE Id = @id";
+
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", id);
+
+                connection.Open();
+                var rowsAffected = command.ExecuteNonQuery();
+                return rowsAffected > 0;
+            }
+        }
+    }
+
+    public bool ReactivarInmueble(int id)
+    {
+        using (MySqlConnection connection = new MySqlConnection(_connectionString))
+        {
+            var query = @"
+            UPDATE inmueble
+            SET Suspendido = false
+            WHERE Id = @id";
+
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", id);
+
+                connection.Open();
+                var rowsAffected = command.ExecuteNonQuery();
+                return rowsAffected > 0;
+            }
+        }
     }
 }

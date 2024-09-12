@@ -5,46 +5,46 @@
     int id = Model == null ? 0 : Model.Id;
 }
 
-<h4>Inquilino</h4>
+<h2>Inquilino</h2>
 <hr>
-    <div class="col-md-12">
-        <div asp-asp-validation-asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <input type="hidden" name="Id" value="@id">
-        <div class="row">
-            <div class="form-group col-md-6 form-group-spacing">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" readonly>
-                <span asp-validation-for="Nombre" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-6 form-group-spacing">
-                <label asp-for="Apellido" class="control-label" readonly></label>
-                <input asp-for="Apellido" class="form-control" readonly>
-                <span asp-validation-for="Apellido" class="text-danger"></span>
-            </div>
+<div class="col-md-12">
+    <div asp-asp-validation-asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" name="Id" value="@id">
+    <div class="row">
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="Nombre" class="control-label"></label>
+            <input asp-for="Nombre" class="form-control" readonly>
+            <span asp-validation-for="Nombre" class="text-danger"></span>
         </div>
-         <div class="row ">  
-             <div class="form-group col-md-6 form-group-spacing">
-                <label asp-for="Documento" class="control-label"></label>
-                <input asp-for="Documento" class="form-control" readonly>
-                <span asp-validation-for="Documento" class="text-danger"></span>          
-            </div>
-            <div class="form-group col-md-6 form-group-spacing">
-                <label asp-for="Telefono" class="control-label"></label>
-                <input asp-for="Telefono" class="form-control" readonly>
-                <span asp-validation-for="Telefono" class="text-danger"></span>          
-            </div>
-        </div> 
-        <div class="row ">
-            <div class="form-group col-md-6 form-group-spacing">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" readonly>
-                <span asp-validation-for="Email" class="text-danger"></span>          
-            </div>            
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="Apellido" class="control-label" readonly></label>
+            <input asp-for="Apellido" class="form-control" readonly>
+            <span asp-validation-for="Apellido" class="text-danger"></span>
         </div>
-        <div class="form-group-spacing">
-             <a asp-action="Index" title="Volver">
-             <i class="fa-solid fa-undo"></i>
-             </a>
-        </div>   
     </div>
+    <div class="row ">
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="Documento" class="control-label"></label>
+            <input asp-for="Documento" class="form-control" readonly>
+            <span asp-validation-for="Documento" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="Telefono" class="control-label"></label>
+            <input asp-for="Telefono" class="form-control" readonly>
+            <span asp-validation-for="Telefono" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row ">
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="Email" class="control-label"></label>
+            <input asp-for="Email" class="form-control" readonly>
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group-spacing">
+        <a asp-action="Index" title="Volver">
+            <i class="fa-solid fa-undo"></i>
+        </a>
+    </div>
+</div>
 </div>
