@@ -22,7 +22,7 @@ public class Usuario
     public string Email { get; set; }
     [Required]
     public string PasswordHash { get; set; }
-    public string Salt { get; set; }
+    public string Salt { get; set; } = "";
     public string Avatar { get; set; } = "";
     public IFormFile? AvatarFile { get; set; }// para que pueda ser nulo
     public Rol Rol { get; set; }

@@ -6,10 +6,12 @@ namespace inmobiliaria_AT.Models;
 
 public class RepositorioUsuario
 {
+    private readonly ILogger<RepositorioUsuario> _logger;
     private readonly string _connectionString;
 
-    public RepositorioUsuario(string connectionString)
+    public RepositorioUsuario(ILogger<RepositorioUsuario> logger, string connectionString)
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _connectionString = connectionString;
     }
     public IList<Usuario> ObtenerTodos()
@@ -98,10 +100,14 @@ public class RepositorioUsuario
 
     public int Alta(Usuario usuario)
     {
+        // Usa _logger aquí para registrar errores
+        _logger.LogInformation("Registrando usuario: {Email}", usuario.Email);
         int res = -1;
-        using (MySqlConnection connection = new MySqlConnection(_connectionString))
+        try
         {
-            var query = $@"
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                var query = $@"
                 INSERT INTO Usuario 
 					({nameof(Usuario.Nombre)}, 
                     {nameof(Usuario.Apellido)}, 
@@ -111,24 +117,31 @@ public class RepositorioUsuario
                     {nameof(Usuario.Rol)},
                     {nameof(Usuario.Salt)})
 				VALUES (@nombre, @apellido, @email, @passwordHash,@avatar, @rol,@salt);
-				SELECT LAST_INSERT_ID();";//devuelve el id insertado (LAST_INSERT_ID para mysql)
-            using (MySqlCommand command = new MySqlCommand(query, connection))
-            {
-                command.Parameters.AddWithValue("@nombre", usuario.Nombre);
-                command.Parameters.AddWithValue("@apellido", usuario.Apellido);
-                command.Parameters.AddWithValue("@email", usuario.Email);
-                command.Parameters.AddWithValue("@passwordHash", usuario.PasswordHash);
-                command.Parameters.AddWithValue("@avatar", usuario.Avatar);
-                command.Parameters.AddWithValue("@rol", (int)usuario.Rol);
-                command.Parameters.AddWithValue("@salt", usuario.Salt);
-                connection.Open();
-                res = Convert.ToInt32(command.ExecuteScalar());
-                usuario.Id = res;//asigna el id generado
-                connection.Close();
+				SELECT LAST_INSERT_ID();";
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@nombre", usuario.Nombre);
+                    command.Parameters.AddWithValue("@apellido", usuario.Apellido);
+                    command.Parameters.AddWithValue("@email", usuario.Email);
+                    command.Parameters.AddWithValue("@passwordHash", usuario.PasswordHash);
+                    command.Parameters.AddWithValue("@avatar", usuario.Avatar);
+                    command.Parameters.AddWithValue("@rol", (int)usuario.Rol);
+                    command.Parameters.AddWithValue("@salt", usuario.Salt);
+                    connection.Open();
+                    res = Convert.ToInt32(command.ExecuteScalar());
+                    usuario.Id = res;
+                    _logger.LogInformation($"Usuario insertado con ID: {res}");
+
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error al insertar usuario: {ex.Message}");
         }
         return res;
     }
+
 
 
     public int Baja(int id)
@@ -153,7 +166,7 @@ public class RepositorioUsuario
     }
 
 
-    public int Modificacion(Usuario usuario)
+    public int Editar(Usuario usuario)
     {
         int res = -1;
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
