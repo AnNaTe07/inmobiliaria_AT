@@ -19,8 +19,12 @@ builder.Services.AddScoped<RepositorioInquilino>(provider => new RepositorioInqu
 builder.Services.AddScoped<RepositorioContrato>(provider => new RepositorioContrato(connectionString));
 builder.Services.AddScoped<RepositorioTipo>(provider => new RepositorioTipo(connectionString));
 
-builder.Services.AddScoped<RepositorioInmueble>(provider => new RepositorioInmueble(connectionString));
-builder.Services.AddScoped<RepositorioUsuario>(provider => new RepositorioUsuario(connectionString));
+builder.Services.AddScoped<RepositorioInmueble>(provider => new RepositorioInmueble(provider.GetRequiredService<ILogger<RepositorioInmueble>>(), // Inyección del logger
+        connectionString));
+builder.Services.AddScoped<RepositorioUsuario>(provider => new RepositorioUsuario(
+provider.GetRequiredService<ILogger<RepositorioUsuario>>(), // Inyección del logger
+        connectionString));
+
 
 builder.Services.AddScoped<RepositorioPago>(provider => new RepositorioPago(connectionString));
 builder.Services.AddScoped<RepositorioConcepto>(provider => new RepositorioConcepto(connectionString));
