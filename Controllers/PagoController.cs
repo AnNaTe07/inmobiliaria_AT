@@ -8,8 +8,8 @@ public class PagoController : Controller
 {
     private readonly ILogger<PagoController> _logger;
     private readonly RepositorioPago _repo;
-    private RepositorioConcepto concepto;
-    private RepositorioContrato contrato;
+    private readonly RepositorioConcepto concepto;
+    private readonly RepositorioContrato contrato;
 
     public PagoController(ILogger<PagoController> logger, RepositorioPago repo, RepositorioContrato repoContrato, RepositorioConcepto repoConcepto)
     {
@@ -40,47 +40,66 @@ public class PagoController : Controller
     }
 
 
-/*
+    /*
 
-public IActionResult Editar(int id)
-{
-    var cont = contrato.ObtenerTodos();
-    var concept = concepto.ObtenerTodos();
-    ViewBag.Contrato = new SelectList(cont, "Id", "Direccion");
-    ViewBag.Concepto = new SelectList(concept, "Id", "Nombre");
-
-    if (id == 0)
+    public IActionResult Editar(int id)
     {
-        return View(new Pago()); // Si no hay ID, devuelve un objeto vacío de Pago.
+        var cont = contrato.ObtenerTodos();
+        var concept = concepto.ObtenerTodos();
+        ViewBag.Contrato = new SelectList(cont, "Id", "Direccion");
+        ViewBag.Concepto = new SelectList(concept, "Id", "Nombre");
+
+        if (id == 0)
+        {
+            return View(new Pago()); // Si no hay ID, devuelve un objeto vacío de Pago.
+        }
+        else
+        {
+            return View(contrato.ObtenerPorId(id));
+        }
     }
-    else
-    {
-        return View(contrato.ObtenerPorId(id));
-    }
-}
-*/
+    */
+    /*
+
+        [HttpPost]
+        public IActionResult Nuevo(Pago pago)
+        {
+            var contratos = contrato.ObtenerTodos();
+            var conceptos = concepto.ObtenerTodos();
+
+            ViewBag.Contrato = new SelectList(contratos, "Id", "DireccionInmueble");
+            ViewBag.Concepto = new SelectList(conceptos, "Id", "Nombre");
 
 
-    [HttpPost]
+
+            if (ModelState.IsValid)
+            {
+                _repo.Alta(pago);
+                TempData["SuccessMessage"] = "Pago realizado correctamente.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(pago);
+        }
+    */
+
+
+
+
+     [HttpPost]
     public IActionResult Nuevo(Pago pago)
     {
-        // Obtener contratos y conceptos para el select nuevamente
         var contratos = contrato.ObtenerTodos();
         var conceptos = concepto.ObtenerTodos();
 
         ViewBag.Contrato = new SelectList(contratos, "Id", "DireccionInmueble");
         ViewBag.Concepto = new SelectList(conceptos, "Id", "Nombre");
 
-        // Si el modelo es válido, guardar el pago
-        if (ModelState.IsValid)
-        {
-            _repo.Alta(pago);
-            TempData["SuccessMessage"] = "Pago realizado correctamente.";
-            return RedirectToAction(nameof(Index));
-        }
+        _repo.Alta(pago);
+        TempData["SuccessMessage"] = "Pago generado correctamente.";
 
-        // Si no es válido, mostrar la vista nuevamente
-        return View(pago);
+
+        return RedirectToAction("Index");;
     }
 
 
