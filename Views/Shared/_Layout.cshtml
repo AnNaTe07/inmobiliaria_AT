@@ -25,8 +25,6 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-
-
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">Contratos</a>
@@ -35,20 +33,6 @@
                                         asp-action="Index">Principal</a></li>
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Contrato"
                                         asp-action="Editar">Crear contrato</a></li>
-                               
-                                
-                            </ul>
-                        </li>
-
-
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">Pagos</a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Pago"
-                                        asp-action="Index">Principal</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Pago" data-bs-toggle="modal"
-                                        data-bs-target="#paymentModal" id="openModalBtn">Nuevo Pago</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
@@ -56,7 +40,7 @@
                                 data-bs-toggle="dropdown" aria-expanded="false">Inmuebles</a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
-                                        asp-action="Disponibles">Inmuebles disponibles</a></li>
+                                        asp-action="DisponiblesTotales">Inmuebles disponibles</a></li>
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
                                         asp-action="ListaPorPropietario">Inmuebles por Propietario</a></li>
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
@@ -79,7 +63,16 @@
                                         opción</a></li>
                             </ul>
                         </li>
-
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">Pagos</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Pago"
+                                        asp-action="Index">Principal</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Pago" data-bs-toggle="modal"
+                                        data-bs-target="#paymentModal" id="openModalBtn">Nuevo Pago</a></li>
+                            </ul>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">Propietarios</a>
@@ -101,8 +94,10 @@
                                         asp-action="Index">Lista de Usuarios</a></li>
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Usuario"
                                         asp-action="Crear">Nuevo Usuario</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Usuario" asp-action="">otra
-                                        opción</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Usuario"
+                                        asp-action="Editar">Editar Usuario</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Usuario"
+                                        asp-action="Login">Login</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -113,34 +108,14 @@
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
-            <div id="modal-nuevo">
-
-            </div>
-            <!-- Modal para nuevo pago -->
-
-            @Html.Partial("../Pago/Nuevo", new inmobiliaria_AT.Models.Pago())
-
         </main>
     </div>
 
     <footer class="border-top footer text-muted">
-
-
         <div class="container">
             &copy; 2024 - Inmobiliaria AT - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#openModalBtn').click(function () {
-                $('#paymentModal').modal('show');
-                $.get('@Url.Action("Nuevo", "Pago")', function (data) {
-                    $('#paymentModal .modal-content').html(data);
-                });
-            });
-        });
-    </script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
