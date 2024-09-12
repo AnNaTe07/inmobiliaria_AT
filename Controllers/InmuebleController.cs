@@ -139,11 +139,45 @@ namespace inmobiliaria_AT.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult Disponibles()
+
+        // Método para obtener los inmuebles disponibles por propietario
+        public IActionResult Disponibles(int IdPropietario)
         {
-            var inmuebles = _repo.ObtenerDisponibles();
+            if (IdPropietario <= 0)
+            {
+                return BadRequest("El ID del propietario es inválido.");
+            }
+            var inmuebles = _repo.ObtenerDisponibles(IdPropietario);
+            return PartialView("_InmueblesPartial", inmuebles);  // Uso PartialView para actualizar una sección
+        }
+        // Método para obtener los inmuebles disponibles
+        public IActionResult DisponiblesTotales()
+        {
+            var inmuebles = _repo.ObtenerDisponiblesTotales();
             return View(inmuebles);
         }
+
+        // Método para obtener los inmuebles no disponibles por propietario
+        public IActionResult NoDisponibles(int IdPropietario)
+        {
+            _logger.LogInformation("NoDisponibles llamado con IdPropietario: {IdPropietario}", IdPropietario);
+
+            if (IdPropietario <= 0)
+            {
+                return BadRequest("El ID del propietario es inválido.");
+            }
+            try
+            {
+                var inmuebles = _repo.ObtenerNoDisponibles(IdPropietario);
+                return PartialView("_InmueblesPartial", inmuebles); // Uso PartialView para actualizar una sección
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener inmuebles no disponibles.");
+                return StatusCode(500, "Error interno del servidor.");
+            }
+        }
+
 
 
         [HttpGet]
@@ -165,8 +199,7 @@ namespace inmobiliaria_AT.Controllers
             // Pasar la lista de propietarios a la vista
             ViewBag.Propietarios = listaPropietarios;
             ViewBag.SelectedPropietarioId = null;
-            ViewBag.SelectedPropietarioNombre = null; // Asegúrate de pasar el nombre como null en el GET
-
+            ViewBag.SelectedPropietarioNombre = null;
             // Pasar una lista vacía de inmuebles
             var inmuebles = new List<Inmueble>();
 
@@ -202,5 +235,47 @@ namespace inmobiliaria_AT.Controllers
             return View(inmuebles);
         }
 
+
+        // Método para suspender inmueble
+        [HttpPost]
+        public IActionResult SuspenderInmueble(int id)
+        {
+            _logger.LogInformation("SuspenderInmueble llamado con Id: {Id}", id);
+
+            // Llama al repositorio para suspender el inmueble
+            var resultado = _repo.SuspenderInmueble(id);
+
+            if (resultado)
+            {
+                _logger.LogInformation("Inmueble con Id: {Id} suspendido con éxito.", id);
+                return Json(new { success = true });
+            }
+            else
+            {
+                _logger.LogWarning("No se pudo suspender el inmueble con Id: {Id}.", id);
+                return Json(new { success = false });
+            }
+        }
+
+        // Método para reactivar inmueble
+        [HttpPost]
+        public IActionResult ReactivarInmueble(int id)
+        {
+            _logger.LogInformation("ReactivarInmueble llamado con Id: {Id}", id);
+
+            // Llama al repositorio para reactivar el inmueble
+            var resultado = _repo.ReactivarInmueble(id);
+
+            if (resultado)
+            {
+                _logger.LogInformation("Inmueble con Id: {Id} reactivado con éxito.", id);
+                return Json(new { success = true });
+            }
+            else
+            {
+                _logger.LogWarning("No se pudo reactivar el inmueble con Id: {Id}.", id);
+                return Json(new { success = false });
+            }
+        }
     }
 }

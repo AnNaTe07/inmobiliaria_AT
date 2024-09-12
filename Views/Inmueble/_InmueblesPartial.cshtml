@@ -1,0 +1,44 @@
+@model IEnumerable<inmobiliaria_AT.Models.Inmueble>
+
+<table class="table text-center">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Dirección</th>
+            <th>Tipo</th>
+            <th>Ambientes</th>
+            <th>Precio</th>
+            <th>Estado</th>
+            <th>Suspendido</th>
+            <th>Activar / Desactivar</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var inmueble in Model)
+        {
+            <tr>
+                <td>@inmueble.Id</td>
+                <td>@inmueble.Direccion</td>
+                <td>@inmueble.TipoDescripcion</td>
+                <td>@inmueble.Ambientes</td>
+                <td>@inmueble.Precio</td>
+                <td>@(inmueble.Estado ? "Disponible" : "No Disponible")</td>
+                <td>@(inmueble.Suspendido ? "Sí" : "No")</td>
+                <td>
+                    @if (inmueble.Suspendido)
+                    {
+                        <button type="button" class="btn btn-success" onclick="reactivar(@inmueble.Id)" title="Reactivar">
+                            <i class="fa-solid fa-play"></i>
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-warning" onclick="suspender(@inmueble.Id)" title="Suspender">
+                            <i class="fa-solid fa-pause"></i>
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
