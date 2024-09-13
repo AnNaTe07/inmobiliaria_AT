@@ -7,9 +7,22 @@ public class RepositorioPago
 {
 
     private readonly string _connectionString;
-    public RepositorioPago(string connectionString)
+    private readonly ILogger<RepositorioPago> _logger;
+    private readonly ILogger<RepositorioUsuario> _loggerUsuario;
+    private readonly ILogger<RepositorioConcepto> _loggerConcepto;
+    private readonly ILogger<RepositorioInmueble> _loggerInmueble;
+
+    private ILogger<RepositorioContrato> _loggerContrato;
+
+    public RepositorioPago(ILogger<RepositorioPago> logger, ILogger <RepositorioContrato> loggerContrato, ILogger<RepositorioUsuario> loggerUsuario,ILogger<RepositorioInmueble> loggerInmueble, ILogger<RepositorioConcepto> loggerConcepto, String connectionString)
     {
         _connectionString = connectionString;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _loggerConcepto = loggerConcepto ?? throw new ArgumentNullException(nameof(loggerConcepto));
+        _loggerUsuario = loggerUsuario ?? throw new ArgumentNullException(nameof(loggerUsuario));
+        _loggerInmueble = loggerInmueble ?? throw new ArgumentNullException(nameof(loggerInmueble));
+        _loggerContrato = loggerContrato ?? throw new ArgumentNullException(nameof(loggerContrato));
+
     }
 
 
@@ -21,29 +34,38 @@ public class RepositorioPago
         {                       //
             var sql = @$"SELECT {nameof(Pago.Id)}, {nameof(Pago.Fecha)}, {nameof(Pago.Monto)}, {nameof(Pago.Estado)}, 
                       {nameof(Pago.FechaAnulacion)}, {nameof(Pago.UsuPago)}, {nameof(Pago.UsuAnulacion)},
-                     {nameof(Pago.Detalle)}, {nameof(Pago.Concepto)} 
+                     {nameof(Pago.Detalle)}, {nameof(Pago.Concepto)}, IdContrato 
                      FROM pago WHERE {nameof(Pago.Estado)} = 1;";
 
             using (MySqlCommand command = new MySqlCommand(sql, connection))
             {
                 connection.Open();
                 var reader = command.ExecuteReader();
+
                 while (reader.Read())
                 {
 
-                    var concepto = new RepositorioConcepto(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.Concepto))));
-                    var uPago = new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuPago))));
-                    var uAnulacion = new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuAnulacion))));
+                    var concepto = new RepositorioConcepto(_loggerConcepto, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.Concepto))));
+                    var uPago = new RepositorioUsuario(_loggerUsuario, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuPago))));
+                    var contrato = new RepositorioContrato(_loggerContrato,_loggerInmueble, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal("IdContrato")));
 
+                    // Verifica si 'UsuAnulacion' es nulo
+                    var uAnulacion = !reader.IsDBNull(reader.GetOrdinal(nameof(Pago.UsuAnulacion)))
+                        ? new RepositorioUsuario(_loggerUsuario, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuAnulacion))))
+                        : null;
                     pagos.Add(new Pago
                     {
                         Id = reader.GetInt32(reader.GetOrdinal(nameof(Pago.Id))),
+                        Contrato = contrato,
                         Fecha = reader.GetDateTime(reader.GetOrdinal(nameof(Pago.Fecha))),
                         Monto = reader.GetDecimal(reader.GetOrdinal(nameof(Pago.Monto))),
                         Estado = reader.GetBoolean(reader.GetOrdinal(nameof(Pago.Estado))),
                         UsuAnulacion = uAnulacion,
                         UsuPago = uPago,
-                        FechaAnulacion = reader.GetDateTime(reader.GetOrdinal(nameof(Pago.FechaAnulacion))),
+                        FechaAnulacion = !reader.IsDBNull(reader.GetOrdinal(nameof(Pago.FechaAnulacion)))
+                        ? reader.GetDateTime(reader.GetOrdinal(nameof(Pago.FechaAnulacion)))
+                        : (DateTime?)null,
+
                         Detalle = reader.GetString(reader.GetOrdinal(nameof(Pago.Detalle))),
                         Concepto = concepto
                     });
@@ -72,9 +94,9 @@ public class RepositorioPago
                 var reader = command.ExecuteReader();
                 if (reader.Read())
                 {
-                    var concepto = new RepositorioConcepto(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.Concepto))));
-                    var uPago = new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuPago))));
-                    var uAnulacion = new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuAnulacion))));
+                    var concepto = new RepositorioConcepto(_loggerConcepto, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.Concepto))));
+                    var uPago = new RepositorioUsuario(_loggerUsuario, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuPago))));
+                    var uAnulacion = new RepositorioUsuario(_loggerUsuario, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuAnulacion))));
 
                     return new Pago
                     {
@@ -112,9 +134,10 @@ public class RepositorioPago
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    var concepto = new RepositorioConcepto(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.Concepto))));
-                    var uPago = new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuPago))));
-                    var uAnulacion = new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuAnulacion))));
+                    var concepto = new RepositorioConcepto(_loggerConcepto, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.Concepto))));
+                    var uPago = new RepositorioUsuario(_loggerUsuario, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuPago))));
+                    var uAnulacion = new RepositorioUsuario(_loggerUsuario, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuAnulacion))));
+
 
                     pagos.Add(new Pago
                     {

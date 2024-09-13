@@ -16,7 +16,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddScoped<RepositorioPropietario>(provider => new RepositorioPropietario(connectionString));
 builder.Services.AddScoped<RepositorioInquilino>(provider => new RepositorioInquilino(connectionString));
 
-builder.Services.AddScoped<RepositorioContrato>(provider => new RepositorioContrato(connectionString));
+builder.Services.AddScoped<RepositorioContrato>(provider => new RepositorioContrato(provider.GetRequiredService<ILogger<RepositorioContrato>>(),provider.GetRequiredService<ILogger<RepositorioInmueble>>() ,connectionString));
 builder.Services.AddScoped<RepositorioTipo>(provider => new RepositorioTipo(connectionString));
 
 builder.Services.AddScoped<RepositorioInmueble>(provider => new RepositorioInmueble(provider.GetRequiredService<ILogger<RepositorioInmueble>>(), // Inyección del logger
@@ -26,8 +26,9 @@ provider.GetRequiredService<ILogger<RepositorioUsuario>>(), // Inyección del lo
         connectionString));
 
 
-builder.Services.AddScoped<RepositorioPago>(provider => new RepositorioPago(connectionString));
-builder.Services.AddScoped<RepositorioConcepto>(provider => new RepositorioConcepto(connectionString));
+builder.Services.AddScoped<RepositorioPago>(provider => new RepositorioPago(provider.GetRequiredService<ILogger<RepositorioPago>>(), provider.GetRequiredService<ILogger<RepositorioContrato>>(),provider.GetRequiredService<ILogger<RepositorioUsuario>>(), provider.GetRequiredService<ILogger<RepositorioInmueble>>(), provider.GetRequiredService<ILogger<RepositorioConcepto>>(),connectionString));
+builder.Services.AddScoped<RepositorioConcepto>(provider => new RepositorioConcepto(provider.GetRequiredService<ILogger<RepositorioConcepto>>(), connectionString));
+
 
 
 // agrego servicios de autenticación

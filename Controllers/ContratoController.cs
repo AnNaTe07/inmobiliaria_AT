@@ -18,7 +18,7 @@ public class ContratoController : Controller
         _repoInmueble = repoInmueble;
         _repoProp = repoProp;
         _repoInquilino = repoInquilino;
-        
+
         _repo.vigenciaContrato();
 
     }
@@ -34,7 +34,7 @@ public class ContratoController : Controller
 
         //obtengo la lista de propietarios
         var propietarios = _repoProp.ObtenerTodos();
-        var inmuebles = _repoInmueble.ObtenerDisponibles();
+        var inmuebles = _repoInmueble.ObtenerDisponiblesTotales();
         var inquilinos = _repoInquilino.ObtenerTodos();
 
         if (id > 0)
@@ -110,7 +110,14 @@ public class ContratoController : Controller
 
 
 
-
+  
+        // Acción para obtener los detalles del contrato
+        public JsonResult ObtenerContrato(int id)
+        {
+            var contrato = _repo.ObtenerPorId(id);
+        return Json(contrato);
+        }
+    
 }
 
 

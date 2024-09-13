@@ -57,45 +57,45 @@ public class RepositorioUsuario
 
 
     public Usuario ObtenerPorId(int id)
+{
+    Usuario? usuario = null;
+    using (MySqlConnection connection = new MySqlConnection(_connectionString))
     {
-        Usuario? usuario = null;
-        using (MySqlConnection connection = new MySqlConnection(_connectionString))
+        var query = $@"
+            SELECT 
+                {nameof(Usuario.Id)}, 
+                {nameof(Usuario.Nombre)}, 
+                {nameof(Usuario.Apellido)},  
+                {nameof(Usuario.Email)}, 
+                {nameof(Usuario.PasswordHash)}, 
+                {nameof(Usuario.Avatar)},
+                {nameof(Usuario.Rol)}
+            FROM 
+                Usuario WHERE Id=@id";
+        using (MySqlCommand command = new MySqlCommand(query, connection))
         {
-            var query = $@"
-                SELECT 
-					{nameof(Usuario.Id)}, 
-                    {nameof(Usuario.Nombre)}, 
-                    {nameof(Usuario.Apellido)},  
-                    {nameof(Usuario.Email)}, 
-                    {nameof(Usuario.PasswordHash)}, 
-                    {nameof(Usuario.Avatar)},
-                    {nameof(Usuario.Rol)}
-				FROM 
-                    Usuario WHERE Id=@id";
-            using (MySqlCommand command = new MySqlCommand(query, connection))
+            command.Parameters.AddWithValue("@id", id);
+            connection.Open();
+            var reader = command.ExecuteReader();
+            if (reader.Read())
             {
-                command.Parameters.AddWithValue("@id", id);
-                connection.Open();
-                var reader = command.ExecuteReader();
-                if (reader.Read())
+                return new Usuario
                 {
-                    return new Usuario
-                    {
-                        Id = reader.GetInt32(reader.GetOrdinal(nameof(Usuario.Id))),
-                        Nombre = reader.GetString(reader.GetOrdinal(nameof(Usuario.Nombre))),
-                        Apellido = reader.GetString(reader.GetOrdinal(nameof(Usuario.Apellido))),
-                        Avatar = reader.GetString(reader.GetOrdinal(nameof(Usuario.Avatar))),
-                        Email = reader.GetString(reader.GetOrdinal(nameof(Usuario.Email))),
-                        PasswordHash = reader.GetString(reader.GetOrdinal(nameof(Usuario.PasswordHash))),
-                        Rol = (Rol)reader.GetInt32(reader.GetOrdinal(nameof(Usuario.Rol)))
-
-                    };
-                }
-                connection.Close();
+                    Id = reader.GetInt32(reader.GetOrdinal(nameof(Usuario.Id))),
+                    Nombre = reader.GetString(reader.GetOrdinal(nameof(Usuario.Nombre))),
+                    Apellido = reader.GetString(reader.GetOrdinal(nameof(Usuario.Apellido))),
+                    Avatar = reader.IsDBNull(reader.GetOrdinal(nameof(Usuario.Avatar))) ? null : reader.GetString(reader.GetOrdinal(nameof(Usuario.Avatar))),
+                    Email = reader.GetString(reader.GetOrdinal(nameof(Usuario.Email))),
+                    PasswordHash = reader.GetString(reader.GetOrdinal(nameof(Usuario.PasswordHash))),
+                    Rol = (Rol)reader.GetInt32(reader.GetOrdinal(nameof(Usuario.Rol)))
+                };
             }
+            connection.Close();
         }
-        return usuario;
     }
+    return usuario;
+}
+
 
 
     public int Alta(Usuario usuario)

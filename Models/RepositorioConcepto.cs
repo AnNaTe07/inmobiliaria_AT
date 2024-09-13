@@ -6,10 +6,12 @@ namespace inmobiliaria_AT.Models
     public class RepositorioConcepto
     {
         private readonly string _connectionString;
+        private readonly ILogger<RepositorioConcepto> _logger;
 
-        public RepositorioConcepto(string connectionString)
+        public RepositorioConcepto(ILogger<RepositorioConcepto> logger, String connectionString)
         {
             _connectionString = connectionString;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public Concepto ObtenerPorId(int id)

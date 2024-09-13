@@ -8,10 +8,16 @@ namespace inmobiliaria_AT.Models;
 public class RepositorioContrato
 {
     private readonly string _connectionString;
+    private readonly ILogger<RepositorioContrato> _logger;
+    private readonly ILogger<RepositorioInmueble> _loggerInmueble;
+    private ILogger<RepositorioPago> logger;
+    private string connectionString;
 
-    public RepositorioContrato(string connectionString)
+    public RepositorioContrato(ILogger<RepositorioContrato> logger, ILogger<RepositorioInmueble> loggerInmueble, string connectionString)
     {
         _connectionString = connectionString;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _loggerInmueble = loggerInmueble ?? throw new ArgumentNullException(nameof(loggerInmueble));
     }
 
 
@@ -34,7 +40,7 @@ public class RepositorioContrato
                     int idInmueble = reader.GetInt32("Inmu");
                     int idPropietario = reader.GetInt32("Prop");
                     var inquilino = new RepositorioInquilino(_connectionString).ObtenerPorId(idInquilino);
-                    var inmueble = new RepositorioInmueble(_connectionString).ObtenerPorId(idInmueble);
+                    var inmueble = new RepositorioInmueble(_loggerInmueble, _connectionString).ObtenerPorId(idInmueble);
                     var propietario = new RepositorioPropietario(_connectionString).ObtenerPorId(idPropietario);
 
 
@@ -89,7 +95,7 @@ public class RepositorioContrato
                 {
 
                     RepositorioInquilino repositorioInquilino = new RepositorioInquilino(_connectionString);
-                    RepositorioInmueble repositorioInmueble = new RepositorioInmueble(_connectionString);
+                    RepositorioInmueble repositorioInmueble = new RepositorioInmueble(_loggerInmueble,_connectionString);
                     RepositorioPropietario repositorioPropietario = new RepositorioPropietario(_connectionString);
                     int idInquilino = reader.GetInt32(nameof(Contrato.Inqui));
                     int Inmu = reader.GetInt32(nameof(Contrato.Inmu));
@@ -136,7 +142,7 @@ public class RepositorioContrato
     public int Alta(Contrato contrato)
 
     {
-        var repo_Inm = new RepositorioInmueble(_connectionString);
+        var repo_Inm = new RepositorioInmueble(_loggerInmueble,_connectionString);
         var id_prop = repo_Inm.ObtenerPorId(contrato.Inmu.Id).IdPropietario;
         int res = -1;
 
@@ -201,7 +207,7 @@ public class RepositorioContrato
     public int Baja(int id)
     {
         int res = -1;
-        var repoCont = new RepositorioContrato(_connectionString);
+        var repoCont = new RepositorioContrato(_logger, _loggerInmueble,_connectionString);
         var contrato = repoCont.ObtenerPorId(id);
 
         using (MySqlConnection conn = new MySqlConnection(_connectionString))
@@ -247,11 +253,11 @@ public class RepositorioContrato
 
     public int Modificar(Contrato contrato)
     {
-        var repo_Inm = new RepositorioInmueble(_connectionString);
+        var repo_Inm = new RepositorioInmueble(_loggerInmueble,_connectionString);
         var id_prop = repo_Inm.ObtenerPorId(contrato.Inmu.Id).IdPropietario;
 
         //OBTENGO EL ID DEL INMUEBLE QUE TIENE EL CONTRATO ANTES DE  MODIFICAR
-        var repoCont = new RepositorioContrato(_connectionString);
+        var repoCont = new RepositorioContrato(_logger, _loggerInmueble, _connectionString);
         Contrato cont = repoCont.ObtenerPorId(contrato.Id);
         var id_inmu = cont.Inmu.Id;
 
@@ -389,114 +395,114 @@ public class RepositorioContrato
     }
 
 
-   public List<Contrato> PorFechaTodos(DateTime desde, DateTime hasta)
-{
-    List<Contrato> contratos = new List<Contrato>();
-    using (MySqlConnection connection = new MySqlConnection(_connectionString))
+    public List<Contrato> PorFechaTodos(DateTime desde, DateTime hasta)
     {
-        var sql = @"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Monto, Estado, Descripcion, Plazo,
+        List<Contrato> contratos = new List<Contrato>();
+        using (MySqlConnection connection = new MySqlConnection(_connectionString))
+        {
+            var sql = @"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Monto, Estado, Descripcion, Plazo,
                     PorcentajeActualizacion, PeriodoActualizacion, Observaciones, Tipo 
                     FROM contrato 
                     WHERE DATE(FechaFin) BETWEEN @desde AND @hasta;";
 
-        using (MySqlCommand command = new MySqlCommand(sql, connection))
-        {
-            command.Parameters.AddWithValue("@desde", desde.ToString("yyyy-MM-dd"));
-            command.Parameters.AddWithValue("@hasta", hasta.ToString("yyyy-MM-dd"));
-
-            connection.Open();
-            var reader = command.ExecuteReader();
-
-            while (reader.Read())
+            using (MySqlCommand command = new MySqlCommand(sql, connection))
             {
-                int idInquilino = reader.GetInt32("Inqui");
-                int idInmueble = reader.GetInt32("Inmu");
-                int idPropietario = reader.GetInt32("Prop");
-                var inquilino = new RepositorioInquilino(_connectionString).ObtenerPorId(idInquilino);
-                var inmueble = new RepositorioInmueble(_connectionString).ObtenerPorId(idInmueble);
-                var propietario = new RepositorioPropietario(_connectionString).ObtenerPorId(idPropietario);
+                command.Parameters.AddWithValue("@desde", desde.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@hasta", hasta.ToString("yyyy-MM-dd"));
 
+                connection.Open();
+                var reader = command.ExecuteReader();
 
-                // Crear el contrato
-                var contrato = new Contrato
+                while (reader.Read())
                 {
-                    Id = reader.GetInt32("Id"),
-                    Inqui = inquilino,
-                    Inmu = inmueble,
-                    Prop = propietario,
-                    FechaInicio = reader.GetDateTime("FechaInicio"),
-                    FechaFin = reader.GetDateTime("FechaFin"),
-                    Monto = reader.GetDecimal("Monto"),
-                    Estado = reader.GetBoolean("Estado"),
-                    Descripcion = reader.GetString("Descripcion"),
-                    Plazo = reader.GetInt32("Plazo"),
-                    PorcentajeActualizacion = reader.GetDecimal("PorcentajeActualizacion"),
-                    PeriodoActualizacion = reader.GetInt32("PeriodoActualizacion"),
-                    Observaciones = reader.GetString("Observaciones"),
-                    Tipo = (TipoContrato)Enum.Parse(typeof(TipoContrato), reader.GetString("Tipo"))
-                };
+                    int idInquilino = reader.GetInt32("Inqui");
+                    int idInmueble = reader.GetInt32("Inmu");
+                    int idPropietario = reader.GetInt32("Prop");
+                    var inquilino = new RepositorioInquilino(_connectionString).ObtenerPorId(idInquilino);
+                    var inmueble = new RepositorioInmueble(_loggerInmueble,_connectionString).ObtenerPorId(idInmueble);
+                    var propietario = new RepositorioPropietario(_connectionString).ObtenerPorId(idPropietario);
 
-                contratos.Add(contrato);
+
+                    // Crear el contrato
+                    var contrato = new Contrato
+                    {
+                        Id = reader.GetInt32("Id"),
+                        Inqui = inquilino,
+                        Inmu = inmueble,
+                        Prop = propietario,
+                        FechaInicio = reader.GetDateTime("FechaInicio"),
+                        FechaFin = reader.GetDateTime("FechaFin"),
+                        Monto = reader.GetDecimal("Monto"),
+                        Estado = reader.GetBoolean("Estado"),
+                        Descripcion = reader.GetString("Descripcion"),
+                        Plazo = reader.GetInt32("Plazo"),
+                        PorcentajeActualizacion = reader.GetDecimal("PorcentajeActualizacion"),
+                        PeriodoActualizacion = reader.GetInt32("PeriodoActualizacion"),
+                        Observaciones = reader.GetString("Observaciones"),
+                        Tipo = (TipoContrato)Enum.Parse(typeof(TipoContrato), reader.GetString("Tipo"))
+                    };
+
+                    contratos.Add(contrato);
+                }
+                connection.Close();
             }
-            connection.Close();
         }
+        return contratos;
     }
-    return contratos;
-}
 
 
-public Contrato PorFechaId(DateTime desde, DateTime hasta, int id)
-{
-    Contrato contrato = null; 
-    using (MySqlConnection connection = new MySqlConnection(_connectionString))
+    public Contrato PorFechaId(DateTime desde, DateTime hasta, int id)
     {
-        var sql = @"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Monto, Estado, Descripcion, Plazo,
+        Contrato contrato = null;
+        using (MySqlConnection connection = new MySqlConnection(_connectionString))
+        {
+            var sql = @"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Monto, Estado, Descripcion, Plazo,
                     PorcentajeActualizacion, PeriodoActualizacion, Observaciones, Tipo 
                     FROM contrato 
                     WHERE Id = @id AND DATE(FechaFin) BETWEEN @desde AND @hasta;";
 
-        using (MySqlCommand command = new MySqlCommand(sql, connection))
-        {
-            command.Parameters.AddWithValue("@id", id);
-            command.Parameters.AddWithValue("@desde", desde.ToString("yyyy-MM-dd"));
-            command.Parameters.AddWithValue("@hasta", hasta.ToString("yyyy-MM-dd"));
-
-            connection.Open();
-            var reader = command.ExecuteReader();
-
-            if (reader.Read())
+            using (MySqlCommand command = new MySqlCommand(sql, connection))
             {
-                int idInquilino = reader.GetInt32("Inqui");
-                int idInmueble = reader.GetInt32("Inmu");
-                int idPropietario = reader.GetInt32("Prop");
-                var inquilino = new RepositorioInquilino(_connectionString).ObtenerPorId(idInquilino);
-                var inmueble = new RepositorioInmueble(_connectionString).ObtenerPorId(idInmueble);
-                var propietario = new RepositorioPropietario(_connectionString).ObtenerPorId(idPropietario);
+                command.Parameters.AddWithValue("@id", id);
+                command.Parameters.AddWithValue("@desde", desde.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@hasta", hasta.ToString("yyyy-MM-dd"));
 
-            
-                contrato = new Contrato
+                connection.Open();
+                var reader = command.ExecuteReader();
+
+                if (reader.Read())
                 {
-                    Id = reader.GetInt32("Id"),
-                    Inqui = inquilino,
-                    Inmu = inmueble,
-                    Prop = propietario,
-                    FechaInicio = reader.GetDateTime("FechaInicio"),
-                    FechaFin = reader.GetDateTime("FechaFin"),
-                    Monto = reader.GetDecimal("Monto"),
-                    Estado = reader.GetBoolean("Estado"),
-                    Descripcion = reader.GetString("Descripcion"),
-                    Plazo = reader.GetInt32("Plazo"),
-                    PorcentajeActualizacion = reader.GetDecimal("PorcentajeActualizacion"),
-                    PeriodoActualizacion = reader.GetInt32("PeriodoActualizacion"),
-                    Observaciones = reader.GetString("Observaciones"),
-                    Tipo = (TipoContrato)Enum.Parse(typeof(TipoContrato), reader.GetString("Tipo"))
-                };
+                    int idInquilino = reader.GetInt32("Inqui");
+                    int idInmueble = reader.GetInt32("Inmu");
+                    int idPropietario = reader.GetInt32("Prop");
+                    var inquilino = new RepositorioInquilino(_connectionString).ObtenerPorId(idInquilino);
+                    var inmueble = new RepositorioInmueble(_loggerInmueble,_connectionString).ObtenerPorId(idInmueble);
+                    var propietario = new RepositorioPropietario(_connectionString).ObtenerPorId(idPropietario);
+
+
+                    contrato = new Contrato
+                    {
+                        Id = reader.GetInt32("Id"),
+                        Inqui = inquilino,
+                        Inmu = inmueble,
+                        Prop = propietario,
+                        FechaInicio = reader.GetDateTime("FechaInicio"),
+                        FechaFin = reader.GetDateTime("FechaFin"),
+                        Monto = reader.GetDecimal("Monto"),
+                        Estado = reader.GetBoolean("Estado"),
+                        Descripcion = reader.GetString("Descripcion"),
+                        Plazo = reader.GetInt32("Plazo"),
+                        PorcentajeActualizacion = reader.GetDecimal("PorcentajeActualizacion"),
+                        PeriodoActualizacion = reader.GetInt32("PeriodoActualizacion"),
+                        Observaciones = reader.GetString("Observaciones"),
+                        Tipo = (TipoContrato)Enum.Parse(typeof(TipoContrato), reader.GetString("Tipo"))
+                    };
+                }
+                connection.Close();
             }
-            connection.Close();
         }
+        return contrato;
     }
-    return contrato;
-}
 
 
 
