@@ -37,6 +37,10 @@ public class Contrato
 
     public string Observaciones { get; set; } = "";
 
-    public string DireccionInmueble=> $"{Inmu.Direccion}" ;
+    //public Usuario UsuCreacion { get; set; }
+
+    //public Usuario? UsuAnulacion { get; set; }
+
+    public string DireccionInmueble => $"{Inmu.Direccion}";
 
 }

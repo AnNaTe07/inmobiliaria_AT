@@ -1,11 +1,11 @@
 @model inmobiliaria_AT.Models.Pago
 
 @{
-    ViewData["Title"] = "Detalle de Contrato";
+    ViewData["Title"] = "Detalle pago # " + Model.Id;
     int id = Model == null ? 0 : Model.Id;
 }
 
-<h4>Contrato</h4>
+<h4>@Model.DireccionContrato.ToUpper(): Pago #@Model.Id </h4>
 <hr>
 <div class="col-md-12">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>

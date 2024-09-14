@@ -5,7 +5,21 @@
     int id = Model == null ? 0 : Model.Id;
 }
 
-<h4>Contrato</h4>
+<head>
+    <div class="d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Contrato: @Model.DireccionInmueble.ToUpper()</h4>
+
+        <div class="icoEditar">
+            <form action="@Url.Action("Editar", new { id = Model.Id })" method="get" style="display: inline;">
+                <button type="submit" class="btn btn-warning btn-custom" title="Editar">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</head>
+
+
 <hr>
 <div class="col-md-12">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>

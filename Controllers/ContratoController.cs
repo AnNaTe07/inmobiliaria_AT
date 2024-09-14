@@ -10,8 +10,7 @@ public class ContratoController : Controller
     private readonly RepositorioPropietario _repoProp;
     private readonly RepositorioInmueble _repoInmueble;
     private readonly RepositorioInquilino _repoInquilino;
-
-    public ContratoController(ILogger<ContratoController> logger, RepositorioContrato repo, RepositorioPropietario repoProp, RepositorioInmueble repoInmueble, RepositorioInquilino repoInquilino)
+    public ContratoController( ILogger<ContratoController> logger, RepositorioContrato repo, RepositorioPropietario repoProp, RepositorioInmueble repoInmueble, RepositorioInquilino repoInquilino)
     {
         _logger = logger;
         _repo = repo;
@@ -22,7 +21,8 @@ public class ContratoController : Controller
         _repo.vigenciaContrato();
 
     }
-    public IActionResult Index()
+   
+  /* public IActionResult Index()
     {
         var propietarios = _repoProp.ObtenerTodos();
         var inmuebles = _repoInmueble.ObtenerTodos();
@@ -31,6 +31,36 @@ public class ContratoController : Controller
         ViewBag.Inmuebles = new SelectList(inmuebles, "Id", "Direccion");
         return View(contratos);
     }
+
+*/
+public IActionResult Index(int? propietarioId, int? inmuebleId)
+{
+    //obtiene todos los propietarios e inmuebles para cargar en los selects
+    var propietarios = _repoProp.ObtenerTodos();
+    var inmuebles = _repoInmueble.ObtenerTodos();
+    
+    // obtiene todos los contratos y luego filtrarlos segun los parametros recibidos
+    var contratos = _repo.ObtenerTodos();
+
+    //aplica los filtros si hay valores seleccionados
+    if (propietarioId.HasValue)
+    {
+        contratos = contratos.Where(c => c.Prop.Id == propietarioId.Value).ToList();
+    }
+
+    if (inmuebleId.HasValue)
+    {
+        contratos = contratos.Where(c => c.Inmu.Id == inmuebleId.Value).ToList();
+    }
+
+    // Envia la lista filtrada a la vista
+    ViewBag.Propietarios = new SelectList(propietarios, "Id", "NombreCompleto");
+    ViewBag.Inmuebles = new SelectList(inmuebles, "Id", "Direccion");
+    
+    return View(contratos);
+}
+
+
 
 
     public IActionResult Editar(int id)
@@ -113,15 +143,11 @@ public class ContratoController : Controller
     }
 
 
-// Método en el controlador para obtener un contrato específico
+// Metodo en el controlador para obtener un contrato especifico
 
 
 }
 
-
-
-
-
-
-
-
+internal class ApplicationDbContext
+{
+}

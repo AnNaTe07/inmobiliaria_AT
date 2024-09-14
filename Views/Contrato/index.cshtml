@@ -1,5 +1,4 @@
 @model IEnumerable<inmobiliaria_AT.Models.Contrato>
-@*@model List<inmobiliaria_AT.Models.Contrato>*@
 
 @{
     ViewData["Title"] = "Contratos";
@@ -8,7 +7,7 @@
 <div class="text-center">
     <h1 class="display-4">Listado de contratos activos</h1>
 </div>
-<div class="filtro_cont">
+@*<div class="filtro_cont">
     <div class="titulo_filtro">
         <label for="tipoFiltro">Filtrar:</label>
     </div>
@@ -27,7 +26,41 @@
             <select class="form-control" asp-items="ViewBag.Inmuebles"></select>
         </div>
     </div>
-</div>
+</div>*@
+<form method="get" action="@Url.Action("Index")">
+    <div class="filtro_cont row align-items-end">
+        <!-- filtro por tipo (Propietario o Inmueble) -->
+        <div class="col-md-3">
+            <label for="tipoFiltro" class="form-label">Filtrar por:</label>
+            <select id="tipoFiltro" class="form-select" onchange="filtrar()">
+                <option value="0">Todos los contratos</option>
+                <option value="Propietario">Propietario</option>
+                <option value="Propiedad">Inmueble</option>
+            </select>
+        </div>
+
+        <!-- filtro por propietario -->
+        <div id="filtroPropietario" class="col-md-3" style="display:none;">
+            <label for="propietarioId" class="form-label">Seleccionar Propietario:</label>
+            <select name="propietarioId" class="form-select" asp-items="ViewBag.Propietarios">
+                <option value="">Seleccionar Propietario</option>
+            </select>
+        </div>
+
+        <!--filtro por inmueble -->
+        <div id="filtroPropiedad" class="col-md-3" style="display:none;">
+            <label for="inmuebleId" class="form-label">Seleccionar Inmueble:</label>
+            <select name="inmuebleId" class="form-select" asp-items="ViewBag.Inmuebles">
+                <option value="">Seleccionar Inmueble</option>
+            </select>
+        </div>
+
+        <!-- Boton de filtro -->
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </div>
+</form>
 
 
 <table class="table">
@@ -103,12 +136,7 @@
 
                     @*--------ICONOS PARA EDITAR, DETALLE Y ELIMINAR -------------*@
                     <td>
-                        <a href="/Contrato/Editar/@item.Id"></a>
-                        <form action="@Url.Action("Editar", new{id=item.Id})" method="get" style="display: inline;">
-                            <button type="submit" class="btn btn-warning btn-custom" title="Editar">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                        </form>
+                        
 
                         <a href="/Contrato/Detalle/@item.Id"></a>
                         <form action="@Url.Action("Detalle", new{id=item.Id})" method="get" style="display: inline;">
@@ -239,6 +267,7 @@
                 filtroPropiedad.style.display = "none";
             }
         }
+        
 
     </script>
     <link rel="stylesheet" type="text/css" href="../css/contrato.css">
