@@ -1,11 +1,13 @@
 @model IEnumerable<inmobiliaria_AT.Models.Pago>
 
 @{
-    ViewData["Title"] = "Pago";
+    ViewData["Title"] = "Pagos del Contrato";
+    // Puedes usar ViewBag para pasar el ID del contrato a la vista si es necesario
+    var contratoId = ViewBag.ContratoId; // Asegúrate de asignar este valor en el controlador
 }
 
 <div class="text-center">
-    <h1 class="display-4">Listado de pagos</h1>
+    <h1 class="display-4">Lista de pagos del contrato N° @contratoId</h1>
 </div>
 
 <!-- Botón para agregar nuevo pago -->
@@ -15,7 +17,7 @@
 
 <table class="table">
     <thead>
-        <th>Código</th>
+        <th>ID</th>
         <th>Fecha</th>
         <th>Inmueble</th>
         <th>Monto</th>
@@ -26,7 +28,7 @@
         @if (Model == null || !Model.Any())
         {
             <tr>
-                <td colspan="6" class="text-center">No se encontraron Pagos.</td>
+                <td colspan="6" class="text-center">No se encontraron pagos para este contrato.</td>
             </tr>
         }
         else
@@ -35,9 +37,9 @@
             {
                 <tr>
                     <td>@item.Id</td>
-                    <td>@item.Fecha</td>
+                    <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
                     <td>@item.DireccionContrato</td>
-                    <td>@item.Monto</td>
+                    <td>@item.Monto.ToString("C")</td>
                     <td>@item.Concepto.Nombre</td>
                     @if (item.Estado == true)
                     {
@@ -48,9 +50,8 @@
                         <td>Anulado</td>
                     }
                     <td>
-                        <!-- Botones de acciones (detalle, anular) -->
+                        <!-- Botones de acciones (detalle, eliminar) -->
                         <a href="/Pago/Detalle/@item.Id" class="btn btn-info">Detalles</a>
-
                         @if (item.Estado != false)
                         {
                             <button type="button" class="btn btn-danger"
@@ -66,7 +67,7 @@
                             </button>
                         }
                         <button type="button" class="btn btn-danger"
-                            onclick="eliminar(@item.Id, '@item.Fecha', '@item.Contrato.Inmu.Direccion', '@item.Monto', '@item.Concepto.Nombre')">
+                            onclick="eliminar(@item.Id, '@item.Fecha.ToString("dd/MM/yyyy")', '@item.DireccionContrato', '@item.Monto.ToString("C")', '@item.Concepto.Nombre')">
                             Eliminar
                         </button>
                     </td>
@@ -77,7 +78,6 @@
 </table>
 
 @Html.Partial("../Pago/Nuevo", new inmobiliaria_AT.Models.Pago())
-
 
 <div class="modal fade" id="modal_anular_pago" tabindex="-1" aria-labelledby="modal_anular_pagoLabel"
     aria-hidden="true">
@@ -105,7 +105,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="modal_eliminar_pago" tabindex="-1" aria-labelledby="modal_eliminar_pagoLabel"
     aria-hidden="true">
     <div class="modal-dialog">
@@ -135,14 +134,14 @@
 
 @section Scripts {
     <script>
-        function eliminar(id, fecha, direccion, Monto, tipo, plazo) {
+        function eliminar(id, fecha, direccion, monto, concepto) {
             document.querySelector("#pago_eliminar_id").value = id;
             document.querySelector("#pago_eliminar_fecha").innerText = "Fecha: " + fecha;
             document.querySelector("#pago_eliminar_direccion").innerText = "Dirección: " + direccion;
-            document.querySelector("#pago_eliminar_monto").innerText = "Monto: " + Monto;
+            document.querySelector("#pago_eliminar_monto").innerText = "Monto: " + monto;
+            document.querySelector("#pago_eliminar_concepto").innerText = "Concepto: " + concepto;
             $("#modal_eliminar_pago").modal("show");
         }
-
         function anular(id, fecha, direccion, Monto, tipo, plazo) {
             document.querySelector("#pago_anular_id").value = id;
             document.querySelector("#pago_anular_fecha").innerText = "Fecha: " + fecha;
@@ -151,8 +150,7 @@
             $("#modal_anular_pago").modal("show");
         }
     </script>
-    <script src="../js/nuevoPago.js"></script>
+    <script src=".../js/nuevoPago.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
 }

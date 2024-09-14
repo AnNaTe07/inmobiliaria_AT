@@ -10,13 +10,15 @@ public class PagoController : Controller
     private readonly RepositorioPago _repo;
     private readonly RepositorioConcepto concepto;
     private readonly RepositorioContrato contrato;
+    private readonly RepositorioInmueble _repoInmueble;
 
-    public PagoController(ILogger<PagoController> logger, RepositorioPago repo, RepositorioContrato repoContrato, RepositorioConcepto repoConcepto)
+    public PagoController(ILogger<PagoController> logger, RepositorioInmueble repoInmueble, RepositorioPago repo, RepositorioContrato repoContrato, RepositorioConcepto repoConcepto)
     {
         _logger = logger;
         _repo = repo;
         contrato = repoContrato;
         concepto = repoConcepto;
+        _repoInmueble = repoInmueble;
     }
 
 
@@ -59,34 +61,17 @@ public class PagoController : Controller
         }
     }
     */
-    /*
 
-        [HttpPost]
-        public IActionResult Nuevo(Pago pago)
-        {
-            var contratos = contrato.ObtenerTodos();
-            var conceptos = concepto.ObtenerTodos();
+    public IActionResult ListadoPagos(int id)
+    {
+        ViewBag.ContratoId = id;
 
-            ViewBag.Contrato = new SelectList(contratos, "Id", "DireccionInmueble");
-            ViewBag.Concepto = new SelectList(conceptos, "Id", "Nombre");
+        return View(_repo.ObtenerPorContrato(id));
+    }
 
 
 
-            if (ModelState.IsValid)
-            {
-                _repo.Alta(pago);
-                TempData["SuccessMessage"] = "Pago realizado correctamente.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            return View(pago);
-        }
-    */
-
-
-
-
-     [HttpPost]
+    [HttpPost]
     public IActionResult Nuevo(Pago pago)
     {
         var contratos = contrato.ObtenerTodos();
@@ -99,7 +84,7 @@ public class PagoController : Controller
         TempData["SuccessMessage"] = "Pago generado correctamente.";
 
 
-        return RedirectToAction("Index");;
+        return RedirectToAction("Index"); ;
     }
 
 

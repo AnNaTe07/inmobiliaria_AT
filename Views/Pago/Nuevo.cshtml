@@ -1,68 +1,4 @@
 @model inmobiliaria_AT.Models.Pago
-@*
-<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="paymentModalLabel">Nuevo Pago</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <h4>Nuevo pago</h4>
-                <form action="@Url.Action("Nuevo", "Pago")" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <input type="hidden" name="Id" value="0">
-                    <div class="row">
-                        <div class="form-group col-md-6 form-group-spacing">
-                            <label for="Fecha" class="control-label">Fecha</label>
-                            <input readonly type="date" id="Fecha" name="Fecha" class="form-control">
-                        </div>
-                        <div class="form-group col-md-6 form-group-spacing">
-                            <label for="Monto" class="control-label">Monto</label>
-                            <input type="number" id="Monto" name="Monto" class="form-control">
-                        </div>
-                    </div>
-
-                    <div class="row">
-
-                        <div class="form-group col-md-6 form-group-spacing">
-                            <label asp-for="Contrato.Id" class="control-label">Contrato</label>
-                            <select asp-for="Contrato.Id" class="form-control" asp-items="ViewBag.Contrato"></select>
-                            <span asp-validation-for="Contrato.Id" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group col-md-6 form-group-spacing">
-                            <label asp-for="Concepto.Id" class="control-label">Concepto</label>
-                            <select asp-for="Concepto.Id" class="form-control" asp-items="ViewBag.Concepto"></select>
-                            <span asp-validation-for="Concepto.Id" class="text-danger"></span>
-                        </div>
-
-
-
-                    </div>
-                    <div class="row">
-
-                        <div class="form-group col-md-12 form-group-spacing">
-                            <label for="Detalle" class="control-label">Detalle</label>
-                            <input type="text" id="Detalle" name="Detalle" class="form-control">
-                        </div>
-                    </div>
-                    <div class="form-group col-md-6 form-group-spacing">
-                        <input type="submit" value="Guardar" class="btn btn-success" />
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <script src="../js/nuevoPago.js"></script>
-
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-
-        </div>
-    </div>
-</div>
-*@
-
 
 <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -89,12 +25,14 @@
                     <div class="row">
                         <div class="form-group col-md-6 form-group-spacing">
                             <label asp-for="Contrato.Id" class="control-label">Contrato</label>
-                            <select asp-for="Contrato.Id" id="Contrato_Id" class="form-control" asp-items="ViewBag.Contrato"></select>
+                            <select asp-for="Contrato.Id" id="Contrato_Id" class="form-control"
+                                data-url="@Url.Action("ObtenerTodos", "Contrato")"></select>
                             <span asp-validation-for="Contrato.Id" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-6 form-group-spacing">
                             <label asp-for="Concepto.Id" class="control-label">Concepto</label>
-                            <select asp-for="Concepto.Id" id="Concepto_Id" class="form-control" asp-items="ViewBag.Concepto"></select>
+                            <select asp-for="Concepto.Id" id="Concepto_Id" class="form-control"
+                                asp-items="ViewBag.Concepto"></select>
                             <span asp-validation-for="Concepto.Id" class="text-danger"></span>
                         </div>
                     </div>
@@ -110,7 +48,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <script src="../js/nuevoPago.js"></script>
+                <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>

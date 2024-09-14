@@ -1,0 +1,76 @@
+@model inmobiliaria_AT.Models.Pago
+
+@{
+    ViewData["Title"] = "Detalle de Contrato";
+    int id = Model == null ? 0 : Model.Id;
+}
+
+<h4>Contrato</h4>
+<hr>
+<div class="col-md-12">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" name="Id" value="@id">
+    <div class="row">
+        <div class="form-group col-md-6 form-group-spacing">
+            <label class="control-label">ID</label>
+            <input type="text" class="form-control" value="@id" readonly>
+        </div>
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="DireccionContrato" class="control-label">Contrato</label>
+            <input asp-for="DireccionContrato" class="form-control" readonly>
+            <span asp-validation-for="DireccionContrato" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="Fecha" class="control-label">Fecha</label>
+            <input asp-for="Fecha" class="form-control" readonly>
+            <span asp-validation-for="Fecha" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="Monto" class="control-label">Monto</label>
+            <input asp-for="Monto" class="form-control" readonly>
+            <span asp-validation-for="Monto" class="text-danger"></span>
+        </div>
+
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="UsuPago" class="control-label">Usuario del Pago</label>
+            <input asp-for="UsuPago.NombreCompleto" class="form-control" readonly>
+            <span asp-validation-for="UsuPago.NombreCompleto" class="text-danger"></span>
+        </div>
+        @if (Model.UsuAnulacion != null)
+        {
+            <div class="form-group col-md-6 form-group-spacing">
+                <label asp-for="UsuAnulacion" class="control-label">Usuario de Anulación</label>
+                <input asp-for="UsuAnulacion.NombreCompleto" class="form-control" readonly>
+                <span asp-validation-for="UsuAnulacion.NombreCompleto" class="text-danger"></span>
+            </div>
+        }
+        @if (Model.FechaAnulacion != null)
+        {
+            <div class="form-group col-md-6 form-group-spacing">
+                <label asp-for="FechaAnulacion" class="control-label">Fecha de Anulación</label>
+                <input asp-for="FechaAnulacion" class="form-control" readonly>
+                <span asp-validation-for="FechaAnulacion" class="text-danger"></span>
+            </div>
+        }
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="Detalle" class="control-label">Detalle</label>
+            <input asp-for="Detalle" class="form-control" readonly>
+            <span asp-validation-for="Detalle" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6 form-group-spacing">
+            <label asp-for="Concepto.Nombre" class="control-label">Concepto</label>
+            <input asp-for="Concepto.Nombre" class="form-control" readonly>
+            <span asp-validation-for="Concepto.Nombre" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group-spacing">
+        <a asp-action="Index" title="Volver">
+            <i class="fa-solid fa-undo"></i>
+        </a>
+    </div>
+</div>
+<footer>
+    <script src="../js/nuevoPago.js"></script>
+
+</footer>

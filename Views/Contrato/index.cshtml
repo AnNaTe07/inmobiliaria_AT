@@ -8,6 +8,28 @@
 <div class="text-center">
     <h1 class="display-4">Listado de contratos activos</h1>
 </div>
+<div class="filtro_cont">
+    <div class="titulo_filtro">
+        <label for="tipoFiltro">Filtrar:</label>
+    </div>
+    <div class="filtro_tipo">
+        <select id="tipoFiltro" onchange="filtrar()">
+            <option value="0">Seleccionar</option>
+            <option value="Propietario">Propietario</option>
+            <option value="Propiedad">Inmueble</option>
+        </select>
+    </div>
+    <div class="filtro_opciom">
+        <div id="filtroPropietario" class="form-group col-md-2 form-group-spacing" style="display:none;">
+            <select class="form-control" asp-items="ViewBag.Propietarios"></select>
+        </div>
+        <div id="filtroPropiedad" class="form-group col-md-2 form-group-spacing" style="display:none;">
+            <select class="form-control" asp-items="ViewBag.Inmuebles"></select>
+        </div>
+    </div>
+</div>
+
+
 <table class="table">
     <thead>
         <th>Código</th>
@@ -18,7 +40,6 @@
         </th>
         <th>
             Propietario
-
         </th>
         <th>
             Inquilino
@@ -33,12 +54,15 @@
             @Html.DisplayNameFor(model => model.Plazo)
 
         </th>
+
+
     </thead>
+
     <tbody>
         @if (Model == null || !Model.Any())
         {
             <tr>
-                <td colspan="6" class="text-center">No se encontraron contratos.</td>
+                <td colspan="3" class="text-center">No se encontraron contratos.</td>
             </tr>
         }
         else
@@ -75,6 +99,7 @@
                         @Html.DisplayFor(modelItem => item.Plazo)
 
                     </td>
+                    <td></td>
 
                     @*--------ICONOS PARA EDITAR, DETALLE Y ELIMINAR -------------*@
                     <td>
@@ -97,11 +122,18 @@
                             <i class="fas fa-trash"></i>
                         </button>
 
-                        
+
                         <button type="button" class="btn btn-success btn-custom" data-bs-toggle="modal"
                             data-bs-target="#paymentModal" data-id="@item.Id" title="Comprar">
-                            <i class="fa-solid fa-dollar-sign"></i>
+                            <h7 style="font-weight: bold;">Pagar</h7>
                         </button>
+
+                        <form action="@Url.Action("ListadoPagos","Pago", new{id=item.Id})" method="get"
+                            style="display: inline;">
+                            <button type="submit" class="btn btn-warning btn-custom" title="Listado de pagos">
+                                <i class="fa-solid fa-dollar-sign"></i>
+                            </button>
+                        </form>
 
                     </td>
                 </tr>
@@ -166,6 +198,7 @@
         </div>
     </div>
 }
+@Html.Partial("../Pago/Nuevo", new inmobiliaria_AT.Models.Pago())
 
 @section Scripts {
     <script>
@@ -189,5 +222,26 @@
             document.querySelector("#contrato_eliminar_plazo").innerText = "Plazo: " + plazo;
             $("#modal_eliminar_contrato").modal("show");
         }
+
+        function filtrar() {
+            var tipoFiltro = document.getElementById("tipoFiltro").value;
+            var filtroPropietario = document.getElementById("filtroPropietario");
+            var filtroPropiedad = document.getElementById("filtroPropiedad");
+
+            if (tipoFiltro === "Propietario") {
+                filtroPropietario.style.display = "block";
+                filtroPropiedad.style.display = "none";
+            } else if (tipoFiltro === "Propiedad") {
+                filtroPropietario.style.display = "none";
+                filtroPropiedad.style.display = "block";
+            } else {
+                filtroPropietario.style.display = "none";
+                filtroPropiedad.style.display = "none";
+            }
+        }
+
     </script>
+    <link rel="stylesheet" type="text/css" href="../css/contrato.css">
+    <script src="../js/nuevoPago.js"></script>
+
 }

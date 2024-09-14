@@ -1,5 +1,6 @@
 using System.ComponentModel.Design;
 using System.Transactions;
+using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 
 
@@ -95,7 +96,7 @@ public class RepositorioContrato
                 {
 
                     RepositorioInquilino repositorioInquilino = new RepositorioInquilino(_connectionString);
-                    RepositorioInmueble repositorioInmueble = new RepositorioInmueble(_loggerInmueble,_connectionString);
+                    RepositorioInmueble repositorioInmueble = new RepositorioInmueble(_loggerInmueble, _connectionString);
                     RepositorioPropietario repositorioPropietario = new RepositorioPropietario(_connectionString);
                     int idInquilino = reader.GetInt32(nameof(Contrato.Inqui));
                     int Inmu = reader.GetInt32(nameof(Contrato.Inmu));
@@ -142,7 +143,7 @@ public class RepositorioContrato
     public int Alta(Contrato contrato)
 
     {
-        var repo_Inm = new RepositorioInmueble(_loggerInmueble,_connectionString);
+        var repo_Inm = new RepositorioInmueble(_loggerInmueble, _connectionString);
         var id_prop = repo_Inm.ObtenerPorId(contrato.Inmu.Id).IdPropietario;
         int res = -1;
 
@@ -199,6 +200,8 @@ public class RepositorioContrato
 
                 }
             }
+            conn.Close();
+
         }
         return res;
     }
@@ -207,7 +210,7 @@ public class RepositorioContrato
     public int Baja(int id)
     {
         int res = -1;
-        var repoCont = new RepositorioContrato(_logger, _loggerInmueble,_connectionString);
+        var repoCont = new RepositorioContrato(_logger, _loggerInmueble, _connectionString);
         var contrato = repoCont.ObtenerPorId(id);
 
         using (MySqlConnection conn = new MySqlConnection(_connectionString))
@@ -253,7 +256,7 @@ public class RepositorioContrato
 
     public int Modificar(Contrato contrato)
     {
-        var repo_Inm = new RepositorioInmueble(_loggerInmueble,_connectionString);
+        var repo_Inm = new RepositorioInmueble(_loggerInmueble, _connectionString);
         var id_prop = repo_Inm.ObtenerPorId(contrato.Inmu.Id).IdPropietario;
 
         //OBTENGO EL ID DEL INMUEBLE QUE TIENE EL CONTRATO ANTES DE  MODIFICAR
@@ -350,9 +353,10 @@ public class RepositorioContrato
         List<Contrato> contratos = ObtenerTodos();
         using (MySqlConnection conn = new MySqlConnection(_connectionString))
         {
+            conn.Open();
+
             foreach (var item in contratos)
             {
-                conn.Open();
                 using (MySqlTransaction transaction = conn.BeginTransaction())
                 {
                     try
@@ -362,7 +366,7 @@ public class RepositorioContrato
                         {
 
                             // BAJA LOGICA DEL CONTRATO DE ACUERDO A LA FECHA DE VENCIMIENTO Y LA ACTUAL
-                            var estadoContrato = $@"UPDATE contrato SET estado = '0' WHERE id = @id;";
+                            var estadoContrato = $@"UPDATE contrato SET estado = '2' WHERE id = @id;";
                             using (MySqlCommand command = new MySqlCommand(estadoContrato, conn, transaction))
                             {
                                 command.Parameters.AddWithValue("@id", item.Id);
@@ -419,7 +423,7 @@ public class RepositorioContrato
                     int idInmueble = reader.GetInt32("Inmu");
                     int idPropietario = reader.GetInt32("Prop");
                     var inquilino = new RepositorioInquilino(_connectionString).ObtenerPorId(idInquilino);
-                    var inmueble = new RepositorioInmueble(_loggerInmueble,_connectionString).ObtenerPorId(idInmueble);
+                    var inmueble = new RepositorioInmueble(_loggerInmueble, _connectionString).ObtenerPorId(idInmueble);
                     var propietario = new RepositorioPropietario(_connectionString).ObtenerPorId(idPropietario);
 
 
@@ -476,7 +480,7 @@ public class RepositorioContrato
                     int idInmueble = reader.GetInt32("Inmu");
                     int idPropietario = reader.GetInt32("Prop");
                     var inquilino = new RepositorioInquilino(_connectionString).ObtenerPorId(idInquilino);
-                    var inmueble = new RepositorioInmueble(_loggerInmueble,_connectionString).ObtenerPorId(idInmueble);
+                    var inmueble = new RepositorioInmueble(_loggerInmueble, _connectionString).ObtenerPorId(idInmueble);
                     var propietario = new RepositorioPropietario(_connectionString).ObtenerPorId(idPropietario);
 
 
@@ -503,9 +507,6 @@ public class RepositorioContrato
         }
         return contrato;
     }
-
-
-
 
 
 

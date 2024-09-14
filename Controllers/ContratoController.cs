@@ -24,7 +24,11 @@ public class ContratoController : Controller
     }
     public IActionResult Index()
     {
+        var propietarios = _repoProp.ObtenerTodos();
+        var inmuebles = _repoInmueble.ObtenerTodos();
         var contratos = _repo.ObtenerTodos();
+        ViewBag.Propietarios = new SelectList(propietarios, "Id", "NombreCompleto");
+        ViewBag.Inmuebles = new SelectList(inmuebles, "Id", "Direccion");
         return View(contratos);
     }
 
@@ -68,6 +72,7 @@ public class ContratoController : Controller
     public IActionResult Detalle(int id)
     {
 
+
         if (id == 0)
         {
             return View();
@@ -108,16 +113,9 @@ public class ContratoController : Controller
     }
 
 
+// Método en el controlador para obtener un contrato específico
 
 
-  
-        // Acción para obtener los detalles del contrato
-        public JsonResult ObtenerContrato(int id)
-        {
-            var contrato = _repo.ObtenerPorId(id);
-        return Json(contrato);
-        }
-    
 }
 
 

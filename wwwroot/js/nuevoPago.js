@@ -6,37 +6,58 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 //--------------------------
-    document.addEventListener('DOMContentLoaded', function () {
-        var paymentModal = document.getElementById('paymentModal');
-        paymentModal.addEventListener('show.bs.modal', function (event) {
-            var button = event.relatedTarget; // Botón que activó el modal
-            var itemId = button.getAttribute('data-id'); // Extraer información del atributo data-id
-            var modalBodyInput = paymentModal.querySelector('.modal-body input[name="Id"]');
-            modalBodyInput.value = itemId; // Asignar el id al campo oculto del modal
-        });
+document.addEventListener('DOMContentLoaded', function () {
+    var paymentModal = document.getElementById('paymentModal');
+    paymentModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget; // Botón que activó el modal
+        var itemId = button.getAttribute('data-id'); // Extraer información del atributo data-id
+        var modalBodyInput = paymentModal.querySelector('.modal-body input[name="Id"]');
+        modalBodyInput.value = itemId; // Asignar el id al campo oculto del modal
     });
+});
 
+$(document).ready(function () {
+    $('#paymentModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Botón que activó el modal
+        var itemId = button.data('id'); // Extraer información del atributo data-id
+        var $modal = $(this);
+        var $modalBodyInput = $modal.find('input[name="Id"]');
+        var $contratoSelect = $modal.find('#Contrato_Id');
 
+        // Asignar el id al campo oculto del modal
+        $modalBodyInput.val(itemId);
 
-    document.addEventListener('DOMContentLoaded', function () {
-        var paymentModal = document.getElementById('paymentModal');
-        paymentModal.addEventListener('show.bs.modal', function (event) {
-            var button = event.relatedTarget; // Botón que activó el modal
-            var itemId = button.getAttribute('data-id'); // Extraer información del atributo data-id
-            var modalBodyInput = paymentModal.querySelector('.modal-body input[name="Id"]');
-            modalBodyInput.value = itemId; // Asignar el id al campo oculto del modal
-
-            // Hacer la solicitud AJAX para obtener los detalles del contrato
-            fetch(`/Contrato/ObtenerContrato?id=${itemId}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Establecer los datos del contrato en los campos del modal
-                    document.getElementById('Fecha').value = data.Fecha;
-                    document.getElementById('Monto').value = data.Monto;
-                    document.getElementById('Contrato_Id').value = data.Contrato.Id;
-                    document.getElementById('Concepto_Id').value = data.Concepto.Id;
-                    document.getElementById('Detalle').value = data.Detalle;
-                })
-                .catch(error => console.error('Error:', error));
-        });
+        if (itemId) {
+            // Solicitud AJAX para obtener el contrato específico
+            $.ajax({
+                url: '/Contrato/RepositorioContrato/ObtenerContrato/' + itemId,
+                method: 'GET',
+                success: function (data) {
+                    // Establecer el contrato en los campos del modal
+                    $contratoSelect.val(data.Contrato.Id);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        } else {
+            // Solicitud AJAX para obtener todos los contratos si no hay un ID
+            $.ajax({
+                url: '/Contrato/RepositorioContrato/ObtenerTodo',
+                method: 'GET',
+                success: function (data) {
+                    $contratoSelect.empty(); // Limpiar opciones actuales
+                    // Agregar las opciones al select
+                    $.each(data, function (index, contrato) {
+                        $contratoSelect.append(
+                            $('<option></option>').val(contrato.Id).text(contrato.Direccion)
+                        );
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
     });
+});
