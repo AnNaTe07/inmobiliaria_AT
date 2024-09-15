@@ -1,6 +1,7 @@
 @model IEnumerable<inmobiliaria_AT.Models.Inmueble>
 @{
     ViewData["Title"] = "Lista de Inmuebles";
+    bool isAdmin = User.IsInRole("Administrador");
 }
 <div class="text-center">
     <h1>Inmuebles</h1>
@@ -69,11 +70,14 @@
                             <i class="fa-solid fa-circle-info"></i>
                         </button>
                     </form>
-                    <button type="submit" class="btn btn-danger btn-custom"
-                        onclick="eliminar(@item.Id, `@item.TipoDescripcion`, `@item.Direccion`, `@item.Precio`, `@item.PropietarioInmueble.NombreCompleto`)"
-                        title="Eliminar">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    @if (isAdmin)
+                    {
+                        <button type="submit" class="btn btn-danger btn-custom"
+                            onclick="eliminar(@item.Id, `@item.TipoDescripcion`, `@item.Direccion`, `@item.Precio`, `@item.PropietarioInmueble.NombreCompleto`)"
+                            title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    }
                 </td>
             </tr>
         }
