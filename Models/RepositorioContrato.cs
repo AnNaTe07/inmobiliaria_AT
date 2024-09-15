@@ -228,7 +228,7 @@ public class RepositorioContrato
                         res = command.ExecuteNonQuery();
 
                     }
-                    var sqlEstado = $@"UPDATE inmueble SET estado = '1' WHERE id = @Inmu ";
+                    var sqlEstado = $@"UPDATE inmueble SET estado = '1' WHERE Id = @Inmu ";
                     using (MySqlCommand command = new MySqlCommand(sqlEstado, conn, transaction)) //transaccion asegura que esta consulta sea parte de la misma
                     {
                         command.Parameters.AddWithValue("@Inmu", contrato.Inmu.Id);
@@ -252,6 +252,53 @@ public class RepositorioContrato
         return res;
     }
 
+
+
+
+    public int Anular(int id)
+    {
+        int res = -1;
+        var repoCont = new RepositorioContrato(_logger, _loggerInmueble, _connectionString);
+        var contrato = repoCont.ObtenerPorId(id);
+
+        using (MySqlConnection conn = new MySqlConnection(_connectionString))
+        {
+
+            conn.Open();
+            using (MySqlTransaction transaction = conn.BeginTransaction())
+            {
+                try
+                {
+                    var sql = $@"UPDATE contrato SET estado = '0' WHERE {nameof(Contrato.Id)} = @id;";
+                    using (MySqlCommand command = new MySqlCommand(sql, conn, transaction))
+                    {
+                        command.Parameters.AddWithValue("@id", id);
+                        res = command.ExecuteNonQuery();
+
+                    }
+                    var sqlEstado = $@"UPDATE inmueble SET estado = '1' WHERE Id = @Inmu ";
+                    using (MySqlCommand command = new MySqlCommand(sqlEstado, conn, transaction)) //transaccion asegura que esta consulta sea parte de la misma
+                    {
+                        command.Parameters.AddWithValue("@Inmu", contrato.Inmu.Id);
+                        command.ExecuteNonQuery();
+                    }
+                    transaction.Commit();
+
+                }
+                catch
+                {
+                    conn.Close();
+
+                    transaction.Rollback();
+
+                    throw;
+                }
+            }
+
+
+        }
+        return res;
+    }
 
 
     public int Modificar(Contrato contrato)

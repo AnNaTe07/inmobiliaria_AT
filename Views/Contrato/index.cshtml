@@ -7,61 +7,58 @@
 <div class="text-center">
     <h1 class="display-4">Listado de contratos activos</h1>
 </div>
-@*<div class="filtro_cont">
-    <div class="titulo_filtro">
-        <label for="tipoFiltro">Filtrar:</label>
-    </div>
-    <div class="filtro_tipo">
-        <select id="tipoFiltro" onchange="filtrar()">
-            <option value="0">Seleccionar</option>
-            <option value="Propietario">Propietario</option>
-            <option value="Propiedad">Inmueble</option>
-        </select>
-    </div>
-    <div class="filtro_opciom">
-        <div id="filtroPropietario" class="form-group col-md-2 form-group-spacing" style="display:none;">
-            <select class="form-control" asp-items="ViewBag.Propietarios"></select>
-        </div>
-        <div id="filtroPropiedad" class="form-group col-md-2 form-group-spacing" style="display:none;">
-            <select class="form-control" asp-items="ViewBag.Inmuebles"></select>
-        </div>
-    </div>
-</div>*@
-<form method="get" action="@Url.Action("Index")">
-    <div class="filtro_cont row align-items-end">
-        <!-- filtro por tipo (Propietario o Inmueble) -->
+<form id="filtrosForm" method="get" action="@Url.Action("Index")">
+    <div class="row">
+     @*   <!-- Filtro por tipo (Propietario, Inmueble) -->
         <div class="col-md-3">
             <label for="tipoFiltro" class="form-label">Filtrar por:</label>
             <select id="tipoFiltro" class="form-select" onchange="filtrar()">
-                <option value="0">Todos los contratos</option>
+                <option value="0">Seleccionar</option>
                 <option value="Propietario">Propietario</option>
                 <option value="Propiedad">Inmueble</option>
             </select>
         </div>
-
-        <!-- filtro por propietario -->
-        <div id="filtroPropietario" class="col-md-3" style="display:none;">
-            <label for="propietarioId" class="form-label">Seleccionar Propietario:</label>
+*@
+       
+        <div id="filtroPropietario" class="col-md-3" > <!-- Filtro por propietario -->
+            <label for="propietarioId" style= "visibility: hidden" class="form-label">Seleccionar Propietario:</label>
             <select name="propietarioId" class="form-select" asp-items="ViewBag.Propietarios">
                 <option value="">Seleccionar Propietario</option>
             </select>
         </div>
 
-        <!--filtro por inmueble -->
-        <div id="filtroPropiedad" class="col-md-3" style="display:none;">
-            <label for="inmuebleId" class="form-label">Seleccionar Inmueble:</label>
+        
+        <div id="filtroPropiedad" class="col-md-3" ><!-- Filtro por inmueble -->
+            <label for="inmuebleId" style= "visibility: hidden" class="form-label">Seleccionar Inmueble:</label>
             <select name="inmuebleId" class="form-select" asp-items="ViewBag.Inmuebles">
                 <option value="">Seleccionar Inmueble</option>
             </select>
         </div>
+    
+        <!-- Filtro por fecha (Fecha Desde y Fecha Hasta) -->
+        <div id="filtroFecha" class="col-md-6 row">
+            <div class="col-md-6">
+                <label for="fechaDesde" class="form-label">Fecha Desde:</label>
+                <input type="date" name="fechaDesde" class="form-control"
+                    value="@ViewContext.HttpContext.Request.Query["fechaDesde"]" />
+            </div>
 
-        <!-- Boton de filtro -->
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <div class="col-md-6">
+                <label for="fechaHasta" class="form-label">Fecha Hasta:</label>
+                <input type="date" name="fechaHasta" class="form-control"
+                    value="@ViewContext.HttpContext.Request.Query["fechaHasta"]" />
+            </div>
+
+           
         </div>
+            <div class="col-md-12 mt-3">
+                <button type="submit" class="btn btn-primary ">Filtrar</button>
+                <button type="button" class="btn btn-secondary ms-2" onclick="limpiarFiltros()">
+                    <i class="fas fa-times"></i> Limpiar Filtros
+                </button>
+            </div>
     </div>
 </form>
-
 
 <table class="table">
     <thead>
@@ -136,7 +133,7 @@
 
                     @*--------ICONOS PARA EDITAR, DETALLE Y ELIMINAR -------------*@
                     <td>
-                        
+
 
                         <a href="/Contrato/Detalle/@item.Id"></a>
                         <form action="@Url.Action("Detalle", new{id=item.Id})" method="get" style="display: inline;">
@@ -144,12 +141,6 @@
                                 <i class="fa-solid fa-circle-info"></i>
                             </button>
                         </form> @* AGREGAR @item.Tipo *@
-                        <button type="submit" class="btn btn-danger btn-custom"
-                            onclick="eliminar(@item.Id, '@item.Inmu.Direccion', '@item.Prop.NombreCompleto', '@item.Inqui.NombreCompleto', '@item.Tipo', '@item.Plazo')"
-                            title="Eliminar">
-                            <i class="fas fa-trash"></i>
-                        </button>
-
 
                         <button type="button" class="btn btn-success btn-custom" data-bs-toggle="modal"
                             data-bs-target="#paymentModal" data-id="@item.Id" title="Comprar">
@@ -163,6 +154,17 @@
                             </button>
                         </form>
 
+                        <button type="submit" class="btn btn-danger btn-custom"
+                            onclick="anular(@item.Id, '@item.Inmu.Direccion', '@item.Prop.NombreCompleto', '@item.Inqui.NombreCompleto', '@item.Tipo', '@item.Plazo')"
+                            title="Anular">
+                            Anular
+                        </button>
+
+                        <button type="submit" class="btn btn-danger btn-custom"
+                            onclick="eliminar(@item.Id, '@item.Inmu.Direccion', '@item.Prop.NombreCompleto', '@item.Inqui.NombreCompleto', '@item.Tipo', '@item.Plazo')"
+                            title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </td>
                 </tr>
             }
@@ -181,6 +183,34 @@
     </tbody>
 
 </table>
+
+<div class="modal fade" id="modal_anular_contrato" tabindex="-1" aria-labelledby="modal_anular_contratoLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_anular_contratoLabel">Confirmar Anulación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-action="Anular" id="form_anular_contrato">
+                <div class="modal-body">
+                    <input type="hidden" name="Id" value="" id="contrato_anular_id">
+                    <p>
+                        <span id="contrato_anular_direccion"></span><br>
+                        <span id="contrato_anular_propietario"></span><br>
+                        <span id="contrato_anular_inquilino"></span><br>
+                        <span id="contrato_anular_tipo"></span><br>
+                        <span id="contrato_anular_plazo"></span>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger"> Confirmar</i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <div class="modal fade" id="modal_eliminar_contrato" tabindex="-1" aria-labelledby="modal_eliminar_contratoLabel"
     aria-hidden="true">
@@ -210,6 +240,7 @@
     </div>
 </div>
 
+
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel"
@@ -231,7 +262,7 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            // Muestro el modal de éxito si existe un mensaje en TempData
+            // Muestro el modal de exito si existe un mensaje en TempData
             if ($('#modal_success_message').length) {
                 $('#modal_success_message').modal('show');
                 // Oculto el modal después de 3 segundos
@@ -241,6 +272,15 @@
             }
         });
 
+        function anular(id, direccion, propietario, inquilino, tipo, plazo) {
+            document.querySelector("#contrato_anular_id").value = id;
+            document.querySelector("#contrato_anular_direccion").innerText = "Dirección: " + direccion;
+            document.querySelector("#contrato_anular_propietario").innerText = "Propietario: " + propietario;
+            document.querySelector("#contrato_anular_inquilino").innerText = "Inquilino: " + inquilino;
+            document.querySelector("#contrato_anular_tipo").innerText = "Tipo: " + tipo;
+            document.querySelector("#contrato_anular_plazo").innerText = "Plazo: " + plazo;
+            $("#modal_anular_contrato").modal("show");
+        }
         function eliminar(id, direccion, propietario, inquilino, tipo, plazo) {
             document.querySelector("#contrato_eliminar_id").value = id;
             document.querySelector("#contrato_eliminar_direccion").innerText = "Dirección: " + direccion;
@@ -253,23 +293,59 @@
 
         function filtrar() {
             var tipoFiltro = document.getElementById("tipoFiltro").value;
-            var filtroPropietario = document.getElementById("filtroPropietario");
-            var filtroPropiedad = document.getElementById("filtroPropiedad");
 
+
+            // Mostrar los filtros según la opción seleccionada
             if (tipoFiltro === "Propietario") {
-                filtroPropietario.style.display = "block";
-                filtroPropiedad.style.display = "none";
+                document.getElementById("filtroPropietario").style.display = "block";
             } else if (tipoFiltro === "Propiedad") {
-                filtroPropietario.style.display = "none";
-                filtroPropiedad.style.display = "block";
-            } else {
-                filtroPropietario.style.display = "none";
-                filtroPropiedad.style.display = "none";
+                document.getElementById("filtroPropiedad").style.display = "block";
             }
         }
-        
+
+        $(document).ready(function () {
+            // Inicializa los selects con Select2
+            $('.select2').select2({
+                theme: 'bootstrap-5', 
+                width: '100%',
+                placeholder: 'Seleccionar opción',
+                allowClear: true
+            });
+        });
+
+
+
+
+
+        function limpiarFiltros() {
+            // resetea los valores de los selects
+            document.querySelector("select[name='propietarioId']").value = "";
+            document.querySelector("select[name='inmuebleId']").value = "";
+
+            // Resetea los campos de fecha
+            document.querySelector("input[name='fechaDesde']").value = "";
+            document.querySelector("input[name='fechaHasta']").value = "";
+            // Ocultar los filtros por propietario e inmueble
+           /* document.getElementById("filtroPropietario").style.display = "none";
+            document.getElementById("filtroPropiedad").style.display = "none";
+*/
+            // Envia el formulario para restablecer los filtros
+            document.getElementById("filtrosForm").submit();
+        }
+
+
+
 
     </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Select2 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
     <link rel="stylesheet" type="text/css" href="../css/contrato.css">
     <script src="../js/nuevoPago.js"></script>
 
