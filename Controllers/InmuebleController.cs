@@ -26,8 +26,6 @@ namespace inmobiliaria_AT.Controllers
             return View(inmuebles);
         }
 
-
-
         public IActionResult Editar(int id)
         {
             // Configuración de opciones para el uso del inmueble
@@ -131,6 +129,8 @@ namespace inmobiliaria_AT.Controllers
             }
             return RedirectToAction("Index");
         }
+
+        //[Authorize(Policy = "Administrador")]
         public IActionResult Eliminar(int id)
 
         {
@@ -138,7 +138,6 @@ namespace inmobiliaria_AT.Controllers
             TempData["SuccessMessage"] = "Datos de inmueble eliminados correctamente.";
             return RedirectToAction("Index");
         }
-
 
         // Método para obtener los inmuebles disponibles por propietario
         public IActionResult Disponibles(int IdPropietario)
@@ -154,7 +153,7 @@ namespace inmobiliaria_AT.Controllers
         public IActionResult DisponiblesTotales()
         {
             var inmuebles = _repo.ObtenerDisponiblesTotales();
-            return View(inmuebles);
+            return PartialView("_InmueblesIndexPartial", inmuebles);
         }
 
         // Método para obtener los inmuebles no disponibles por propietario
@@ -178,7 +177,11 @@ namespace inmobiliaria_AT.Controllers
             }
         }
 
-
+        public IActionResult NoDisponiblesTotales()
+        {
+            var inmuebles = _repo.ObtenerNoDisponiblesTotales();
+            return PartialView("_InmueblesIndexPartial", inmuebles);
+        }
 
         [HttpGet]
         public IActionResult ListaPorPropietario()
@@ -276,6 +279,46 @@ namespace inmobiliaria_AT.Controllers
                 _logger.LogWarning("No se pudo reactivar el inmueble con Id: {Id}.", id);
                 return Json(new { success = false });
             }
+        }
+
+        public IActionResult ObtenerInmueblesTodos(string filtro)
+        {
+            List<Inmueble> inmuebles;
+
+            switch (filtro)
+            {
+                case "disponible":
+                    inmuebles = _repo.ObtenerDisponiblesTotales();
+                    break;
+                case "noDisponible":
+                    inmuebles = _repo.ObtenerNoDisponiblesTotales();
+                    break;
+                default:
+                    inmuebles = _repo.ObtenerTodos();
+                    break;
+            }
+
+            return PartialView("_InmueblesIndexPartial", inmuebles);
+        }
+
+        public IActionResult ObtenerInmuebles(string filtro, int idPropietario)
+        {
+            List<Inmueble> inmuebles;
+
+            switch (filtro)
+            {
+                case "inmueblesDisponibles":
+                    inmuebles = _repo.ObtenerDisponibles(idPropietario);
+                    break;
+                case "inmueblesNoDisponibles":
+                    inmuebles = _repo.ObtenerNoDisponibles(idPropietario);
+                    break;
+                default:
+                    inmuebles = _repo.BuscarPorPropietario(idPropietario);
+                    break;
+            }
+
+            return PartialView("_InmueblesPartial", inmuebles);
         }
     }
 }

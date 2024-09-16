@@ -267,6 +267,7 @@ public class RepositorioInmueble
                 i.Precio, 
                 i.IdPropietario,
                 i.Estado, 
+                i.Suspendido,
                 p.Nombre AS PropietarioNombre, 
                 p.Apellido AS PropietarioApellido
             FROM 
@@ -302,6 +303,7 @@ public class RepositorioInmueble
                             Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
                             IdPropietario = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
                             Estado = reader.GetInt32(reader.GetOrdinal("Estado")) == 1,
+                            Suspendido = reader.GetInt32(reader.GetOrdinal("Suspendido")) == 1,
                             PropietarioInmueble = new Propietario
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
@@ -345,7 +347,7 @@ public class RepositorioInmueble
             INNER JOIN 
                 Propietario p ON i.IdPropietario = p.Id 
             WHERE 
-                i.Estado = 1  AND i.Suspendido = 0; ";
+                i.Estado = 1  ; ";//AND i.Suspendido = 0
 
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {
@@ -384,6 +386,76 @@ public class RepositorioInmueble
         }
         return inmuebles;
     }
+
+    public List<Inmueble> ObtenerNoDisponiblesTotales()
+    {
+        List<Inmueble> inmuebles = new List<Inmueble>();
+        using (MySqlConnection connection = new MySqlConnection(_connectionString))
+        {
+            var query = @"
+            SELECT 
+                i.Id AS InmuebleId, 
+                i.Uso, 
+                i.Direccion, 
+                i.TipoId, 
+                t.Descripcion AS TipoDescripcion, 
+                i.Ambientes, 
+                i.Latitud, 
+                i.Longitud, 
+                i.Superficie,
+                i.Precio, 
+                i.IdPropietario,
+                i.Estado, 
+                i.Suspendido,
+                p.Nombre AS PropietarioNombre, 
+                p.Apellido AS PropietarioApellido
+            FROM 
+                inmueble i
+            JOIN 
+                tipo t ON i.TipoId = t.Id
+            INNER JOIN 
+                Propietario p ON i.IdPropietario = p.Id 
+            WHERE 
+                i.Estado = 0  ; ";//OR i.Suspendido = 1
+
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var uso = (UsoInmueble)reader.GetInt32(reader.GetOrdinal("Uso"));
+
+                        inmuebles.Add(new Inmueble
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("InmuebleId")),
+                            Uso = uso,
+                            Direccion = reader.GetString(reader.GetOrdinal("Direccion")),
+                            TipoId = reader.GetInt32(reader.GetOrdinal("TipoId")),
+                            TipoDescripcion = reader.GetString(reader.GetOrdinal("TipoDescripcion")),
+                            Ambientes = reader.GetInt32(reader.GetOrdinal("Ambientes")),
+                            Latitud = reader.GetDecimal(reader.GetOrdinal("Latitud")),
+                            Longitud = reader.GetDecimal(reader.GetOrdinal("Longitud")),
+                            Superficie = reader.GetDecimal(reader.GetOrdinal("Superficie")),
+                            Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
+                            IdPropietario = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
+                            Estado = reader.GetInt32(reader.GetOrdinal("Estado")) == 1,
+                            Suspendido = reader.GetInt32(reader.GetOrdinal("Suspendido")) == 1,
+                            PropietarioInmueble = new Propietario
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
+                                Nombre = reader.GetString(reader.GetOrdinal("PropietarioNombre")),
+                                Apellido = reader.GetString(reader.GetOrdinal("PropietarioApellido"))
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        return inmuebles;
+    }
+
     public List<Inmueble> ObtenerNoDisponibles(int IdPropietario)
     {
         List<Inmueble> inmuebles = new List<Inmueble>();
