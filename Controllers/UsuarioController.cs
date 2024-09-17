@@ -24,14 +24,14 @@ public class UsuarioController : Controller
         this._repositorioUsuario = repositorio;
     }
     // GET: Usuarios
-    // [Authorize(Policy = "Administrador")]
+    [Authorize(Policy = "Administrador")]
     public IActionResult Index()
     {
         var usuarios = _repositorioUsuario.ObtenerTodos();
         return View(usuarios);
     }
     //GET: Usuario/Detalle/id
-    // [Authorize(Policy = "Administrador")]   
+    [Authorize(Policy = "Administrador")]
     public IActionResult Detalle(int id)
     {
         var usuario = _repositorioUsuario.ObtenerPorId(id);
@@ -39,7 +39,7 @@ public class UsuarioController : Controller
     }
 
     // GET: Usuarios/Crear
-    //  [Authorize(Policy = "Administrador")]
+    [Authorize(Policy = "Administrador")]
     public ActionResult Crear()
     {
         ViewBag.Roles = Enum.GetValues(typeof(Roles))
@@ -57,6 +57,7 @@ public class UsuarioController : Controller
     // POST: Usuarios/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Policy = "Administrador")]
     public async Task<IActionResult> Crear(Usuario usuario)
     {
         if (!ModelState.IsValid)
@@ -187,6 +188,16 @@ public class UsuarioController : Controller
             return NotFound();
         }
 
+        // Obtengo el ID del usuario actual
+        var currentUserId = HttpContext.User.FindFirst("UserId")?.Value;
+        var isAdmin = HttpContext.User.IsInRole("Administrador");
+
+        // Verifica si el usuario actual es el propietario del perfil o un administrador
+        if (usuario.Id.ToString() != currentUserId && !isAdmin)
+        {
+            return Forbid(); // O redirige a una página de acceso denegado
+        }
+
         // Creo un modelo para la vista de edición
         var model = new Usuario
         {
@@ -237,28 +248,38 @@ public class UsuarioController : Controller
                 return NotFound();
             }
 
+            // Obtengo el ID del usuario actual
+            var currentUserId = HttpContext.User.FindFirst("UserId")?.Value;
+            var isAdmin = HttpContext.User.IsInRole("Administrador");
+
+            // Verifica si el usuario actual es el propietario del perfil o un administrador
+            if (user.Id.ToString() != currentUserId && !isAdmin)
+            {
+                return Forbid(); // O redirige a una página de acceso denegado
+            }
+
             // Actualizo los datos del usuario
             user.Nombre = usuario.Nombre;
             user.Apellido = usuario.Apellido;
             user.Email = usuario.Email;
-            user.Rol = usuario.Rol;
+            // user.Rol = usuario.Rol;
             // Antes de actualizar
-            Console.WriteLine($"Salt actual antes de la actualización: {user.Salt}");
+            //Console.WriteLine($"Salt actual antes de la actualización: {user.Salt}");
             // Solo actualizo la contraseña si hay una nueva
             if (!string.IsNullOrEmpty(usuario.Clave))
             {
                 var result = PasswordUtils.HashPassword(usuario.Clave);
                 user.Clave = result.hashedPassword; // Guardar el hash de la nueva contraseña
                 user.Salt = result.salt; // Guardar el salt para la nueva contraseña
-                Console.WriteLine("Contraseña actualizada.");
-                Console.WriteLine($"Nuevo salt después de la actualización: {result.salt}");
+                //Console.WriteLine("Contraseña actualizada.");
+                //Console.WriteLine($"Nuevo salt después de la actualización: {result.salt}");
             }
             else
             {/*
                   user.Salt = user.Salt;
                   Console.WriteLine("No se proporcionó una nueva contraseña, el salt se mantiene igual.");
               } */
-                Console.WriteLine($"Salt mantenido después de la actualización: {user.Salt}");
+                //Console.WriteLine($"Salt mantenido después de la actualización: {user.Salt}");
             }
 
             // Manejo del archivo del avatar
@@ -268,15 +289,33 @@ public class UsuarioController : Controller
                 // Guardo el nuevo avatar y actualizo la ruta en el usuario
                 var avatarPath = await SaveAvatarFileAsync(avatarFile);
                 user.Avatar = avatarPath;
-                Console.WriteLine($"Nuevo avatar guardado en {avatarPath}.");
+                // Console.WriteLine($"Nuevo avatar guardado en {avatarPath}.");
+            }
+
+            // Solo el administrador puede cambiar el rol
+            if (User.IsInRole("Administrador"))
+            {
+                user.Rol = usuario.Rol; // cambia el rol solo si el usuario es administrador
             }
 
             // Guardo los cambios en el repositorio
             _repositorioUsuario.Editar(user);
-            Console.WriteLine("Usuario actualizado exitosamente.");
+            // Console.WriteLine("Usuario actualizado exitosamente.");
 
             TempData["SuccessMessage"] = "Datos de Usuario actualizado correctamente.";
-            return RedirectToAction(nameof(Index));
+            // Redirigir según el rol del usuario
+            if (User.IsInRole("Administrador"))
+            {
+                return RedirectToAction("Index", "Usuario");
+            }
+            else if (User.IsInRole("Empleado"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // Si el modelo no es válido, volver a cargar los roles para la vista
@@ -333,7 +372,7 @@ public class UsuarioController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    //  [Authorize(Policy = "Administrador")]
+    [Authorize(Policy = "Administrador")]
     //POST: Usuario/Eliminar/id
 
     public IActionResult Eliminar(int id)
@@ -342,70 +381,6 @@ public class UsuarioController : Controller
         return RedirectToAction("Index");
     }
 
-
-    // [Authorize]
-    /*   public IActionResult Avatar()
-      {
-          var u = _repositorioUsuario.ObtenerPorEmail(User.Identity.Name);
-          string fileName = "avatar_" + u.Id + Path.GetExtension(u.Avatar);
-          string wwwPath = environment.WebRootPath;
-          string path = Path.Combine(wwwPath, "Uploads");
-          string pathCompleto = Path.Combine(path, fileName);
-
-          //leer el archivo
-          byte[] fileBytes = System.IO.File.ReadAllBytes(pathCompleto);
-          //devolverlo
-          return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
-      } */
-
-    // [Authorize]
-    /*  public string AvatarBase64()
-     {
-         var u = _repositorioUsuario.ObtenerPorEmail(User.Identity.Name);
-         string fileName = "avatar_" + u.Id + Path.GetExtension(u.Avatar);
-         string wwwPath = environment.WebRootPath;
-         string path = Path.Combine(wwwPath, "Uploads");
-         string pathCompleto = Path.Combine(path, fileName);
-
-         //leer el archivo
-         byte[] fileBytes = System.IO.File.ReadAllBytes(pathCompleto);
-         //devolverlo
-         return Convert.ToBase64String(fileBytes);
-     } */
-
-    // [Authorize]
-    /*   [HttpPost("[controller]/[action]/{fileName}")]
-      public IActionResult FromBase64([FromBody] string imagen, [FromRoute] string fileName)
-      {
-          //arma el path
-          string wwwPath = environment.WebRootPath;
-          string path = Path.Combine(wwwPath, "Uploads");
-          string pathCompleto = Path.Combine(path, fileName);
-          //convierto a arreglo de bytes
-          var bytes = Convert.FromBase64String(imagen);
-          //lo escribe
-          System.IO.File.WriteAllBytes(pathCompleto, bytes);
-          return Ok();
-      }
-   */
-    // [Authorize]
-    /*    public ActionResult Foto()
-       {
-           try
-           {
-               var u = _repositorioUsuario.ObtenerPorEmail(User.Identity.Name);
-               var stream = System.IO.File.Open(
-                       Path.Combine(environment.WebRootPath, u.Avatar.Substring(1)),
-                       FileMode.Open,
-                       FileAccess.Read);
-               var ext = Path.GetExtension(u.Avatar);
-               return new FileStreamResult(stream, $"image/{ext.Substring(1)}");
-           }
-           catch (Exception ex)
-           {
-               throw ex;
-           }
-       } */
 
 
     [HttpGet]
@@ -483,6 +458,12 @@ public class UsuarioController : Controller
 
         // Devuelve la vista del login con el modelo para mostrar errores
         return View("~/Views/Usuario/Login.cshtml", model);
+    }
+
+    [HttpGet]
+    public IActionResult AccessDenied()
+    {
+        return View();
     }
 
 }

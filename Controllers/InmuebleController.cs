@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using inmobiliaria_AT.Models;
@@ -26,6 +27,7 @@ namespace inmobiliaria_AT.Controllers
             return View(inmuebles);
         }
 
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult Editar(int id)
         {
             // Configuración de opciones para el uso del inmueble
@@ -104,6 +106,7 @@ namespace inmobiliaria_AT.Controllers
                 return View(inmueble);
             }
         }
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult Detalle(int id)
         {
             if (id == 0)
@@ -115,6 +118,7 @@ namespace inmobiliaria_AT.Controllers
             }
         }
         [HttpPost]
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult Guardar(Inmueble inmueble)
         {
             if (inmueble.Id == 0)
@@ -130,7 +134,7 @@ namespace inmobiliaria_AT.Controllers
             return RedirectToAction("Index");
         }
 
-        //[Authorize(Policy = "Administrador")]
+        [Authorize(Policy = "Administrador")]
         public IActionResult Eliminar(int id)
 
         {
@@ -138,8 +142,9 @@ namespace inmobiliaria_AT.Controllers
             TempData["SuccessMessage"] = "Datos de inmueble eliminados correctamente.";
             return RedirectToAction("Index");
         }
-
+        [Authorize(Policy = "AdminEmpleado")]
         // Método para obtener los inmuebles disponibles por propietario
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult Disponibles(int IdPropietario)
         {
             if (IdPropietario <= 0)
@@ -150,6 +155,7 @@ namespace inmobiliaria_AT.Controllers
             return PartialView("_InmueblesPartial", inmuebles);  // Uso PartialView para actualizar una sección
         }
         // Método para obtener los inmuebles disponibles
+
         public IActionResult DisponiblesTotales()
         {
             var inmuebles = _repo.ObtenerDisponiblesTotales();
@@ -157,6 +163,7 @@ namespace inmobiliaria_AT.Controllers
         }
 
         // Método para obtener los inmuebles no disponibles por propietario
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult NoDisponibles(int IdPropietario)
         {
             _logger.LogInformation("NoDisponibles llamado con IdPropietario: {IdPropietario}", IdPropietario);
@@ -184,6 +191,7 @@ namespace inmobiliaria_AT.Controllers
         }
 
         [HttpGet]
+
         public IActionResult ListaPorPropietario()
         {
             // Obtener la lista de propietarios
@@ -210,6 +218,7 @@ namespace inmobiliaria_AT.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult ListaPorPropietario(int? IdPropietario)
         {
             _logger.LogInformation("FiltrarPorPropietario llamado con IdPropietario: {IdPropietario}", IdPropietario);
@@ -241,8 +250,18 @@ namespace inmobiliaria_AT.Controllers
 
         // Método para suspender inmueble
         [HttpPost]
+        [Authorize(Roles = "AdminEmpleado")]
         public IActionResult SuspenderInmueble(int id)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { message = "Debe iniciar sesión para realizar esta acción." });
+            }
+
+            if (!User.IsInRole("AdminEmpleado"))
+            {
+                return Forbid(); // También puedes redirigir a una página de acceso denegado
+            }
             _logger.LogInformation("SuspenderInmueble llamado con Id: {Id}", id);
 
             // Llama al repositorio para suspender el inmueble
@@ -262,6 +281,7 @@ namespace inmobiliaria_AT.Controllers
 
         // Método para reactivar inmueble
         [HttpPost]
+        [Authorize(Roles = "AdminEmpleado")]
         public IActionResult ReactivarInmueble(int id)
         {
             _logger.LogInformation("ReactivarInmueble llamado con Id: {Id}", id);
@@ -300,7 +320,7 @@ namespace inmobiliaria_AT.Controllers
 
             return PartialView("_InmueblesIndexPartial", inmuebles);
         }
-
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult ObtenerInmuebles(string filtro, int idPropietario)
         {
             List<Inmueble> inmuebles;
