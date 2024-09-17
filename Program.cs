@@ -41,11 +41,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddAuthorization(options =>
 {
-    //options.FallbackPolicy = new AuthorizationPolicyBuilder(CookieAuthenticationDefaults.AuthenticationScheme)
-    // .RequireAuthenticatedUser()
-    // .Build();
+    options.AddPolicy("Administrador", policy => policy.RequireRole("Administrador"));
+    options.AddPolicy("AdminEmpleado", policy => policy.RequireRole("Empleado", "Administrador"));
 });
-// Add controllers with views
+
+// controladores de vista
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
