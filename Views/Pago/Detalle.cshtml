@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Detalle pago # " + Model.Id;
-    int id = Model == null ? 0 : Model.Id;
+    int? id = Model == null ? 0 : Model.Id;
 }
 
 <h4>@Model.DireccionContrato.ToUpper(): Pago #@Model.Id </h4>

@@ -1,0 +1,107 @@
+@model inmobiliaria_AT.Models.Contrato
+
+@{
+    ViewData["Title"] = "Anulación de contrato";
+    int id = Model != null ? Model.Id : 0;
+
+    // Calcular multa si TiempoRestante no es nulo
+    var multa = ViewBag.TiempoRestante != null ? Math.Abs(ViewBag.TiempoRestante) * 1500 : 0;
+}
+
+<h4>@Model.DireccionInmueble.ToUpper(): Multa por anulación de contrato</h4>
+<hr>
+<div class="col-md-12">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" name="Id" value="@id">
+    <div class="row">
+
+        <div class="form-group col-md-6 form-group-spacing">
+            <label class="control-label">ID</label>
+            <input type="text" class="form-control" value="@id" readonly>
+        </div>
+        <div class="form-group col-md-6 form-group-spacing">
+            <label>Contrato</label>
+            <input type="text" class="form-control" value="@Model.DireccionInmueble" readonly>
+        </div>
+        <div class="form-group col-md-6 form-group-spacing">
+            <label>Fecha</label>
+            <input type="text" class="form-control" value="@DateTime.Now.ToShortDateString()" readonly>
+        </div>
+        <div class="form-group col-md-6 form-group-spacing">
+            <label>Vencimiento del contrato</label>
+            <input type="text" class="form-control" value="@Model.FechaFin.ToShortDateString()" readonly>
+        </div>
+
+        <div class="form-group col-md-6 form-group-spacing">
+            <label class="control-label">Detalle</label>
+            <input type="text" class="form-control"
+                value="El presente contrato será rescindido a @ViewBag.TiempoRestante días de haber finalizado."
+                readonly>
+        </div>
+
+        <div class="form-group col-md-6 form-group-spacing">
+            <label>Multa por Rescisión</label>
+            <input type="text" class="form-control" value="$@multa " readonly>
+        </div>
+
+        <div class="form-group col-md-6 form-group-spacing">
+            <label class="control-label">Concepto</label>
+            <input type="text" class="form-control" value="Multa por rescisión de contrato" readonly>
+        </div>
+    </div>
+
+    <div class="form-group-spacing">
+        <a asp-action="Index" title="Volver">
+            <i class="fa-solid fa-undo"></i>
+        </a>
+    </div>
+</div>
+
+<!-- Botón que abre el modal de confirmación de anulación -->
+<button type="button" class="btn btn-warning" data-toggle="modal" data-target="#confirmarAnulacionModal">
+    Abonar
+</button>
+
+<!-- Modal de confirmación de anulación -->
+<div class="modal fade" id="confirmarAnulacionModal" tabindex="-1" role="dialog"
+    aria-labelledby="confirmarAnulacionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmarAnulacionModalLabel">Confirmación Final</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Al abonar la multa, el contrato será anulado. ¿Desea continuar?</p>
+            </div>
+            <div class="modal-footer">
+                <form id="ConfirmarAnulacion" method="post" action="@Url.Action("ConfirmarAnulacion", "Pago")">
+                    <input type="hidden" name="idContrato" id="IdContrato" value="@Model.Id" />
+                    <button type="submit" class="btn btn-danger " title="Confirmar anulación">Confirmar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var confirmacionForm = document.getElementById('ConfirmarAnulacion');
+
+        // Solo si quieres hacer algo más antes de enviar el formulario
+        confirmacionForm.addEventListener('submit', function (event) {
+            var contratoId = document.getElementById('IdContrato').value;
+
+            if (!contratoId ) {
+                event.preventDefault(); // Evita el envío si los datos no son válidos
+                alert("Error: No se encontraron los datos necesarios.");
+            }
+        });
+    });
+
+</script>

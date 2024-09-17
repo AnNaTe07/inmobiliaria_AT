@@ -28,6 +28,8 @@ public class Usuario
     public Rol Rol { get; set; }
     public string RolNombre => Rol.ToString();
 
+    public string NombreCompleto => $"{Nombre} {Apellido}";
+
     /* 
         public static string ObtenerRol(int rolValue)
         {

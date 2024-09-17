@@ -68,11 +68,13 @@
             <input asp-for="Descripcion" class="form-control" readonly>
             <span asp-validation-for="Descripcion" class="text-danger"></span>
         </div>
+        
         <div class="form-group col-md-6 form-group-spacing">
-            <label asp-for="Plazo" class="control-label"></label>
-            <input asp-for="Plazo" class="form-control" readonly>
+            <label class="control-label">Vencimiento</label>
+            <input value="@ViewBag.MesesYDiasRestantes" class="form-control" readonly>
             <span asp-validation-for="Plazo" class="text-danger"></span>
         </div>
+
         <div class="form-group col-md-6 form-group-spacing">
             <label asp-for="PorcentajeActualizacion" class="control-label">% actualización</label>
             <input asp-for="PorcentajeActualizacion" class="form-control" readonly>

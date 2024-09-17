@@ -41,6 +41,6 @@ public class Contrato
 
     //public Usuario? UsuAnulacion { get; set; }
 
-    public string DireccionInmueble => $"{Inmu.Direccion}";
+    public string DireccionInmueble => Inmu != null ? Inmu.Direccion : "Dirección no disponible";
 
 }

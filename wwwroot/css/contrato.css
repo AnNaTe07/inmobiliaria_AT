@@ -5,3 +5,8 @@
 .me-2 {
     margin-right: 0.5rem;
 }
+.select2-container--bootstrap-5 .select2-selection {
+    border: 1px solid #495057 !important;
+    border-radius: 5%;
+    height: 35px;
+}

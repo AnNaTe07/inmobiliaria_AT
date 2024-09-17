@@ -5,9 +5,9 @@
 
 }
 <div class="text-center">
-    <h1 class="display-4">Listado de contratos activos</h1>
+    <h1 class="display-4">Listado de contratos vencidos</h1>
 </div>
-<form id="filtrosForm" method="get" action="@Url.Action("Index")">
+<form id="filtrosForm" method="get" action="@Url.Action("Vencidos")">
 
     <div class="row">
 
@@ -52,11 +52,6 @@
                 <i class="fas fa-times"></i> Limpiar Filtros
             </button>
         </div>
-        <div class="col-md-12 mt-3">
-            <a href="@Url.Action("ListaVencidos", "Contrato")" class="btn btn-primary">Contratos Vencidos</a>
-
-        </div>
-
     </div>
 </form>
 
@@ -142,24 +137,13 @@
                                 <i class="fa-solid fa-circle-info"></i>
                             </button>
                         </form> @* AGREGAR @item.Tipo *@
-
-                        <button type="button" class="btn btn-success btn-custom" data-bs-toggle="modal"
-                            data-bs-target="#paymentModal" data-id="@item.Id" title="Comprar">
-                            <h7 style="font-weight: bold;">Pagar</h7>
-                        </button>
-
-                        <form action="@Url.Action("ListadoPagos","Pago", new{id=item.Id})" method="get"
-                            style="display: inline;">
-                            <button type="submit" class="btn btn-primary btn-custom" title="Listado de pagos">
-                                <i class="fa-solid fa-dollar-sign"></i>
-                            </button>
-                        </form>
-
-                        <button type="submit" class="btn btn-warning btn-custom"
-                            onclick="anular(@item.Id, '@item.Inmu.Direccion', '@item.Prop.NombreCompleto', '@item.Inqui.NombreCompleto', '@item.Tipo', '@item.Plazo')"
-                            title="Anular">
-                            Anular
-                        </button>
+                        <div class="icoRenovar">
+                            <form action="@Url.Action("Renovar", new { id = item.Id })" method="get" style="display: inline;">
+                                <button type="submit" class="btn btn-warning btn-custom" title="Editar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                            </form>
+                        </div>
 
                         <button type="submit" class="btn btn-danger btn-custom"
                             onclick="eliminar(@item.Id, '@item.Inmu.Direccion', '@item.Prop.NombreCompleto', '@item.Inqui.NombreCompleto', '@item.Tipo', '@item.Plazo')"

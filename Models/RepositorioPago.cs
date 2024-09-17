@@ -220,12 +220,13 @@ public class RepositorioPago
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
         {
             //
-            var query = $@"INSERT INTO Pago Id, Fecha, Monto, Estado, UsuPago, Detalle, Concepto
-             VALUES ( @Id, @Fecha, @Monto, @Estado, @UsuPago,
+            var query = $@"INSERT INTO Pago IdContrato, Fecha, Monto, Estado, UsuPago, Detalle, Concepto
+             VALUES ( @IdContrato, @Fecha, @Monto, @Estado, @UsuPago,
              @FechaAnulacion,@Detalle, @Concepto; SELECT LAST_INSERT_ID();";
 
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {
+                command.Parameters.AddWithValue("IdContrato", pago.Contrato.Id);
                 command.Parameters.AddWithValue("@Fecha", pago.Fecha);
                 command.Parameters.AddWithValue("@Monto", pago.Monto);
                 command.Parameters.AddWithValue("@Estado", pago.Estado);
@@ -239,6 +240,43 @@ public class RepositorioPago
         }
         return res;
     }
+
+    public int AltaMulta(int idContrato, string detalle, DateTime fecha)
+    {
+        int res = -1;
+        Decimal monto = 0;
+        var contrato = new RepositorioContrato(_loggerContrato, _loggerInmueble, _connectionString).ObtenerPorId(idContrato);
+
+        
+
+        DateTime? fechaFin = contrato.FechaFin;
+
+        monto = fechaFin.HasValue ? (fechaFin.Value - DateTime.Now).Days *1500 : 0;
+
+        using (MySqlConnection connection = new MySqlConnection(_connectionString))
+        {
+            // Consulta SQL con parámetros
+            var query = $@"INSERT INTO Pago (IdContrato, Fecha, Monto, Detalle, Concepto)
+                       VALUES (@IdContrato, @Fecha, @Monto, @Detalle, 2); 
+                       SELECT LAST_INSERT_ID();";
+
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                // Asignación de valores a los parámetros
+                command.Parameters.AddWithValue("@IdContrato", idContrato);
+                command.Parameters.AddWithValue("@Fecha", fecha);
+                command.Parameters.AddWithValue("@Monto", monto);
+                command.Parameters.AddWithValue("@Detalle", detalle);
+
+                // Abrir la conexión y ejecutar el comando
+                connection.Open();
+                res = Convert.ToInt32(command.ExecuteScalar());
+                connection.Close();
+            }
+        }
+        return res;
+    }
+
 
 
     public int Anular(int id)

@@ -1,0 +1,125 @@
+@model inmobiliaria_AT.Models.Contrato
+
+@{
+    ViewData["Title"] = "Renovar contrato";
+}
+
+<h4>Renovar Contrato</h4>
+<hr>
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Renovar">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" name="Id" value="@Model.Id">
+            <div class="row">
+                <!-- ID del contrato -->
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label>Id del Contrato</label>
+                    <input class="form-control" value="@Model.Id" readonly />
+                </div>
+
+                <!-- Inquilino (solo lectura) -->
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label>Inquilino</label>
+                    <input class="form-control" value="@ViewBag.Inquilino.NombreCompleto" readonly />
+                </div>
+
+                <!-- Inmueble (solo lectura) -->
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label>Dirección del Inmueble</label>
+                    <input class="form-control" value="@ViewBag.Inmueble.Direccion" readonly />
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Fecha de inicio (solo lectura, con la fecha actual) -->
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="FechaInicio" class="control-label">Fecha de renovación</label>
+                    <input asp-for="FechaInicio" class="form-control" readonly />
+                    <span asp-validation-for="FechaInicio" class="text-danger"></span>
+                </div>
+
+                <!-- Fecha de finalización (editable) -->
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="FechaFin" class="control-label">Fecha de finalización</label>
+                    <input asp-for="FechaFin" class="form-control" />
+                    <span asp-validation-for="FechaFin" class="text-danger"></span>
+                </div>
+            </div>
+
+
+            <!-- Campos editables: Plazo, Monto, Descripción, Observaciones, etc. -->
+            <div class="row">
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Plazo" class="control-label">Plazo</label>
+                    <input asp-for="Plazo" class="form-control" />
+                    <span asp-validation-for="Plazo" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Monto" class="control-label">Monto</label>
+                    <input asp-for="Monto" class="form-control" />
+                    <span asp-validation-for="Monto" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="PorcentajeActualizacion" class="control-label">Porcentaje de actualización</label>
+                    <input asp-for="PorcentajeActualizacion" class="form-control" />
+                    <span asp-validation-for="PorcentajeActualizacion" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="PeriodoActualizacion" class="control-label">Periodo de actualización (Meses)</label>
+                    <input asp-for="PeriodoActualizacion" class="form-control" />
+                    <span asp-validation-for="PeriodoActualizacion" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Descripción y Observaciones (editables) -->
+            <div class="row">
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Descripcion" class="control-label">Descripción</label>
+                    <input asp-for="Descripcion" class="form-control" />
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Observaciones" class="control-label">Observaciones</label>
+                    <input asp-for="Observaciones" class="form-control" />
+                    <span asp-validation-for="Observaciones" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Botón de guardar -->
+            <div class="form-group col-md-6 form-group-spacing">
+                <input type="submit" value="Guardar" class="btn btn-success" />
+            </div>
+        </form>
+
+        <!-- Botón de volver -->
+        <div class="form-group-spacing">
+            <a asp-action="ListaVencidos" title="Volver" class="btn btn-secondary">
+                <i class="fa-solid fa-undo"></i> Volver
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@TempData["SuccessMessage"]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}

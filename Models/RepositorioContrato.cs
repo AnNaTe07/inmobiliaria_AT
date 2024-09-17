@@ -22,13 +22,15 @@ public class RepositorioContrato
     }
 
 
+// ------------ ESTADOS == 0: ANULADO, 1: ACTIVO, 2: VENCIDO, 3: RESCINDIDO, 4: RENOVADO  ---------------------
+
     public List<Contrato> ObtenerTodos()
     {
         List<Contrato> contratos = new List<Contrato>();
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
         {
             var sql = $@"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Monto, Estado, Descripcion, Plazo, PorcentajeActualizacion, PeriodoActualizacion, Observaciones, Tipo FROM contrato
-            WHERE estado = 1;";
+            WHERE estado = 1 OR estado = 4;";
 
             using (MySqlCommand command = new MySqlCommand(sql, connection))
             {
@@ -79,7 +81,64 @@ public class RepositorioContrato
     }
 
 
-    public Contrato? ObtenerPorId(int id)
+  public List<Contrato> ObtenerVencidos()
+    { //ESTADO DE VENCIDO = 2
+        List<Contrato> contratos = new List<Contrato>();
+        using (MySqlConnection connection = new MySqlConnection(_connectionString))
+        {
+            var sql = $@"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Monto, Estado, Descripcion, Plazo, PorcentajeActualizacion, PeriodoActualizacion, Observaciones, Tipo FROM contrato
+            WHERE estado = 2;";
+
+            using (MySqlCommand command = new MySqlCommand(sql, connection))
+            {
+                connection.Open();
+                var reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    int idInquilino = reader.GetInt32("Inqui");
+                    int idInmueble = reader.GetInt32("Inmu");
+                    int idPropietario = reader.GetInt32("Prop");
+                    var inquilino = new RepositorioInquilino(_connectionString).ObtenerPorId(idInquilino);
+                    var inmueble = new RepositorioInmueble(_loggerInmueble, _connectionString).ObtenerPorId(idInmueble);
+                    var propietario = new RepositorioPropietario(_connectionString).ObtenerPorId(idPropietario);
+
+
+                    if (inquilino == null || inmueble == null || propietario == null)
+                    {
+                        Console.WriteLine("Datos incompletos: Inquilino: " + inquilino + ", Inmueble: " + inmueble + ", Propietario: " + propietario);
+                        continue;
+                    }
+
+                    // Crear el contrato
+                    var contrato = new Contrato
+                    {
+                        Id = reader.GetInt32("Id"),
+                        Inqui = inquilino,
+                        Inmu = inmueble,
+                        Prop = propietario,
+                        FechaInicio = reader.GetDateTime("FechaInicio"),
+                        FechaFin = reader.GetDateTime("FechaFin"),
+                        Monto = reader.GetDecimal("Monto"),
+                        Estado = reader.GetBoolean("Estado"),
+                        Descripcion = reader.GetString("Descripcion"),
+                        Plazo = reader.GetInt32("Plazo"),
+                        PorcentajeActualizacion = reader.GetDecimal("PorcentajeActualizacion"),
+                        PeriodoActualizacion = reader.GetInt32("PeriodoActualizacion"),
+                        Observaciones = reader.GetString("Observaciones"),
+                        Tipo = (TipoContrato)Enum.Parse(typeof(TipoContrato), reader.GetString("Tipo"))
+                    };
+
+                    contratos.Add(contrato);
+                }
+                connection.Close();
+            }
+        }
+        return contratos;
+    }
+
+
+    public Contrato ObtenerPorId(int id)
     {//AGREGAR TIPO
         Contrato? cont = null;
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
@@ -253,9 +312,7 @@ public class RepositorioContrato
     }
 
 
-
-
-    public int Anular(int id)
+    public int Anular(int id, String observ)
     {
         int res = -1;
         var repoCont = new RepositorioContrato(_logger, _loggerInmueble, _connectionString);
@@ -269,7 +326,7 @@ public class RepositorioContrato
             {
                 try
                 {
-                    var sql = $@"UPDATE contrato SET estado = '0' WHERE {nameof(Contrato.Id)} = @id;";
+                    var sql = $@"UPDATE contrato SET estado = '3', observaciones = '{observ}' WHERE {nameof(Contrato.Id)} = @id;";
                     using (MySqlCommand command = new MySqlCommand(sql, conn, transaction))
                     {
                         command.Parameters.AddWithValue("@id", id);
@@ -376,6 +433,77 @@ public class RepositorioContrato
                         }
 
                     }
+                    transaction.Commit();
+
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    conn.Close();
+
+                    throw;
+                }
+            }
+        }
+        return res;
+    }
+
+
+
+    public int Renovar(Contrato contrato)
+    {
+        var repo_Inm = new RepositorioInmueble(_loggerInmueble, _connectionString);
+        var id_prop = repo_Inm.ObtenerPorId(contrato.Inmu.Id).IdPropietario;
+
+        //OBTENGO EL ID DEL INMUEBLE QUE TIENE EL CONTRATO ANTES DE  MODIFICAR
+        var repoCont = new RepositorioContrato(_logger, _loggerInmueble, _connectionString);
+        Contrato cont = repoCont.ObtenerPorId(contrato.Id);
+        var id_inmu = cont.Inmu.Id;
+
+        int res = -1;
+
+        using (MySqlConnection conn = new MySqlConnection(_connectionString))
+        {
+            conn.Open();
+            using (MySqlTransaction transaction = conn.BeginTransaction())
+            {
+                try
+                {
+                    var query = $@"UPDATE contrato SET 
+                {nameof(Contrato.FechaInicio)} = @fechaInicio,
+                {nameof(Contrato.FechaFin)} = @fechaFin,
+                {nameof(Contrato.Monto)} = @monto,
+                {nameof(Contrato.Estado)} = 4,
+                {nameof(Contrato.Descripcion)} = @descripcion,
+                {nameof(Contrato.Plazo)} = @plazo,
+                {nameof(Contrato.PorcentajeActualizacion)} = @porcentajeActualizacion,
+                {nameof(Contrato.PeriodoActualizacion)} = @periodoActualizacion,
+                {nameof(Contrato.Observaciones)} = @observaciones,
+
+                    WHERE {nameof(Contrato.Id)} = @id;";
+
+                    using (MySqlCommand command = new MySqlCommand(query, conn, transaction))
+                    {
+                      
+                        command.Parameters.AddWithValue("@fechaInicio", contrato.FechaInicio);
+                        command.Parameters.AddWithValue("@fechaFin", contrato.FechaFin);
+                        command.Parameters.AddWithValue("@monto", contrato.Monto);
+                        command.Parameters.AddWithValue("@descripcion", contrato.Descripcion);
+                        command.Parameters.AddWithValue("@plazo", contrato.Plazo);
+                        command.Parameters.AddWithValue("@porcentajeActualizacion", contrato.PorcentajeActualizacion);
+                        command.Parameters.AddWithValue("@periodoActualizacion", contrato.PeriodoActualizacion);
+                        command.Parameters.AddWithValue("@observaciones", contrato.Observaciones);
+                        res = command.ExecuteNonQuery();
+                    }
+
+                    var sqlEstado = $@"UPDATE inmueble SET estado = '0' WHERE id = @Inmu ";
+
+                    //transaccion asegura que esta consulta sea parte de la mismo
+                    using (MySqlCommand command = new MySqlCommand(sqlEstado, conn, transaction))
+                    {
+                        command.Parameters.AddWithValue("@Inmu", contrato.Inmu.Id);
+                        command.ExecuteNonQuery();
+                    }            
                     transaction.Commit();
 
                 }
