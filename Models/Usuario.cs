@@ -1,34 +1,14 @@
-using System.ComponentModel.DataAnnotations; // Necesario para [Required] y [EmailAddress]
-using Microsoft.AspNetCore.Http; // Necesario para IFormFile (para el avatar)
+using System.ComponentModel.DataAnnotations;
 
-namespace inmobiliaria_AT.Models;
-
-
-public enum Rol
+namespace inmobiliaria_AT.Models
 {
-    Administrador = 1,
-    Empleado = 2,
-}
 
-public class Usuario
-{
-    public int Id { get; set; }
-    [Required]
-    public string Nombre { get; set; }
-    [Required]
-    public string Apellido { get; set; }
-    [Required]
-    [EmailAddress]
-    public string Email { get; set; }
-    [Required]
-    public string PasswordHash { get; set; }
-    public string Salt { get; set; } = "";
-    public string Avatar { get; set; } = "";
-    public IFormFile? AvatarFile { get; set; }// para que pueda ser nulo
-    public Rol Rol { get; set; }
-    public string RolNombre => Rol.ToString();
+    public enum Roles
+    {
+        Administrador = 1,
+        Empleado = 2,
+    }
 
-    public string NombreCompleto => $"{Nombre} {Apellido}";
 
     /* 
         public static string ObtenerRol(int rolValue)
@@ -46,4 +26,31 @@ public class Usuario
                 return "Rol no válido";
             }
         } */
+    public class Usuario
+    {
+        public int Id { get; set; }
+        [Required(ErrorMessage = "El nombre es obligatorio.")]
+        public string Nombre { get; set; }
+
+        [Required(ErrorMessage = "El apellido es obligatorio.")]
+        public string Apellido { get; set; }
+        [Required(ErrorMessage = "El correo electrónico es obligatorio.")]
+        [EmailAddress(ErrorMessage = "El correo electrónico no es válido.")]
+        public string Email { get; set; }
+
+        //[Required(ErrorMessage = "La contraseña es obligatoria.")]
+        //[DataType(DataType.Password)]
+        public string? Clave { get; set; }
+        public string Salt { get; set; } = "";
+        public string Avatar { get; set; } = "";
+
+        public IFormFile? AvatarFile { get; set; }
+        [Required(ErrorMessage = "El rol es obligatorio.")]
+        public Roles Rol { get; set; }
+        public string RolNombre => Rol.ToString();
+
+        public string NombreCompleto => $"{Nombre} {Apellido}";
+        public bool Estado { get; set; }//para dar de baja el usuario
+
+    }
 }

@@ -14,126 +14,108 @@
     <!-- Campo oculto para el ID del propietario -->
     <input type="hidden" id="hiddenPropietarioId" value="@ViewBag.SelectedPropietarioId" />
     <!-- Formulario para filtrar por propietario -->
-    <div class="row">
-        <div class="col-md-12 form-group">
-            <form asp-action="ListaPorPropietario" method="post" id="propietarioForm">
-                <div class="form-row align-items-center">
-                    <div class="col-md-6 mb-2 mt-3">
-                        <label for="propietarioSelect" class="sr-only">Seleccionar Propietario</label>
-                        <select id="propietarioSelect" name="IdPropietario" class="form-control"
-                            asp-items="ViewBag.Propietarios">
-                            <option value="">Seleccione propietario</option>
-                        </select>
+    <div class="container">
+        <form asp-action="ListaPorPropietario" method="post" id="propietarioForm">
+            <div class="row align-items-center">
+                <div class="col-md-4 mb-2 mt-3">
+                    <label for="propietarioSelect" class="sr-only">Seleccionar Propietario</label>
+                    <select id="propietarioSelect" name="IdPropietario" class="form-control"
+                        asp-items="ViewBag.Propietarios">
+                        <option value="">Seleccione propietario</option>
+                    </select>
+                </div>
+                <div class="col-md-8 mb-2 mt-3">
+                    <div class="d-flex align-items-center">
+                        <form id="filterForm" class="d-flex align-items-center">
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="radio" name="filter" id="todosInmuebles"
+                                    value="todosInmuebles" checked>
+                                <label class="form-check-label" for="todosInmuebles">Todos</label>
+                            </div>
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="radio" name="filter" id="inmueblesDisponibles"
+                                    value="inmueblesDisponibles">
+                                <label class="form-check-label" for="inmueblesDisponibles">Disponibles</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="filter" id="inmueblesNoDisponibles"
+                                    value="inmueblesNoDisponibles">
+                                <label class="form-check-label" for="inmueblesNoDisponibles">No Disponibles</label>
+                            </div>
+                        </form>
                     </div>
                 </div>
-            </form>
-            <div class="row mt-3">
-                <div class="col-md-6 mb-2">
-                    <button type="button" class="btn btn-info w-100" onclick="filtrarPorEstado(true)">Inmuebles
-                        Disponibles</button>
-                </div>
-                <div class="col-md-6 mb-2">
-                    <button type="button" class="btn btn-dark w-100" onclick="filtrarPorEstado(false)">Inmuebles No
-                        Disponibles</button>
-                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+<!-- Contenedor para mostrar inmuebles -->
+<div id="inmueblesContainer">
+    @if (Model.Any())
+    {
+        @Html.Partial("_InmueblesPartial", Model)
+    }
+    else
+    {
+        <p>No hay inmuebles disponibles para el propietario seleccionado.</p>
+    }
+</div>
+
+
+
+
+<div class="form-group-spacing volver">
+    <a asp-action="Index" title="Volver">
+        <i class="fa-solid fa-undo"></i>
+    </a>
+</div>
+
+<!-- Modal para Mensajes Generales -->
+<div class="modal fade" id="modal_message" tabindex="-1" aria-labelledby="modalMessageLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalMessageLabel">Mensaje</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="message_text">Mensaje</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="confirm_action" class="btn btn-primary">Confirmar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
-    <!-- Contenedor para mostrar inmuebles -->
-    <div id="inmueblesContainer">
-        @if (Model.Any())
-        {
-            @Html.Partial("_InmueblesPartial", Model)
-        }
-        else
-        {
-            <p>No hay inmuebles disponibles para el propietario seleccionado.</p>
-        }
-    </div>
+</div>
 
-    <div class="form-group-spacing volver">
-        <a asp-action="Index" title="Volver">
-            <i class="fa-solid fa-undo"></i>
-        </a>
-    </div>
-
-    <!-- Modal para Mensajes Generales -->
-    <div class="modal fade" id="modal_message" tabindex="-1" aria-labelledby="modalMessageLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalMessageLabel">Mensaje</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p id="message_text">Mensaje predeterminado.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="confirm_action" class="btn btn-primary">Confirmar</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @section Scripts {
-        <script>
-            $(document).ready(function () {
-                // Inicializar Select2
-                $('#propietarioSelect').select2({
-                    placeholder: "Seleccione un propietario",
-                    allowClear: true,
-                    width: 'resolve'
-                });
-
-                // Manejo del cambio en el select
-                $('#propietarioSelect').on('change', function () {
-                    var selectedId = $(this).val(); // Captura el ID seleccionado
-                    console.log("ID del Propietario en change:", selectedId);
-
-                    // Actualizar el campo oculto
-                    $('#hiddenPropietarioId').val(selectedId);
-
-                    // Enviar el formulario cuando cambia el select
-                    $('#propietarioForm').submit();
-                });
-
-                $('#confirm_action').on('click', function () {
-                    var url;
-                    if (actionToPerform === "suspender") {
-                        url = '@Url.Action("SuspenderInmueble")';
-                    } else if (actionToPerform === "reactivar") {
-                        url = '@Url.Action("ReactivarInmueble")';
-                    }
-
-                    $.post(url, { id: inmuebleId }, function (result) {
-                        $('#modal_message').modal('hide');
-                        if (result.success) {
-                            location.reload();
-                        } else {
-                            $('#message_text').text("Se produjo un error al procesar la solicitud.");
-                            $('#modal_message').modal('show');
-                        }
-                    }).fail(function (jqXHR, textStatus, errorThrown) {
-                        $('#message_text').text("Se produjo un error al procesar la solicitud.");
-                        $('#modal_message').modal('show');
-                    });
-                });
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Inicializar Select2
+            $('#propietarioSelect').select2({
+                placeholder: "Seleccione un propietario",
+                allowClear: true,
+                width: 'resolve'
             });
 
-            var inmuebleId;
-            var actionToPerform;
+            // Manejo del cambio en el select
+            $('#propietarioSelect').on('change', function () {
+                var selectedId = $(this).val();
+                console.log("ID del Propietario en change:", selectedId);
 
-            function showModal(message, action, id) {
-                inmuebleId = id;
-                actionToPerform = action;
+                // Actualizar el campo oculto
+                $('#hiddenPropietarioId').val(selectedId);
 
-                $('#message_text').text(message);
-                $('#modal_message').modal('show');
-            }
+                // Enviar el formulario cuando cambia el select
+                $('#propietarioForm').submit();
+            });
 
-            function filtrarPorEstado(estado) {
-                var idPropietario = $('#hiddenPropietarioId').val(); // Capturo el ID del propietario
+            // Manejo del filtro con radio buttons
+            $('input[name="filter"]').on('change', function () {
+                var selectedFilter = $('input[name="filter"]:checked').val();
+                var idPropietario = $('#hiddenPropietarioId').val();
 
                 if (!idPropietario) {
                     $('#message_text').text("Seleccione un propietario primero.");
@@ -141,7 +123,17 @@
                     return;
                 }
 
-                var url = (estado ? '@Url.Action("Disponibles")' : '@Url.Action("NoDisponibles")') + '?IdPropietario=' + idPropietario;
+                switch (selectedFilter) {
+                    case 'inmueblesDisponibles':
+                        url = '@Url.Action("ObtenerInmuebles", "Inmueble")?filtro=inmueblesDisponibles&idPropietario=' + idPropietario;
+                        break;
+                    case 'inmueblesNoDisponibles':
+                        url = '@Url.Action("ObtenerInmuebles", "Inmueble")?filtro=inmueblesNoDisponibles&idPropietario=' + idPropietario;
+                        break;
+                    default: // Para el filtro "Todos"
+                        url = '@Url.Action("ObtenerInmuebles", "Inmueble")?filtro=todosInmuebles&idPropietario=' + idPropietario;
+                        break;
+                }
 
                 $.get(url, function (result) {
                     $('#inmueblesContainer').html(result);
@@ -149,14 +141,55 @@
                     $('#message_text').text("Se produjo un error al obtener los datos.");
                     $('#modal_message').modal('show');
                 });
-            }
+            });
 
-            function suspender(id) {
-                showModal("¿Está seguro de que desea suspender este inmueble?", "suspender", id);
-            }
+            // Manejo del clic en el botón de confirmación del modal
+            $('#confirm_action').on('click', function () {
+                var url;
+                if (actionToPerform === "suspender") {
+                    url = '@Url.Action("SuspenderInmueble")';
+                } else if (actionToPerform === "reactivar") {
+                    url = '@Url.Action("ReactivarInmueble")';
+                }
 
-            function reactivar(id) {
-                showModal("¿Está seguro de que desea reactivar este inmueble?", "reactivar", id);
-            }
-        </script>
-    }
+                $.post(url, { id: inmuebleId }, function (result) {
+                    $('#modal_message').modal('hide');
+                    if (result.success) {
+                        location.reload();
+                    } else {
+                        $('#message_text').text(result.message || "Se produjo un error al procesar la solicitud.");
+                        $('#modal_message').modal('show');
+                    }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    if (jqXHR.status === 401) {
+                        $('#message_text').text("Debe iniciar sesión para realizar esta acción.");
+                    } else if (jqXHR.status === 403) {
+                        $('#message_text').text("Acceso denegado. No tiene permiso para realizar esta acción.");
+                    } else {
+                        $('#message_text').text("Se produjo un error al procesar la solicitud.");
+                    }
+                    $('#modal_message').modal('show');
+                });
+            });
+        });
+
+        var inmuebleId;
+        var actionToPerform;
+
+        function showModal(message, action, id) {
+            inmuebleId = id;
+            actionToPerform = action;
+
+            $('#message_text').text(message);
+            $('#modal_message').modal('show');
+        }
+
+        function suspender(id) {
+            showModal("¿Está seguro de que desea suspender este inmueble?", "suspender", id);
+        }
+
+        function reactivar(id) {
+            showModal("¿Está seguro de que desea reactivar este inmueble?", "reactivar", id);
+        }
+    </script>
+}

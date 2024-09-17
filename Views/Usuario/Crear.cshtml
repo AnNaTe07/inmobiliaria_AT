@@ -1,9 +1,9 @@
 @model inmobiliaria_AT.Models.Usuario
-
 @{
     ViewData["Title"] = "Usuario";
-    int id = Model == null ? 0 : Model.Id;
+    @* int id = Model == null ? 0 Model.id; *@
 }
+
 
 <h2>Usuario</h2>
 <hr />
@@ -11,7 +11,7 @@
     <div class="col-md-12">
         <form asp-action="Crear" enctype="multipart/form-data">@* para enviar los datos *@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" name="Id" value="@id">
+
             <div class="row ">
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="Nombre" class="control-label"></label>
@@ -23,16 +23,20 @@
                     <input asp-for="Apellido" class="form-control" />
                     <span asp-validation-for="Apellido" class="text-danger"></span>
                 </div>
+            </div>
+            <div class="row ">
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="Email" class="control-label"></label>
                     <input asp-for="Email" class="form-control" />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
                 <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="PasswordHash" class="control-label">Password</label>
-                    <input asp-for="PasswordHash" class="form-control" />
-                    <span asp-validation-for="PasswordHash" class="text-danger"></span>
+                    <label asp-for="Clave" class="control-label">Password</label>
+                    <input type="Password" asp-for="Clave" class="form-control" />
+                    <span asp-validation-for="Clave" class="text-danger"></span>
                 </div>
+            </div>
+            <div class="row ">
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="AvatarFile" class="control-label"></label>
                     <input type="file" name="AvatarFile" class="form-control" />
@@ -40,20 +44,17 @@
                 </div>
                 <div class="form-group col-md-6 form-group-spacing">
                     <label class="control-label">Rol</label>
-                    <select class="form-control" name="Rol">
-                        <option value="">Seleccione rol</option>
-                        @foreach (var rol in ViewBag.Roles)
-                        {
-                            <option value="@rol.Id">@rol.Nombre</option>
-                        }
+                    <select asp-for="Rol" class="form-control" asp-items="ViewBag.Roles">
+                        <option value="">Seleccione un rol</option>
                     </select>
                     <span asp-validation-for="Rol" class="text-danger"></span>
                 </div>
-                <div class="row">
-                    <div class="form-group col-md-6 form-group-spacing">
-                        <input type="submit" value="Guardar" class="btn btn-success" />
-                    </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6 form-group-spacing">
+                    <input type="submit" value="Guardar" class="btn btn-success" />
                 </div>
+            </div>
 
         </form>
         <div class="form-group-spacing">

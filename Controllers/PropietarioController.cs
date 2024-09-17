@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using inmobiliaria_AT.Models;
 
 namespace inmobiliaria_AT.Controllers
@@ -15,12 +16,13 @@ namespace inmobiliaria_AT.Controllers
             _logger = logger;
             _repo = repo;
         }
-
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult Index()
         {
             return View(_repo.ObtenerTodos());
         }
 
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult Editar(int id)
         {
             if (id == 0)
@@ -31,6 +33,7 @@ namespace inmobiliaria_AT.Controllers
                 return View(propietario);
             }
         }
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult Detalle(int id)
         {
             if (id == 0)
@@ -42,6 +45,8 @@ namespace inmobiliaria_AT.Controllers
             }
         }
         [HttpPost]
+
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult Guardar(Propietario propietario)
         {
             if (propietario.Id == 0)
@@ -57,6 +62,7 @@ namespace inmobiliaria_AT.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Policy = "Administrador")]
         public IActionResult Eliminar(int id)
         {
             _repo.Baja(id);

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using inmobiliaria_AT.Models;
 
 namespace inmobiliaria_AT.Controllers
@@ -22,6 +23,7 @@ namespace inmobiliaria_AT.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult AgregarTipo(string descripcion)
         {
             if (string.IsNullOrWhiteSpace(descripcion))
@@ -60,6 +62,7 @@ namespace inmobiliaria_AT.Controllers
 
 
         [HttpPost]
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult Modificar(Tipo tipo)
         {
             try
@@ -114,6 +117,7 @@ namespace inmobiliaria_AT.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Administrador")]
         public IActionResult Eliminar(int Id, int InmuebleId)
         {
             if (Id <= 0)

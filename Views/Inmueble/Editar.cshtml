@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Listado de Inmueble";
     int id = Model == null ? 0 : Model.Id;
+    bool isAdmin = User.IsInRole("Administrador");
 }
 
 <h2>Inmueble</h2>
@@ -37,8 +38,11 @@
                             <button type="button" class="btn btn-warning" title="Modificar tipo de inmueble">
                                 <i class="fa-solid fa-pen"></i>
                             </button>
-                            <button type="button" class="btn btn-danger" id="removeTipo"
-                                title="Eliminar tipo de inmueble">-</button>
+                            @if (isAdmin)
+                            {
+                                <button type="button" class="btn btn-danger" id="removeTipo"
+                                    title="Eliminar tipo de inmueble">-</button>
+                            }
                         </div>
                     </div>
                     <span asp-validation-for="TipoId" class="text-danger"></span>

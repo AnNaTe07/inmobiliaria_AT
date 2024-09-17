@@ -1,0 +1,81 @@
+@model IEnumerable<Inmueble>
+
+@{
+    ViewData["Title"] = "Lista de Inmuebles Parcial";
+    bool isAdmin = User.IsInRole("Administrador");
+    bool IsEmple = User.IsInRole("Empleado");
+}
+
+<table class="table text-center mt-4">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>@Html.DisplayNameFor(model => model.Uso)</th>
+            <th>@Html.DisplayNameFor(model => model.Direccion)</th>
+            <th>Tipo de inmueble</th>
+            <th>@Html.DisplayNameFor(model => model.Ambientes)</th>
+            <th>@Html.DisplayNameFor(model => model.Precio)</th>
+            @if (isAdmin || IsEmple)
+            {
+                <th>Propietario</th>
+            }
+            <th>@Html.DisplayNameFor(model => model.Estado)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                <td>@Html.DisplayFor(modelItem => item.Uso)</td>
+                <td>@Html.DisplayFor(modelItem => item.Direccion)</td>
+                <td>@Html.DisplayFor(modelItem => item.TipoDescripcion)</td>
+                <td>@Html.DisplayFor(modelItem => item.Ambientes)</td>
+                <td>$ @Html.DisplayFor(modelItem => item.Precio)</td>
+                @if (isAdmin || IsEmple)
+                {
+                    <td>@(item.PropietarioInmueble.NombreCompleto)</td>
+                }
+                <td>
+                    @if (item.Estado)
+                    {
+                        <span style="color: rgb(26, 163, 26);">
+                            <i class="fas fa-check estado-true"></i>
+                        </span>
+                    }
+                    else
+                    {
+                        <span style="color: red;">
+                            <i class="fas fa-times estado-false"></i>
+                        </span>
+                    }
+                </td>
+                <td>
+                    @if (isAdmin || IsEmple)
+                    {
+                        <a href="/Inmueble/Editar/@item.Id"></a>
+                        <form action="@Url.Action("Editar", new { id = item.Id })" method="get" style="display: inline;">
+                            <button type="submit" class="btn btn-warning btn-custom" title="Editar">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                        </form>
+                        <a href="/Inmueble/Detalle/@item.Id"></a>
+                        <form action="@Url.Action("Detalle", new { id = item.Id })" method="get" style="display: inline;">
+                            <button type="submit" class="btn btn-info btn-custom" title="Detalles">
+                                <i class="fa-solid fa-circle-info"></i>
+                            </button>
+                        </form>
+                    }
+                    @if (isAdmin)
+                    {
+                        <button type="submit" class="btn btn-danger btn-custom"
+                            onclick="eliminar(@item.Id, `@item.TipoDescripcion`, `@item.Direccion`, `@item.Precio`, `@item.PropietarioInmueble.NombreCompleto`)"
+                            title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

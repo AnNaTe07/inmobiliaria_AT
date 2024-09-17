@@ -1,3 +1,10 @@
+@using System.Security.Claims
+@{
+    var userId = User.FindFirst("UserId")?.Value;
+    bool isAdmin = User.IsInRole("Administrador");
+    bool isEmple = User.IsInRole("Empleado");
+}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,7 +16,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     @* <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" /> *@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="false" />
 
 </head>
 
@@ -26,7 +33,8 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
 
-                        @*                                     CONTRATO                                *@
+
+       @*                                     CONTRATO                                *@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">Contratos</a>
@@ -40,8 +48,49 @@
                             </ul>
                         </li>
 
-                        
-                        @*                                     PAGOS                                *@
+
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">Inmuebles</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
+                                        asp-action="Buscar">Buscar inmuebles</a></li>
+                              @if (isEmple || isAdmin)
+                                {
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
+                                        asp-action="ListaPorPropietario">Inmuebles por Propietario</a></li>
+                                }
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
+                                        asp-action="Index">Listado de inmuebles</a></li>
+                                @if (isEmple || isAdmin)
+                                {
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
+                                        asp-action="Editar">Nuevo Inmueble</a></li>
+                                }
+                            </ul>
+                        </li>
+
+
+                    @if (isEmple || isAdmin)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">Inquilinos</a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Inquilino"
+                                        asp-action="Index">Lista de Inquilinos</a>
+                                    </li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Inquilino"
+                                        asp-action="Editar">Nuevo Inquilino</a>
+                                    </li>
+
+                                </ul>
+                            </li>
+                        }
+
+
+                      @*                           PAGOS                             *@
 
 
                         <li class="nav-item dropdown">
@@ -55,87 +104,86 @@
                                         data-bs-target="#paymentModal" id="openModalBtn">Nuevo Pago</a></li>
                             </ul>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">Inmuebles</a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
-                                        asp-action="Disponibles">Inmuebles disponibles</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
-                                        asp-action="ListaPorPropietario">Inmuebles por Propietario</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
-                                        asp-action="Index">Listado de inmuebles</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Inmueble"
-                                        asp-action="Editar">Nuevo Inmueble</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">Inquilinos</a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Inquilino"
-                                        asp-action="Index">Lista de Inquilinos</a>
-                                </li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Inquilino"
-                                        asp-action="Editar">Nuevo Inquilino</a>
-                                </li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Inquilino" asp-action="">otra
-                                        opción</a></li>
-                            </ul>
-                        </li>
 
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
+
+                        @if (isEmple || isAdmin)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">Propietarios</a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Propietario"
                                         asp-action="Index">Listado de Propietarios</a></li>
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Propietario"
                                         asp-action="Editar">Nuevo Propietario</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Propietario" asp-action="">otra
-                                        opción</a></li>
+                              
                             </ul>
                         </li>
+                        }
+
+
+                        @if (isAdmin)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">Usuarios
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Usuario"
+                                            asp-action="Index">Lista de Usuarios</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Usuario"
+                                            asp-action="Crear">Nuevo Usuario</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Usuario"
+                                            asp-action="Login">Editar Usuario</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="" asp-action=""></a></li>
+                                </ul>
+                            </li>
+                        }
+
+ 
+                        @if (isEmple || isAdmin)
+                        {
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">Usuarios
+                                data-bs-toggle="dropdown" aria-expanded="false">@User.Identity.Name
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Usuario" asp-action="Editar"
+                                        asp-route-id="@userId">Perfil </a></li>
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Usuario"
-                                        asp-action="Index">Lista de Usuarios</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Usuario"
-                                        asp-action="Crear">Nuevo Usuario</a></li>
+                                        asp-action="Avatar">Editar Avatar</a></li>
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Usuario" asp-action="">otra
-                                        opción</a></li>
+                                        opcion</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Usuario"
+                                        asp-action="Logout">Salir</a></li>
                             </ul>
                         </li>
+                        }                       
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
-            <div id="modal-nuevo">
-
-            </div>
-            <!-- Modal para nuevo pago -->
+        </main>
+             <!-- Modal para nuevo pago -->
 
            @* @Html.Partial("../Pago/Nuevo", new inmobiliaria_AT.Models.Pago())  *@
 
-        </main>
     </div>
 
     <footer class="border-top footer text-muted">
-
-
         <div class="container">
-            &copy; 2024 - Inmobiliaria AT - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2024 - Inmobiliaria AT - <a asp-area="" asp-controller="Home" asp-action="Privacy">Contáctanos</a>
         </div>
     </footer>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
+
+    
+        <script>
         $(document).ready(function () {
             $('#openModalBtn').click(function () {
                 $('#paymentModal').modal('show');
@@ -145,7 +193,6 @@
             });
         });
     </script>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
@@ -154,7 +201,7 @@
     <script src="~/js/tipoModificar.js"></script>
     <script src="~/js/tipoEliminar.js"></script>
 
-    <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
