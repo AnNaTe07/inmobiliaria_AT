@@ -26,16 +26,13 @@ namespace inmobiliaria_AT.Models
         public string? Clave { get; set; }
         public string Salt { get; set; } = "";
         public string Avatar { get; set; } = "";
-        //[NotMapped]//Para EF
-        public IFormFile? AvatarFile { get; set; }// para que pueda ser nulo
-                                                  //[NotMapped]//Para EF
-                                                  //public byte[] AvatarFileContent { get; set; }
-                                                  //[NotMapped]//Para EF
-                                                  //public string AvatarFileName { get; set; }  
+
+        public IFormFile? AvatarFile { get; set; }
         [Required(ErrorMessage = "El rol es obligatorio.")]
         public Roles Rol { get; set; }
         public string RolNombre => Rol.ToString();
-        // Propiedad auxiliar para gestionar la validación condicional
+
+        public string NombreCompleto => $"{Nombre} {Apellido}";
         public bool Estado { get; set; }//para dar de baja el usuario
     }
 }
