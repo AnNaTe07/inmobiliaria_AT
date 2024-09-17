@@ -9,23 +9,6 @@ namespace inmobiliaria_AT.Models
         Empleado = 2,
     }
 
-
-    /* 
-        public static string ObtenerRol(int rolValue)
-        {
-            // Verifica si el valor del rol está en el rango válido de la enumeración
-            if (Enum.IsDefined(typeof(Rol), rolValue))
-            {
-                // Convierte el valor entero a la descripción del rol
-                Rol rol = (Rol)rolValue;
-                return rol.ToString();
-            }
-            else
-            {
-                // Retorna un valor predeterminado o un mensaje de error si el valor no es válido
-                return "Rol no válido";
-            }
-        } */
     public class Usuario
     {
         public int Id { get; set; }
