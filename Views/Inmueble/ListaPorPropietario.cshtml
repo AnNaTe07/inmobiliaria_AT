@@ -157,11 +157,17 @@
                     if (result.success) {
                         location.reload();
                     } else {
-                        $('#message_text').text("Se produjo un error al procesar la solicitud.");
+                        $('#message_text').text(result.message || "Se produjo un error al procesar la solicitud.");
                         $('#modal_message').modal('show');
                     }
                 }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $('#message_text').text("Se produjo un error al procesar la solicitud.");
+                    if (jqXHR.status === 401) {
+                        $('#message_text').text("Debe iniciar sesión para realizar esta acción.");
+                    } else if (jqXHR.status === 403) {
+                        $('#message_text').text("Acceso denegado. No tiene permiso para realizar esta acción.");
+                    } else {
+                        $('#message_text').text("Se produjo un error al procesar la solicitud.");
+                    }
                     $('#modal_message').modal('show');
                 });
             });

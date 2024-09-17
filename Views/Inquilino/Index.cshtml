@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Listado de Inquilinos";
     bool isAdmin = User.IsInRole("Administrador");
+    bool IsEmple = User.IsInRole("Empleado");
 }
 <div class="text-center">
     <h1>Inquilinos</h1>
@@ -39,18 +40,21 @@
                     @Html.DisplayFor(modelItem => item.Apellido)
                 </td>
                 <td>
-                    <a href="/Propietario/Editar/@item.Id"></a>
-                    <form action="@Url.Action("Editar", new{id = item.Id})" method="get" style="display:inline;">
-                        <button type="submit" class="btn btn-warning btn-custom" title="Editar">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                    </form>
-                    <a href="/Propietario/Detalle/@item.Id"></a>
-                    <form action="@Url.Action("Detalle", new{id = item.Id})" method="get" style="display:inline;">
-                        <button type="submit" class="btn btn-info btn-custom" title="Detalles">
-                            <i class="fa-solid fa-circle-info"></i>
-                        </button>
-                    </form>
+                    @if (IsEmple || isAdmin)
+                    {
+                        <a href="/Propietario/Editar/@item.Id"></a>
+                        <form action="@Url.Action("Editar", new{id = item.Id})" method="get" style="display:inline;">
+                            <button type="submit" class="btn btn-warning btn-custom" title="Editar">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                        </form>
+                        <a href="/Propietario/Detalle/@item.Id"></a>
+                        <form action="@Url.Action("Detalle", new{id = item.Id})" method="get" style="display:inline;">
+                            <button type="submit" class="btn btn-info btn-custom" title="Detalles">
+                                <i class="fa-solid fa-circle-info"></i>
+                            </button>
+                        </form>
+                    }
                     @if (isAdmin)
                     {
                         <button type="submit" class="btn btn-danger btn-custom"
