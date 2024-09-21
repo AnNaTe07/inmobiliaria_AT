@@ -3,12 +3,15 @@
 @{
     ViewData["Title"] = "Editar Usuario";
     int id = Model == null ? 0 : Model.Id;
+    string usuarioLogueado = User.Identity.IsAuthenticated ? User.Identity.Name : "";
+    string nombre = Model == null ? "" : Model.NombreCompleto;
+
     bool isAdmin = User.IsInRole("Administrador");
 }
 
-@if (isAdmin)
+@if (isAdmin && usuarioLogueado != nombre)
 {
-    <h2>Editar Usuario</h2>
+    <h2>Editar Usuario: @nombre</h2>
 }
 else
 {
@@ -92,9 +95,9 @@ else
                 <p>Sin avatar</p>
             }
         </form>
-        <div class="form-group-spacing volver">
+        <div class="form-group-spacing volver mt-3">
             <a asp-action="Index" title="Volver">
-                <i class="fa-solid fa-undo"></i>
+                <i class="fa-solid fa-undo fa-lg"></i>
             </a>
         </div>
     </div>

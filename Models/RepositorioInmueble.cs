@@ -267,7 +267,6 @@ public class RepositorioInmueble
                 i.Precio, 
                 i.IdPropietario,
                 i.Estado, 
-                i.Suspendido,
                 p.Nombre AS PropietarioNombre, 
                 p.Apellido AS PropietarioApellido
             FROM 
@@ -303,7 +302,6 @@ public class RepositorioInmueble
                             Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
                             IdPropietario = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
                             Estado = reader.GetInt32(reader.GetOrdinal("Estado")) == 1,
-                            Suspendido = reader.GetInt32(reader.GetOrdinal("Suspendido")) == 1,
                             PropietarioInmueble = new Propietario
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
@@ -337,7 +335,6 @@ public class RepositorioInmueble
                 i.Precio, 
                 i.IdPropietario,
                 i.Estado, 
-                i.Suspendido,
                 p.Nombre AS PropietarioNombre, 
                 p.Apellido AS PropietarioApellido
             FROM 
@@ -347,7 +344,7 @@ public class RepositorioInmueble
             INNER JOIN 
                 Propietario p ON i.IdPropietario = p.Id 
             WHERE 
-                i.Estado = 1  ; ";//AND i.Suspendido = 0
+                i.Estado = 1  ; ";
 
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {
@@ -372,7 +369,6 @@ public class RepositorioInmueble
                             Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
                             IdPropietario = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
                             Estado = reader.GetInt32(reader.GetOrdinal("Estado")) == 1,
-                            Suspendido = reader.GetInt32(reader.GetOrdinal("Suspendido")) == 1,
                             PropietarioInmueble = new Propietario
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
@@ -406,7 +402,6 @@ public class RepositorioInmueble
                 i.Precio, 
                 i.IdPropietario,
                 i.Estado, 
-                i.Suspendido,
                 p.Nombre AS PropietarioNombre, 
                 p.Apellido AS PropietarioApellido
             FROM 
@@ -416,7 +411,7 @@ public class RepositorioInmueble
             INNER JOIN 
                 Propietario p ON i.IdPropietario = p.Id 
             WHERE 
-                i.Estado = 0  ; ";//OR i.Suspendido = 1
+                i.Estado = 0  ; ";
 
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {
@@ -441,7 +436,6 @@ public class RepositorioInmueble
                             Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
                             IdPropietario = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
                             Estado = reader.GetInt32(reader.GetOrdinal("Estado")) == 1,
-                            Suspendido = reader.GetInt32(reader.GetOrdinal("Suspendido")) == 1,
                             PropietarioInmueble = new Propietario
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
@@ -477,7 +471,6 @@ public class RepositorioInmueble
                 i.Precio, 
                 i.IdPropietario,
                 i.Estado, 
-                i.Suspendido,
                 p.Nombre AS PropietarioNombre, 
                 p.Apellido AS PropietarioApellido
             FROM 
@@ -514,7 +507,6 @@ public class RepositorioInmueble
                                 Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
                                 IdPropietario = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
                                 Estado = reader.GetInt32(reader.GetOrdinal("Estado")) == 1,
-                                Suspendido = reader.GetInt32(reader.GetOrdinal("Suspendido")) == 1,
                                 PropietarioInmueble = new Propietario
                                 {
                                     Id = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
@@ -556,7 +548,6 @@ public class RepositorioInmueble
             i.Precio, 
             i.IdPropietario,
             i.Estado,
-            i.Suspendido,
             p.Nombre AS PropietarioNombre, 
             p.Apellido AS PropietarioApellido
         FROM 
@@ -593,7 +584,6 @@ public class RepositorioInmueble
                             Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
                             IdPropietario = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
                             Estado = reader.GetBoolean(reader.GetOrdinal("Estado")),
-                            Suspendido = reader.GetBoolean(reader.GetOrdinal("Suspendido")),
                             PropietarioInmueble = new Propietario
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("IdPropietario")),
@@ -613,7 +603,7 @@ public class RepositorioInmueble
         {
             var query = @"
             UPDATE inmueble
-            SET Suspendido = true
+            SET estado = false
             WHERE Id = @id";
 
             using (MySqlCommand command = new MySqlCommand(query, connection))
@@ -633,7 +623,7 @@ public class RepositorioInmueble
         {
             var query = @"
             UPDATE inmueble
-            SET Suspendido = false
+            SET estado = true
             WHERE Id = @id";
 
             using (MySqlCommand command = new MySqlCommand(query, connection))

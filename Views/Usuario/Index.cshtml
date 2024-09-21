@@ -12,92 +12,94 @@
 <p>
     <button type="button" class="btn btn-ligth">
         <a href="/Usuario/Crear" title="Agregar Usuario">
-            <i class="fa-duotone fa-solid fa-plus"></i>
+            <i class="fa-duotone fa-solid fa-plus fa-2x"></i>
         </a>
     </button>
 </p>
-<table class="table text-center">
-    <thead>
-        <tr>
-            <th>
-                Código
-                @* @Html.DisplayNameFor(model => model.Id) *@
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nombre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Apellido)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Avatar)
-            </th>
-            <th>
-                Rol
-                @* @Html.DisplayNameFor(model => model.RolNombre) *@
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+<div class="mb-5">
+    <table class="table text-center">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Nombre)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Apellido)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Email)
-                </td>
-                <td>
-                    @if (!String.IsNullOrEmpty(item.Avatar))
-                    {
-                        var x = item.Avatar + "?" + rnd.Next();
-                        <img width="32" src="@x" />
-                    }
-                    else
-                    {
-                        <span>Sin foto</span>
-                    }
-
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RolNombre)
-                </td>
-                @* @if (User.IsInRole("Administrador"))
-            { *@
-                <td>
-                    <a href="/Usuario/Editar/@item.Id"></a>
-                    <form action="@Url.Action("Editar", new{id=item.Id})" method="get" style="display: inline;">
-                        <button type="submit" class="btn btn-warning btn-custom" title="Editar">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                    </form>
-                    <a href="/Usuario/Detalle/@item.Id"></a>
-                    <form action="@Url.Action("Detalle", new{id=item.Id})" method="get" style="display: inline;">
-                        <button type="submit" class="btn btn-info btn-custom" title="Detalles">
-                            <i class="fa-solid fa-circle-info"></i>
-                        </button>
-                    </form>
-                    <button type="submit" class="btn btn-danger btn-custom"
-                        onclick="eliminar(@item.Id, `@item.Nombre`, `@item.Apellido`)" title="Eliminar">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-                @* } *@
+                <th>
+                    Código
+                    @* @Html.DisplayNameFor(model => model.Id) *@
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nombre)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Apellido)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Email)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Avatar)
+                </th>
+                <th>
+                    Rol
+                    @* @Html.DisplayNameFor(model => model.RolNombre) *@
+                </th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Apellido)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                    <td>
+                        @if (!String.IsNullOrEmpty(item.Avatar))
+                        {
+                            var x = item.Avatar + "?" + rnd.Next();
+                            <img width="32" src="@x" />
+                        }
+                        else
+                        {
+                            <span>Sin foto</span>
+                        }
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RolNombre)
+                    </td>
+                    @* @if (User.IsInRole("Administrador"))
+                { *@
+                    <td>
+                        <a href="/Usuario/Editar/@item.Id"></a>
+                        <form action="@Url.Action("Editar", new{id=item.Id})" method="get" style="display: inline;">
+                            <button type="submit" class="btn btn-warning btn-custom" title="Editar">
+                                <i class="fa-solid fa-pen fa-lg"></i>
+                            </button>
+                        </form>
+                        <a href="/Usuario/Detalle/@item.Id"></a>
+                        <form action="@Url.Action("Detalle", new{id=item.Id})" method="get" style="display: inline;">
+                            <button type="submit" class="btn btn-info btn-custom" title="Detalles">
+                                <i class="fa-solid fa-circle-info fa-lg"></i>
+                            </button>
+                        </form>
+                        <button type="submit" class="btn btn-danger btn-custom"
+                            onclick="eliminar(@item.Id, `@item.Nombre`, `@item.Apellido`)" title="Eliminar">
+                            <i class="fas fa-trash fa-lg"></i>
+                        </button>
+                    </td>
+                    @* } *@
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
 <div class="modal fade" id="modal_eliminar_usuario" tabindex="-1" aria-labelledby="modal_eliminar_usuarioLabel"
     aria-hidden="true">

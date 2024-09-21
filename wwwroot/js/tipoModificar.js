@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+/* document.addEventListener("DOMContentLoaded", function () {
   // Selecciona el botón y los modales
   const btnEdit = document.querySelector(".btn-warning");
   const modalModificar = new bootstrap.Modal(
@@ -47,3 +47,4 @@ document.addEventListener("DOMContentLoaded", function () {
     console.error("Botón no encontrado.");
   }
 });
+ */

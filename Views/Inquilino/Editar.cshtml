@@ -13,8 +13,8 @@
             <div asp-asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" name="Id" value="@id">
             <div class="row ">
-            <div class="form-group col-md-6 form-group-spacing">
-                 <label asp-for="Nombre" class="control-label"></label>
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="Nombre" class="control-label"></label>
                     <input asp-for="Nombre" class="form-control">
                     <span asp-validation-for="Nombre" class="text-danger"></span>
                 </div>
@@ -47,7 +47,7 @@
         </form>
         <div class="form-group-spacing volver">
             <a asp-action="Index" title="Volver">
-                <i class="fa-solid fa-undo"></i>
+                <i class="fa-solid fa-undo fa-lg"></i>
             </a>
         </div>
     </div>
@@ -55,7 +55,7 @@
 
 @if (TempData["SuccessMessage"] != null)
 {
-     <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel"
+    <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel"
         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

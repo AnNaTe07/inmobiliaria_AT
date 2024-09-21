@@ -18,7 +18,6 @@ public class Inmueble
     public decimal Superficie { get; set; }
     public decimal Precio { get; set; }
     public int IdPropietario { get; set; }
-    public Propietario PropietarioInmueble { get; set; }
-    public bool Estado { get; set; } = true; // Disponibilidad
-    public bool Suspendido { get; set; } = false; // Suspensión temporal
+    public Propietario? PropietarioInmueble { get; set; }
+    public bool Estado { get; set; } = true;
 }

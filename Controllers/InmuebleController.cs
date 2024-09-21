@@ -12,15 +12,17 @@ namespace inmobiliaria_AT.Controllers
         private readonly RepositorioInmueble _repo;
         private readonly RepositorioTipo _repositorioTipo;
         private readonly RepositorioPropietario _repoPropietario;
-        public InmuebleController(ILogger<InmuebleController> logger, RepositorioInmueble repo, RepositorioTipo repositorioTipo, RepositorioPropietario repoPropietario)
+        private readonly RepositorioContrato _repoContrato;
+        public InmuebleController(ILogger<InmuebleController> logger, RepositorioInmueble repo, RepositorioTipo repositorioTipo, RepositorioPropietario repoPropietario, RepositorioContrato repoContrato)
         {
             _logger = logger;
             _repo = repo;
             _repositorioTipo = repositorioTipo;
             _repoPropietario = repoPropietario;
+            _repoContrato = repoContrato;
         }
 
-
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult Index()
         {
             var inmuebles = _repo.ObtenerTodos();
@@ -135,6 +137,7 @@ namespace inmobiliaria_AT.Controllers
         }
 
         [Authorize(Policy = "Administrador")]
+
         public IActionResult Eliminar(int id)
 
         {
@@ -144,6 +147,7 @@ namespace inmobiliaria_AT.Controllers
         }
         [Authorize(Policy = "AdminEmpleado")]
         // Método para obtener los inmuebles disponibles por propietario
+
         [Authorize(Policy = "AdminEmpleado")]
         public IActionResult Disponibles(int IdPropietario)
         {
@@ -156,6 +160,7 @@ namespace inmobiliaria_AT.Controllers
         }
         // Método para obtener los inmuebles disponibles
 
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult DisponiblesTotales()
         {
             var inmuebles = _repo.ObtenerDisponiblesTotales();
@@ -184,12 +189,14 @@ namespace inmobiliaria_AT.Controllers
             }
         }
 
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult NoDisponiblesTotales()
         {
             var inmuebles = _repo.ObtenerNoDisponiblesTotales();
             return PartialView("_InmueblesIndexPartial", inmuebles);
         }
 
+        [Authorize(Policy = "AdminEmpleado")]
         [HttpGet]
 
         public IActionResult ListaPorPropietario()
@@ -250,7 +257,7 @@ namespace inmobiliaria_AT.Controllers
 
         // Método para suspender inmueble
         [HttpPost]
-        [Authorize(Roles = "AdminEmpleado")]
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult SuspenderInmueble(int id)
         {
             if (!User.Identity.IsAuthenticated)
@@ -258,10 +265,11 @@ namespace inmobiliaria_AT.Controllers
                 return Unauthorized(new { message = "Debe iniciar sesión para realizar esta acción." });
             }
 
-            if (!User.IsInRole("AdminEmpleado"))
+            if (!User.IsInRole("Administrador") && !User.IsInRole("Empleado"))
             {
-                return Forbid(); // También puedes redirigir a una página de acceso denegado
+                return Forbid();
             }
+
             _logger.LogInformation("SuspenderInmueble llamado con Id: {Id}", id);
 
             // Llama al repositorio para suspender el inmueble
@@ -281,7 +289,7 @@ namespace inmobiliaria_AT.Controllers
 
         // Método para reactivar inmueble
         [HttpPost]
-        [Authorize(Roles = "AdminEmpleado")]
+        [Authorize(Policy = "AdminEmpleado")]
         public IActionResult ReactivarInmueble(int id)
         {
             _logger.LogInformation("ReactivarInmueble llamado con Id: {Id}", id);
@@ -339,6 +347,96 @@ namespace inmobiliaria_AT.Controllers
             }
 
             return PartialView("_InmueblesPartial", inmuebles);
+        }
+
+
+        public IActionResult verificarDisponibilidad(int inmuebleId, DateTime fechaInicio, DateTime fechaFin)
+        {
+            bool isAvailable = _repoContrato.disponiblePorFechas(inmuebleId, fechaInicio, fechaFin);
+            return Json(isAvailable); // Retornar JSON para uso en JavaScript si es necesario
+        }
+        [HttpGet]
+        public IActionResult BuscarInmuebles()
+        {   // Obtengo los tipos de inmueble
+            var tipos = _repositorioTipo.ObtenerTodos();
+
+            // Creo una lista con la opción por defecto para Tipo
+            var listaTipos = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "", Text = "Seleccione tipo de inmueble" }
+    };
+            if (tipos != null && tipos.Any())
+            {
+                listaTipos.AddRange(tipos.Select(t => new SelectListItem
+                {
+                    Value = t.Id.ToString(),
+                    Text = t.Descripcion
+                }));
+            }
+
+            ViewBag.Tipo = new SelectList(listaTipos, "Value", "Text");
+
+            // Pasar un modelo vacío o nulo al cargar la vista de búsqueda
+            return View(new List<Inmueble>());
+        }
+        [HttpPost]
+        public IActionResult BuscarInmuebles(string uso, string tipo, int? ambientes, decimal? precioMinimo, decimal? precioMaximo, DateTime? fechaInicio, DateTime? fechaFin)
+        {
+
+            // Guardo las fechas en ViewBag
+            ViewBag.FechaInicio = fechaInicio;
+            ViewBag.FechaFin = fechaFin;
+
+            // Verificar que las fechas estén seleccionadas
+            if (!fechaInicio.HasValue || !fechaFin.HasValue || string.IsNullOrEmpty(uso))
+            {
+                ModelState.AddModelError(string.Empty, "Debe seleccionar las fechas y el uso para realizar la búsqueda.");
+                return PartialView("_PartialBuscar", new List<Inmueble>()); // Retornar una lista vacía
+            }
+            // Obtener todos los inmuebles
+            var inmuebles = _repo.ObtenerTodos().AsQueryable();
+            // Filtrar según los parámetros
+            if (!string.IsNullOrEmpty(uso))
+            {
+                inmuebles = inmuebles.Where(i => i.Uso.ToString() == uso);
+            }
+            Console.WriteLine($"Inmuebles después de filtrar por uso: {inmuebles.Count()}");
+
+            if (!string.IsNullOrEmpty(tipo))
+            {
+                inmuebles = inmuebles.Where(i => i.TipoId.ToString() == tipo);
+            }
+            Console.WriteLine($"Inmuebles después de filtrar por tipo: {inmuebles.Count()}");
+
+            if (ambientes.HasValue)
+            {
+                inmuebles = inmuebles.Where(i => i.Ambientes == ambientes.Value);
+            }
+            Console.WriteLine($"Inmuebles después de filtrar por v: {inmuebles.Count()}");
+
+            if (precioMinimo.HasValue)
+            {
+                inmuebles = inmuebles.Where(i => i.Precio >= precioMinimo.Value);
+            }
+            Console.WriteLine($"Inmuebles después de filtrar por n: {inmuebles.Count()}");
+
+            if (precioMaximo.HasValue)
+            {
+                inmuebles = inmuebles.Where(i => i.Precio <= precioMaximo.Value);
+            }
+            Console.WriteLine($"Inmuebles después de filtrar por d: {inmuebles.Count()}");
+
+            if (fechaInicio.HasValue && fechaFin.HasValue)
+            {
+                inmuebles = inmuebles.Where(i => _repoContrato.disponiblePorFechas(i.Id, fechaInicio.Value, fechaFin.Value));
+            }
+            Console.WriteLine($"Inmuebles después de filtrar por t: {inmuebles.Count()}");
+
+            // Verificar que los parámetros no sean nulos
+            Console.WriteLine($"Uso: {uso}, Tipo: {tipo}, Ambientes: {ambientes}, Precio Mínimo: {precioMinimo}, Precio Máximo: {precioMaximo}, Fecha Inicio: {fechaInicio}, Fecha Fin: {fechaFin}");
+            // Retornar la lista filtrada a la vista
+            return PartialView("_PartialBuscar", inmuebles.ToList());
+
         }
     }
 }

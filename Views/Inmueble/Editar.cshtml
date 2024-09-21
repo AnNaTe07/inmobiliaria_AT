@@ -34,14 +34,15 @@
                         </select>
                         <div class="input-group-append">
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#modalAgregarTipo" title="Agregar tipo de inmueble">+</button>
+                                data-bs-target="#modalAgregarTipo" title="Agregar tipo de inmueble"> <i
+                                    class="fa-duotone fa-solid fa-plus fa-lg"></i></button>
                             <button type="button" class="btn btn-warning" title="Modificar tipo de inmueble">
-                                <i class="fa-solid fa-pen"></i>
+                                <i class="fa-solid fa-pen fa-lg"></i>
                             </button>
                             @if (isAdmin)
                             {
                                 <button type="button" class="btn btn-danger" id="removeTipo"
-                                    title="Eliminar tipo de inmueble">-</button>
+                                    title="Eliminar tipo de inmueble"><i class="fa-solid fa-minus fa-lg"></i></button>
                             }
                         </div>
                     </div>
@@ -50,31 +51,31 @@
 
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="Ambientes" class="control-label"></label>
-                    <input asp-for="Ambientes" class="form-control">
+                    <input type="number" asp-for="Ambientes" class="form-control">
                     <span asp-validation-for="Ambientes" class="text-danger"></span>
                 </div>
 
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="Latitud" class="control-label"></label>
-                    <input asp-for="Latitud" class="form-control" />
+                    <input type="number" asp-for="Latitud" class="form-control" />
                     <span asp-validation-for="Latitud" class="text-danger"></span>
                 </div>
 
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="Longitud" class="control-label"></label>
-                    <input asp-for="Longitud" class="form-control" />
+                    <input type="number" asp-for="Longitud" class="form-control" />
                     <span asp-validation-for="Longitud" class="text-danger"></span>
                 </div>
 
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="Superficie" class="control-label"></label>
-                    <input asp-for="Superficie" class="form-control" />
+                    <input type="number" asp-for="Superficie" class="form-control" />
                     <span asp-validation-for="Superficie" class="text-danger"></span>
                 </div>
 
                 <div class="form-group col-md-6 form-group-spacing">
                     <label asp-for="Precio" class="control-label"></label>
-                    <input asp-for="Precio" class="form-control">
+                    <input type="number" asp-for="Precio" class="form-control">
                     <span asp-validation-for="Precio" class="text-danger"></span>
                 </div>
 
@@ -97,7 +98,7 @@
         </form>
         <div class="form-group-spacing volver">
             <a asp-action="Index" title="Volver">
-                <i class="fa-solid fa-undo"></i>
+                <i class="fa-solid fa-undo fa-lg"></i>
             </a>
         </div>
 
@@ -245,6 +246,7 @@
 
 
     @section Scripts {
+        @* script para usar select2 *@
         <script>
             $(document).ready(function () {
                 $('#propietarioSelect').select2({
@@ -254,6 +256,7 @@
                 });
             });
         </script>
+        @* script para mensajes tempdata *@
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 // Mostrar el modal de éxito si hay un mensaje en TempData
@@ -273,5 +276,193 @@
                 }
             });
         </script>
+        @* script Eliminar tipo inmueble *@
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const btnRemove = document.getElementById("removeTipo");
+                const modalEliminar = new bootstrap.Modal(
+                    document.getElementById("modal_eliminar_inmueble")
+                );
+                const modalMsg = document.getElementById("modal_message");
+                const msgText = document.getElementById("message_text");
+                const selectTipo = document.querySelector('select[name="TipoId"]');
+                const hiddenTipoId = document.getElementById("inmueble_eliminar_id");
 
+                if (btnRemove) {
+                    btnRemove.addEventListener("click", function () {
+                        const tipoId = selectTipo ? selectTipo.value : null;
+
+                        if (tipoId) {
+                            if (hiddenTipoId) {
+                                hiddenTipoId.value = tipoId; //valor del campo oculto
+                            }
+                            modalEliminar.show(); // Muestro el modal de eliminación
+                        } else {
+                            if (modalMsg) {
+                                msgText.textContent =
+                                    "Por favor, selecciona un tipo de inmueble para eliminar.";
+                                const modalInstance = new bootstrap.Modal(modalMsg);
+                                modalInstance.show(); // Muestro el modal de mensaje de error
+
+                                // Oculto el modal
+                                setTimeout(() => {
+                                    modalInstance.hide();
+                                }, 1000);
+                            } else {
+                                console.error("El modal para mensajes no está en el DOM.");
+                            }
+                        }
+                    });
+                } else {
+                    console.error("Botón para eliminar no encontrado.");
+                }
+            });
+
+        </script>
+        @* script Agregar tipo inmueble *@
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const botonAgregar = document.getElementById("addTipo");
+                const formularioAgregar = document.getElementById("formAgregarTipo");
+
+                // Modales
+                const modalAgregar = new bootstrap.Modal(
+                    document.getElementById("modalAgregarTipo")
+                );
+
+                // Mostrar el modal de agregar tipo al hacer clic en el botón
+                if (botonAgregar) {
+                    botonAgregar.addEventListener("click", function () {
+                        modalAgregar.show();
+                    });
+                }
+
+                // Manejar el envío del formulario
+                if (formularioAgregar) {
+                    formularioAgregar.addEventListener("submit", function (evento) {
+                        evento.preventDefault(); // Prevenir el envío tradicional del formulario
+
+                        // Obtener el valor del campo de descripción
+                        const descripcion = document.getElementById("nuevoTipoDescripcion").value;
+
+                        fetch(formularioAgregar.action, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded",
+                            },
+                            body: new URLSearchParams({ descripcion: descripcion }),
+                        })
+                            .then((respuesta) => {
+                                return respuesta
+                                    .text()
+                                    .then((text) => ({ status: respuesta.status, text }));
+                            })
+                            .then(({ status, text }) => {
+                                if (status === 200) {
+                                    // Mostrar mensaje de éxito
+                                    document.getElementById("message_text").textContent =
+                                        "Tipo agregado exitosamente";
+                                    modalAgregar.hide(); // Ocultar el modal de agregar tipo
+                                    setTimeout(() => location.reload(), 1000); // Recargar la página después de ocultar el modal
+                                } else if (status === 409) {
+                                    // Mostrar mensaje de conflicto
+                                    document.getElementById("message_text").textContent =
+                                        text || "El tipo ya existe.";
+                                    const modalError = new bootstrap.Modal(
+                                        document.getElementById("modal_message")
+                                    );
+                                    modalError.show(); // Mostrar el modal
+
+                                    // Ocultar el modal después de 1'
+                                    setTimeout(() => {
+                                        modalError.hide();
+                                    }, 1000);
+                                } else {
+                                    // Mostrar mensaje de error para otros códigos de error
+                                    document.getElementById("message_text").textContent =
+                                        text || "Error al agregar el tipo";
+                                    const modalError = new bootstrap.Modal(
+                                        document.getElementById("modal_message")
+                                    );
+                                    modalError.show(); // Mostrar el modal
+
+                                    // Ocultar el modal después de 1'
+                                    setTimeout(() => {
+                                        modalError.hide();
+                                    }, 1000);
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                                // Mostrar mensaje de error en caso de excepción
+                                document.getElementById("message_text").textContent =
+                                    "Error al agregar el tipo";
+                                const modalError = new bootstrap.Modal(
+                                    document.getElementById("modal_message")
+                                );
+                                modalError.show(); // Mostrar el modal de mensaje
+
+                                // Ocultar el modal después de 1'
+                                setTimeout(() => {
+                                    modalError.hide();
+                                }, 1000);
+                            });
+                    });
+                }
+            });
+
+        </script>
+        @* Script modificar tipo inmueble *@
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Selecciona el botón y los modales
+                const btnEdit = document.querySelector(".btn-warning");
+                const modalModificar = new bootstrap.Modal(
+                    document.getElementById("modalModificar")
+                );
+                const modalMessage = new bootstrap.Modal(
+                    document.getElementById("modal_message")
+                );
+
+                // Evento para el botón de editar
+                if (btnEdit) {
+                    btnEdit.addEventListener("click", function () {
+                        const tipoSelect = document.getElementById("tipoSelect");
+
+                        if (tipoSelect && tipoSelect.value) {
+                            // Obtener el valor y el texto del tipo seleccionado
+                            const tipoId = tipoSelect.value;
+                            const tipoDescripcion =
+                                tipoSelect.options[tipoSelect.selectedIndex].text;
+
+                            // Cargar el valor seleccionado en el modal
+                            document.getElementById("tipoIdModificar").value = tipoId;
+                            document.getElementById("tipoDescripcionModificar").value =
+                                tipoDescripcion;
+
+                            // Mostrar el modal de modificar
+                            modalModificar.show();
+                        } else {
+                            // Mostrar el mensaje de error si no hay tipo seleccionado
+                            const messageText = document.getElementById("message_text");
+                            if (messageText) {
+                                messageText.textContent =
+                                    "Por favor, selecciona un tipo de inmueble para modificar.";
+                                modalMessage.show();
+
+                                // Ocultar el modal después de 2 segundos
+                                setTimeout(() => {
+                                    modalMessage.hide();
+                                }, 2000); // 2000 milisegundos
+                            } else {
+                                console.error("El elemento de mensaje no se encontró.");
+                            }
+                        }
+                    });
+                } else {
+                    console.error("Botón no encontrado.");
+                }
+            });
+
+        </script>
     }

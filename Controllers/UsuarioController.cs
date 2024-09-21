@@ -180,6 +180,7 @@ public class UsuarioController : Controller
 
     // GET: Usuario/Editar/id
     [HttpGet]
+    [Authorize(Policy = "AdminEmpleado")]
     public IActionResult Editar(int id)
     {
         var usuario = _repositorioUsuario.ObtenerPorId(id);
@@ -228,6 +229,8 @@ public class UsuarioController : Controller
     // POST: Usuario/Editar
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Policy = "AdminEmpleado")]
+
     public async Task<IActionResult> Editar(Usuario usuario, IFormFile? avatarFile)
     {
         // Console.WriteLine("Inicio del método Editar.");

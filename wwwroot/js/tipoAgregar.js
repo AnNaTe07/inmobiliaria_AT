@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+/* document.addEventListener("DOMContentLoaded", function () {
   const botonAgregar = document.getElementById("addTipo");
   const formularioAgregar = document.getElementById("formAgregarTipo");
 
@@ -87,3 +87,4 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+ */

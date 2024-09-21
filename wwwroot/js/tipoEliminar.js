@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+/* document.addEventListener("DOMContentLoaded", function () {
   const btnRemove = document.getElementById("removeTipo");
   const modalEliminar = new bootstrap.Modal(
     document.getElementById("modal_eliminar_inmueble")
@@ -37,3 +37,4 @@ document.addEventListener("DOMContentLoaded", function () {
     console.error("Botón para eliminar no encontrado.");
   }
 });
+ */

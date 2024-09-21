@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 namespace inmobiliaria_AT.Models;
 
 public class Propietario
@@ -7,6 +8,7 @@ public class Propietario
     public string Apellido { get; set; } = "";
     public string Documento { get; set; } = "";
     public string Telefono { get; set; } = "";
+    [EmailAddress(ErrorMessage = "El correo electrónico no es válido.")]
     public string Email { get; set; } = "";
     public string Direccion { get; set; } = "";
     public string NombreCompleto => $"{Nombre} {Apellido}";

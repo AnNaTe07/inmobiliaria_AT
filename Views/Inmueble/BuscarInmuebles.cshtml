@@ -1,0 +1,182 @@
+@model IEnumerable<inmobiliaria_AT.Models.Inmueble>
+@{
+    ViewData["Title"] = "Buscar Inmuebles";
+}
+
+<div class="text-center row mt-3 mb-3">
+    <h1>Buscar Inmueble</h1>
+</div>
+
+
+<div class="col-md-12">
+    <div class="row mt-4 mb-3 align-items-center">
+        <!-- Formulario de Búsqueda Avanzada -->
+        <div id="advancedSearchContainer" class="col-md-12">
+            <form id="advancedFilterForm" method="get" action="@Url.Action("BuscarInmuebles", "Inmueble")"
+                class="d-flex flex-column align-items-start">
+
+                <div class="row ">
+
+                    <div class="form-group col-md-4 form-group-spacing">
+                        <label for="uso">Uso del Inmueble:</label>
+                        <select id="uso" name="uso" class="form-control">
+                            <option value="">Seleccionar...</option>
+                            @foreach (var uso in Enum.GetValues(typeof(UsoInmueble)).Cast<UsoInmueble>())
+                            {
+                                <option value="@uso">@uso</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4 form-group-spacing">
+                        <label for="tipoSelect">Tipo de Inmueble:</label>
+                        <select id="tipoSelect" name="tipo" class="form-control" asp-items="ViewBag.Tipo"></select>
+                    </div>
+
+                    <div class="form-group col-md-4 form-group-spacing">
+                        <label for="ambientes">Número de Ambientes:</label>
+                        <input type="number" id="ambientes" name="ambientes" class="form-control" />
+                    </div>
+
+                </div>
+
+                <div class="row ">
+                    <div class="form-group col-md-3 form-group-spacing">
+
+                        <label for="precioMinimo">Precio Mínimo:</label>
+                        <input type="number" id="precioMinimo" name="precioMinimo" class="form-control" step="0.01" />
+                    </div>
+
+                    <div class="form-group col-md-3 form-group-spacing">
+                        <label for="precioMaximo">Precio Máximo:</label>
+                        <input type="number" id="precioMaximo" name="precioMaximo" class="form-control" step="0.01" />
+                    </div>
+
+
+                    <div class="form-group col-md-3 form-group-spacing">
+                        <label for="fechaInicio">Fecha de Inicio:</label>
+                        <input type="date" id="fechaInicio" name="fechaInicio" class="form-control"
+                            value="@ViewBag.FechaInicio?.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="form-group col-md-3 form-group-spacing">
+                        <label for="fechaFin">Fecha de Fin:</label>
+                        <input type="date" id="fechaFin" name="fechaFin" class="form-control"
+                            value="@ViewBag.FechaFin?.ToString("yyyy-MM-dd")" />
+                    </div>
+
+
+                    <div class="row">
+                        <div class="form-group col-md-6 form-group-spacing">
+                            <input id="btnBuscar" type="submit" value="Buscar" class="btn btn-primary" />
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div id="inmueblesBuscar" class="mb-5">
+    @Html.Partial("_PartialBuscar", Model)
+</div>
+
+
+<div class="form-group-spacing volver">
+    <a asp-action="Index" title="Volver">
+        <i class="fa-solid fa-undo fa-lg"></i>
+    </a>
+</div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@TempData["SuccessMessage"]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<!-- Modal para Mensajes Generales -->
+<div class="modal fade" id="modal_message" tabindex="-1" aria-labelledby="modalMessageLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalMessageLabel">Mensaje</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="message_text">Mensaje predeterminado.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const buscarBtn = document.getElementById('btnBuscar');
+            const form = document.getElementById('advancedFilterForm');
+
+            if (buscarBtn) {
+                buscarBtn.addEventListener('click', function (e) {
+                    const uso = document.getElementById('uso').value;
+                    const fechaInicio = document.getElementById('fechaInicio').value;
+                    const fechaFin = document.getElementById('fechaFin').value;
+
+                    // Verificar que las fechas y el uso estén seleccionados
+                    if (!fechaInicio || !fechaFin || !uso) {
+                        e.preventDefault(); // Evitar el envío del formulario
+                        document.getElementById('message_text').innerText = "Debe seleccionar las fechas y el uso para realizar la búsqueda.";
+                        const modalElement = document.getElementById('modal_message');
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                    } else {
+                        // Si todo está bien, sigue con el envío AJAX
+                        e.preventDefault(); // Evita el envío del formulario
+
+                        $.ajax({
+                            url: form.action, // URL de la acción
+                            type: 'POST', // Método POST
+                            data: $(form).serialize(), // Serializa los datos
+                            success: function (response) {
+                                $('#inmueblesBuscar').html(response); // Actualiza el contenedor
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error en la solicitud AJAX:', status, error); // Muestra error en consola
+                            }
+                        });
+                    }
+                });
+            } else {
+                console.error('El botón de búsqueda no se encontró.');
+            }
+        });
+
+
+    </script>
+
+
+
+}

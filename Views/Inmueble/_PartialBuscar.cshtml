@@ -1,0 +1,74 @@
+@model IEnumerable<Inmueble>
+
+@{
+    ViewData["Title"] = "_PartialBuscar";
+    bool isAdmin = User.IsInRole("Administrador");
+    bool IsEmple = User.IsInRole("Empleado");
+}
+
+<table class="table text-center mt-4">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>@Html.DisplayNameFor(model => model.Uso)</th>
+            <th>@Html.DisplayNameFor(model => model.Direccion)</th>
+            <th>Tipo de inmueble</th>
+            <th>@Html.DisplayNameFor(model => model.Ambientes)</th>
+            <th>@Html.DisplayNameFor(model => model.Precio)</th>
+            @if (isAdmin || IsEmple)
+            {
+                <th>Propietario</th>
+            }
+            @* <th>@Html.DisplayNameFor(model => model.Estado)</th> *@
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                <td>@Html.DisplayFor(modelItem => item.Uso)</td>
+                <td>@Html.DisplayFor(modelItem => item.Direccion)</td>
+                <td>@Html.DisplayFor(modelItem => item.TipoDescripcion)</td>
+                <td>@Html.DisplayFor(modelItem => item.Ambientes)</td>
+                <td>$ @Html.DisplayFor(modelItem => item.Precio)</td>
+                @if (isAdmin || IsEmple)
+                {
+                    <td>@(item.PropietarioInmueble.NombreCompleto)</td>
+                }
+                @* <td>
+            @if (item.Estado)
+            {
+            var estado = item.Estado;
+            <span class="badge bg-success" )">
+            Disponible
+            </span>
+            }
+            else
+            {
+            <!-- Opcionalmente, maneja el caso en que `item.Estado` es null -->
+            <span class="badge bg-danger">
+            No Disponible
+            </span>
+            }
+
+            </td> *@
+                <td>
+                    @if (isAdmin || IsEmple)
+                    {
+                        <form action="@Url.Action("Crear", "Contrato")" method="get">
+                            <input type="hidden" name="inmuebleId" value="@item.Id" />
+                            <input type="hidden" name="fechaInicio" value="@ViewBag.FechaInicio?.ToString("yyyy-MM-dd")" />
+                            <input type="hidden" name="fechaFin" value="@ViewBag.FechaFin?.ToString("yyyy-MM-dd")" />
+                            <button type="submit" class="btn btn-warning btn-custom" title="Nuevo contrato">
+                                <i class="fa-solid fa-file-contract fa-lg"></i>
+                            </button>
+                        </form>
+
+                    }
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>

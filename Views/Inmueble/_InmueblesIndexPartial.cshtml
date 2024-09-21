@@ -39,16 +39,19 @@
                 <td>
                     @if (item.Estado)
                     {
-                        <span style="color: rgb(26, 163, 26);">
-                            <i class="fas fa-check estado-true"></i>
+                        var estado = item.Estado;
+                        <span class="badge bg-success" )">
+                            Disponible
                         </span>
                     }
                     else
                     {
-                        <span style="color: red;">
-                            <i class="fas fa-times estado-false"></i>
+                        <!-- Opcionalmente, maneja el caso en que `item.Estado` es null -->
+                        <span class="badge bg-danger">
+                            No Disponible
                         </span>
                     }
+
                 </td>
                 <td>
                     @if (isAdmin || IsEmple)
@@ -56,13 +59,13 @@
                         <a href="/Inmueble/Editar/@item.Id"></a>
                         <form action="@Url.Action("Editar", new { id = item.Id })" method="get" style="display: inline;">
                             <button type="submit" class="btn btn-warning btn-custom" title="Editar">
-                                <i class="fa-solid fa-pen"></i>
+                                <i class="fa-solid fa-pen fa-lg"></i>
                             </button>
                         </form>
                         <a href="/Inmueble/Detalle/@item.Id"></a>
                         <form action="@Url.Action("Detalle", new { id = item.Id })" method="get" style="display: inline;">
                             <button type="submit" class="btn btn-info btn-custom" title="Detalles">
-                                <i class="fa-solid fa-circle-info"></i>
+                                <i class="fa-solid fa-circle-info fa-lg"></i>
                             </button>
                         </form>
                     }
@@ -71,7 +74,7 @@
                         <button type="submit" class="btn btn-danger btn-custom"
                             onclick="eliminar(@item.Id, `@item.TipoDescripcion`, `@item.Direccion`, `@item.Precio`, `@item.PropietarioInmueble.NombreCompleto`)"
                             title="Eliminar">
-                            <i class="fas fa-trash"></i>
+                            <i class="fas fa-trash fa-lg"></i>
                         </button>
                     }
                 </td>

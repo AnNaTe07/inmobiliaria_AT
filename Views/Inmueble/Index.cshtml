@@ -15,7 +15,7 @@
         <div class="col-md-1 mb-2">
             <button type="button" class="btn btn-light">
                 <a href="/Inmueble/Editar" title="Agregar Inmueble" class="text-decoration-none">
-                    <i class="fa-duotone fa-solid fa-plus"></i>
+                    <i class="fa-duotone fa-solid fa-plus fa-2x"></i>
                 </a>
             </button>
         </div>
@@ -39,9 +39,13 @@
     </div>
 </div>
 
+
+
 <div id="inmueblesTableContainer">
     @Html.Partial("_InmueblesIndexPartial", Model)
 </div>
+
+
 <div class="modal fade" id="modal_eliminar_inmueble" tabindex="-1" aria-labelledby="modal_eliminar_inmuebleLabel"
     aria-hidden="true">
     <div class="modal-dialog">
@@ -128,4 +132,17 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var toggleButton = document.getElementById('toggleAdvancedSearch');
+            if (toggleButton) {
+                toggleButton.addEventListener('click', function () {
+                    var container = document.getElementById('advancedSearchContainer');
+                    container.classList.toggle('d-none');
+                });
+            }
+        });
+
+    </script>
+
 }

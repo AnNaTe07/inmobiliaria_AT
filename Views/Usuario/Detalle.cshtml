@@ -1,0 +1,65 @@
+@model inmobiliaria_AT.Models.Usuario
+
+@{
+    ViewData["Title"] = "Detalle Usuario";
+    int id = Model == null ? 0 : Model.Id;
+    string nombre = Model == null ? "" : Model.NombreCompleto;
+}
+
+<h2>Usuario: @nombre</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <!-- Campo oculto para ID -->
+        <input type="hidden" name="Id" value="@id" />
+
+        <div class="row">
+            <div class="form-group col-md-6 form-group-spacing">
+                <label asp-for="Nombre" class="control-label"></label>
+                <input asp-for="Nombre" class="form-control" readonly />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6 form-group-spacing">
+                <label asp-for="Apellido" class="control-label"></label>
+                <input asp-for="Apellido" class="form-control" readonly />
+                <span asp-validation-for="Apellido" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6 form-group-spacing">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" readonly />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6 form-group-spacing">
+                <label class="control-label">Rol</label>
+                <input asp-for="Rol" class="form-control" readonly>
+                <span asp-validation-for="Rol" class="text-danger"></span>
+            </div>
+        </div>
+
+
+        <!-- Formulario para eliminar el avatar, separado del formulario de edición -->
+
+        @if (!string.IsNullOrEmpty(Model.Avatar))
+        {
+            <div class="image-container" style="width: 200px; display: inline-block;">
+                <img src="@Model.Avatar" alt="Avatar" class="img-thumbnail" style="max-width: 100%; max-height: 200px;" />
+            </div>
+        }
+        else
+        {
+            <p>Sin avatar</p>
+        }
+
+        <div class="form-group-spacing volver mt-5">
+            <a asp-action="Index" title="Volver">
+                <i class="fa-solid fa-undo fa-lg"></i>
+            </a>
+        </div>
+    </div>
+</div>
