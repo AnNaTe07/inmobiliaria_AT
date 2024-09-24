@@ -2,18 +2,19 @@
 
 @{
     ViewData["Title"] = "Pagos del Contrato";
-    // Puedes usar ViewBag para pasar el ID del contrato a la vista si es necesario
-    var contratoId = ViewBag.ContratoId; // Asegúrate de asignar este valor en el controlador
+    bool isAdmin = User.IsInRole("Administrador");
+    bool IsEmple = User.IsInRole("Empleado");
 }
 
 <div class="text-center">
-    <h1 class="display-4">Lista de pagos del contrato #@contratoId</h1>
+    <h1 class="display-4">Pagos: @ViewBag.contrato.Inqui.NombreCompleto - @ViewBag.contrato.DireccionInmueble </h1>
 </div>
 
 <!-- Botón para agregar nuevo pago -->
-<button type="button" class="btn btn-success btn-primary" data-bs-toggle="modal" data-bs-target="#paymentModal">
-    <i class="fa-solid fa-plus"></i> Nuevo Pago
-</button>
+<a href="@Url.Action("Nuevo", "Pago", new { id = ViewBag.contrato.Id })" class="btn btn-success btn-custom"
+    title="Pagar">
+    <h7 style="font-weight: bold;">Pagar</h7>
+</a>
 
 <table class="table">
     <thead>
@@ -49,35 +50,39 @@
                     {
                         <td>Anulado</td>
                     }
-                    <td>
-                        <!-- Botones de acciones (detalle, eliminar) -->
-                        <a href="/Pago/Detalle/@item.Id" class="btn btn-info">Detalles</a>
-                        @if (item.Estado != false)
-                        {
-                            <button type="button" class="btn btn-danger"
-                                onclick="anular(@item.Id, '@item.Fecha', '@item.Contrato.Inmu.Direccion', '@item.Monto', '@item.Concepto.Nombre')">
-                                Anular
-                            </button>
-                        }
-                        else
-                        {
-                            <button disabled type="button" class="btn btn-secondary"
-                                onclick="anular(@item.Id, '@item.Fecha', '@item.Contrato.Inmu.Direccion', '@item.Monto', '@item.Concepto.Nombre')">
-                                Anular
-                            </button>
-                        }
-                        <button type="button" class="btn btn-danger"
-                            onclick="eliminar(@item.Id, '@item.Fecha.ToString("dd/MM/yyyy")', '@item.DireccionContrato', '@item.Monto.ToString("C")', '@item.Concepto.Nombre')">
-                            Eliminar
-                        </button>
-                    </td>
+                    @if (IsEmple || isAdmin)
+                    {
+                        <td>
+                            <!-- Botones de acciones (detalle, eliminar) -->
+                            <a href="/Pago/Detalle/@item.Id" class="btn btn-info">Detalles</a>
+                            @if (item.Estado != false)
+                            {
+                                <button type="button" class="btn btn-danger"
+                                    onclick="anular(@item.Id, '@item.Fecha', '@item.Contrato.Inmu.Direccion', '@item.Monto', '@item.Concepto.Nombre')">
+                                    Anular
+                                </button>
+                            }
+                            else
+                            {
+                                <button disabled type="button" class="btn btn-secondary"
+                                    onclick="anular(@item.Id, '@item.Fecha', '@item.Contrato.Inmu.Direccion', '@item.Monto', '@item.Concepto.Nombre')">
+                                    Anular
+                                </button>
+                            }
+                            @* <button type="button" class="btn btn-danger"
+                onclick="eliminar(@item.Id, '@item.Fecha.ToString("dd/MM/yyyy")', '@item.DireccionContrato',
+                '@item.Monto.ToString("C")', '@item.Concepto.Nombre')">
+                Eliminar
+                </button> *@
+                        </td>
+                    }
                 </tr>
             }
         }
     </tbody>
+
 </table>
 
-@Html.Partial("../Pago/Nuevo", new inmobiliaria_AT.Models.Pago())
 
 <div class="modal fade" id="modal_anular_pago" tabindex="-1" aria-labelledby="modal_anular_pagoLabel"
     aria-hidden="true">
@@ -150,7 +155,6 @@
             $("#modal_anular_pago").modal("show");
         }
     </script>
-    <script src=".../js/nuevoPago.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 }

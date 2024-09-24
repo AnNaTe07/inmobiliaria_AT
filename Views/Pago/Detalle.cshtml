@@ -2,10 +2,11 @@
 
 @{
     ViewData["Title"] = "Detalle pago # " + Model.Id;
+    bool isAdmin = User.IsInRole("Administrador");
     int? id = Model == null ? 0 : Model.Id;
 }
 
-<h4>@Model.DireccionContrato.ToUpper(): Pago #@Model.Id </h4>
+<h4>Pago #@Model.Id: @Model.Contrato.Inqui.NombreCompleto - @Model.DireccionContrato.ToUpper() </h4>
 <hr>
 <div class="col-md-12">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -31,27 +32,7 @@
             <span asp-validation-for="Monto" class="text-danger"></span>
         </div>
 
-        <div class="form-group col-md-6 form-group-spacing">
-            <label asp-for="UsuPago" class="control-label">Usuario del Pago</label>
-            <input asp-for="UsuPago.NombreCompleto" class="form-control" readonly>
-            <span asp-validation-for="UsuPago.NombreCompleto" class="text-danger"></span>
-        </div>
-        @if (Model.UsuAnulacion != null)
-        {
-            <div class="form-group col-md-6 form-group-spacing">
-                <label asp-for="UsuAnulacion" class="control-label">Usuario de Anulación</label>
-                <input asp-for="UsuAnulacion.NombreCompleto" class="form-control" readonly>
-                <span asp-validation-for="UsuAnulacion.NombreCompleto" class="text-danger"></span>
-            </div>
-        }
-        @if (Model.FechaAnulacion != null)
-        {
-            <div class="form-group col-md-6 form-group-spacing">
-                <label asp-for="FechaAnulacion" class="control-label">Fecha de Anulación</label>
-                <input asp-for="FechaAnulacion" class="form-control" readonly>
-                <span asp-validation-for="FechaAnulacion" class="text-danger"></span>
-            </div>
-        }
+
         <div class="form-group col-md-6 form-group-spacing">
             <label asp-for="Detalle" class="control-label">Detalle</label>
             <input asp-for="Detalle" class="form-control" readonly>
@@ -62,10 +43,39 @@
             <input asp-for="Concepto.Nombre" class="form-control" readonly>
             <span asp-validation-for="Concepto.Nombre" class="text-danger"></span>
         </div>
+
+        <!------------------------------------------- SOLO PARA ADMINISTRADORES ------------------------------->
+        @if (isAdmin)
+        {
+            <div class="form-group col-md-6 form-group-spacing">
+                <label asp-for="UsuPago" class="control-label">Usuario que creó Pago</label>
+                <input asp-for="UsuPago.NombreCompleto" class="form-control" readonly>
+                <span asp-validation-for="UsuPago.NombreCompleto" class="text-danger"></span>
+            </div>
+            @if (Model.UsuAnulacion != null)
+            {
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="UsuAnulacion" class="control-label">Usuario de Anulación</label>
+                    <input asp-for="UsuAnulacion.NombreCompleto" class="form-control" readonly>
+                    <span asp-validation-for="UsuAnulacion.NombreCompleto" class="text-danger"></span>
+                </div>
+            }
+            @if (Model.FechaAnulacion != null)
+            {
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="FechaAnulacion" class="control-label">Fecha de Anulación</label>
+                    <input asp-for="FechaAnulacion" class="form-control" readonly>
+                    <span asp-validation-for="FechaAnulacion" class="text-danger"></span>
+                </div>
+            }
+
+        }
+
+
     </div>
 
-    <div class="form-group-spacing">
-        <a asp-action="Index" title="Volver">
+    <div class="form-group-spacing mt-8">
+        <a asp-action="Index" class="btn btn-dark mb-3" title="Volver">
             <i class="fa-solid fa-undo"></i>
         </a>
     </div>

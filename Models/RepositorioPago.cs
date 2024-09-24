@@ -8,7 +8,6 @@ public class RepositorioPago
 
     private readonly string _connectionString;
     private readonly ILogger<RepositorioPago> _logger;
-    private readonly ILogger<RepositorioUsuario> _loggerUsuario;
     private readonly ILogger<RepositorioConcepto> _loggerConcepto;
     private readonly ILogger<RepositorioInmueble> _loggerInmueble;
 
@@ -19,7 +18,6 @@ public class RepositorioPago
         _connectionString = connectionString;
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _loggerConcepto = loggerConcepto ?? throw new ArgumentNullException(nameof(loggerConcepto));
-        _loggerUsuario = loggerUsuario ?? throw new ArgumentNullException(nameof(loggerUsuario));
         _loggerInmueble = loggerInmueble ?? throw new ArgumentNullException(nameof(loggerInmueble));
         _loggerContrato = loggerContrato ?? throw new ArgumentNullException(nameof(loggerContrato));
 
@@ -34,7 +32,7 @@ public class RepositorioPago
         {                       //
             var sql = @$"SELECT {nameof(Pago.Id)}, {nameof(Pago.Fecha)}, {nameof(Pago.Monto)}, {nameof(Pago.Estado)}, 
                       {nameof(Pago.FechaAnulacion)}, {nameof(Pago.UsuPago)}, {nameof(Pago.UsuAnulacion)},
-                     {nameof(Pago.Detalle)}, {nameof(Pago.Concepto)}, IdContrato 
+                     {nameof(Pago.Detalle)}, {nameof(Pago.Concepto)}, {nameof(Pago.Nro)}, IdContrato 
                      FROM pago;";
 
             using (MySqlCommand command = new MySqlCommand(sql, connection))
@@ -46,12 +44,13 @@ public class RepositorioPago
                 {
 
                     var concepto = new RepositorioConcepto(_loggerConcepto, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.Concepto))));
-                    var uPago = new RepositorioUsuario(_loggerUsuario, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuPago))));
+
+                    var uPago = new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuPago))));
                     var contrato = new RepositorioContrato(_loggerContrato, _loggerInmueble, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal("IdContrato")));
 
                     // Verifica si 'UsuAnulacion' es nulo
                     var uAnulacion = !reader.IsDBNull(reader.GetOrdinal(nameof(Pago.UsuAnulacion)))
-                        ? new RepositorioUsuario(_loggerUsuario, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuAnulacion))))
+                        ? new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuAnulacion))))
                         : null;
                     pagos.Add(new Pago
                     {
@@ -67,7 +66,8 @@ public class RepositorioPago
                         : (DateTime?)null,
 
                         Detalle = reader.GetString(reader.GetOrdinal(nameof(Pago.Detalle))),
-                        Concepto = concepto
+                        Concepto = concepto,
+                        Nro = reader.GetInt32(reader.GetOrdinal(nameof(Pago.Nro)))
                     });
                 }
                 connection.Close();
@@ -84,7 +84,7 @@ public class RepositorioPago
         {                       //
             var sql = @$"SELECT {nameof(Pago.Id)}, {nameof(Pago.Fecha)}, {nameof(Pago.Monto)}, {nameof(Pago.Estado)}, 
                       {nameof(Pago.FechaAnulacion)}, {nameof(Pago.UsuPago)}, {nameof(Pago.UsuAnulacion)},
-                     {nameof(Pago.Detalle)}, {nameof(Pago.Concepto)}, IdContrato 
+                     {nameof(Pago.Detalle)}, {nameof(Pago.Concepto)}, {nameof(Pago.Nro)}, IdContrato 
                      FROM pago WHERE IdContrato = {id};";
 
             using (MySqlCommand command = new MySqlCommand(sql, connection))
@@ -96,12 +96,12 @@ public class RepositorioPago
                 {
 
                     var concepto = new RepositorioConcepto(_loggerConcepto, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.Concepto))));
-                    var uPago = new RepositorioUsuario(_loggerUsuario, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuPago))));
+                    var uPago = new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuPago))));
                     var contrato = new RepositorioContrato(_loggerContrato, _loggerInmueble, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal("IdContrato")));
 
                     // Verifica si 'UsuAnulacion' es nulo
                     var uAnulacion = !reader.IsDBNull(reader.GetOrdinal(nameof(Pago.UsuAnulacion)))
-                        ? new RepositorioUsuario(_loggerUsuario, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuAnulacion))))
+                        ? new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuAnulacion))))
                         : null;
                     pagos.Add(new Pago
                     {
@@ -117,7 +117,8 @@ public class RepositorioPago
                         : (DateTime?)null,
 
                         Detalle = reader.GetString(reader.GetOrdinal(nameof(Pago.Detalle))),
-                        Concepto = concepto
+                        Concepto = concepto,
+                        Nro = reader.GetInt32(reader.GetOrdinal(nameof(Pago.Nro)))
                     });
                 }
                 connection.Close();
@@ -134,7 +135,7 @@ public class RepositorioPago
             Pago? pago = null;
             var sql = @$"SELECT {nameof(Pago.Id)}, {nameof(Pago.Fecha)}, {nameof(Pago.Monto)}, {nameof(Pago.Estado)}, 
                       {nameof(Pago.FechaAnulacion)}, {nameof(Pago.UsuPago)}, {nameof(Pago.UsuAnulacion)},
-                     {nameof(Pago.Detalle)}, {nameof(Pago.Concepto)}, IdContrato
+                     {nameof(Pago.Detalle)}, {nameof(Pago.Concepto)}, {nameof(Pago.Nro)}, IdContrato
                      FROM pago WHERE {nameof(Pago.Id)} = @id;";
 
             using (MySqlCommand command = new MySqlCommand(sql, connection))
@@ -145,9 +146,9 @@ public class RepositorioPago
                 if (reader.Read())
                 {
                     var concepto = new RepositorioConcepto(_loggerConcepto, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.Concepto))));
-                    var uPago = new RepositorioUsuario(_loggerUsuario, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuPago))));
+                    var uPago = new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuPago))));
                     var uAnulacion = !reader.IsDBNull(reader.GetOrdinal(nameof(Pago.UsuAnulacion)))
-                       ? new RepositorioUsuario(_loggerUsuario, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuAnulacion))))
+                       ? new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuAnulacion))))
                        : null;
                     var contrato = new RepositorioContrato(_loggerContrato, _loggerInmueble, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal("IdContrato")));
                     return new Pago
@@ -163,7 +164,8 @@ public class RepositorioPago
                         ? reader.GetDateTime(reader.GetOrdinal(nameof(Pago.FechaAnulacion)))
                         : (DateTime?)null,
                         Detalle = reader.GetString(reader.GetOrdinal(nameof(Pago.Detalle))),
-                        Concepto = concepto
+                        Concepto = concepto,
+                        Nro = reader.GetInt32(reader.GetOrdinal(nameof(Pago.Nro)))
                     };
                 }
                 connection.Close();
@@ -179,7 +181,7 @@ public class RepositorioPago
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
         {
             var sql = @$"SELECT {nameof(Pago.Id)}, {nameof(Pago.Fecha)}, {nameof(Pago.Monto)}, {nameof(Pago.Estado)},
-             {nameof(Pago.FechaAnulacion)}, {nameof(Pago.Detalle)}, {nameof(Pago.Concepto)}, {nameof(Pago.UsuPago)}, {nameof(Pago.UsuAnulacion)}
+             {nameof(Pago.FechaAnulacion)}, {nameof(Pago.Detalle)}, {nameof(Pago.Concepto)}, {nameof(Pago.UsuPago)}, {nameof(Pago.UsuAnulacion)}, {nameof(Pago.Nro)}
             FROM pago WHERE {nameof(Pago.Estado)} = 1 AND {nameof(Pago.Concepto)} = @id;";
 
             using (MySqlCommand command = new MySqlCommand(sql, connection))
@@ -190,8 +192,8 @@ public class RepositorioPago
                 while (reader.Read())
                 {
                     var concepto = new RepositorioConcepto(_loggerConcepto, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.Concepto))));
-                    var uPago = new RepositorioUsuario(_loggerUsuario, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuPago))));
-                    var uAnulacion = new RepositorioUsuario(_loggerUsuario, _connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuAnulacion))));
+                    var uPago = new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuPago))));
+                    var uAnulacion = new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32(reader.GetOrdinal(nameof(Pago.UsuAnulacion))));
 
 
                     pagos.Add(new Pago
@@ -204,7 +206,8 @@ public class RepositorioPago
                         UsuPago = uPago,
                         FechaAnulacion = reader.GetDateTime(reader.GetOrdinal(nameof(Pago.FechaAnulacion))),
                         Detalle = reader.GetString(reader.GetOrdinal(nameof(Pago.Detalle))),
-                        Concepto = concepto
+                        Concepto = concepto,
+                        Nro = reader.GetInt32(reader.GetOrdinal(nameof(Pago.Nro))),
                     });
                 }
                 connection.Close();
@@ -217,47 +220,61 @@ public class RepositorioPago
     public int Alta(Pago pago)
     {
         int res = -1;
-        using (MySqlConnection connection = new MySqlConnection(_connectionString))
-        {
-            //
-            var query = $@"INSERT INTO Pago IdContrato, Fecha, Monto, Estado, UsuPago, Detalle, Concepto
-             VALUES ( @IdContrato, @Fecha, @Monto, @Estado, @UsuPago,
-             @FechaAnulacion,@Detalle, @Concepto; SELECT LAST_INSERT_ID();";
 
-            using (MySqlCommand command = new MySqlCommand(query, connection))
+
+        try
+        {
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
-                command.Parameters.AddWithValue("IdContrato", pago.Contrato.Id);
-                command.Parameters.AddWithValue("@Fecha", pago.Fecha);
-                command.Parameters.AddWithValue("@Monto", pago.Monto);
-                command.Parameters.AddWithValue("@Estado", pago.Estado);
-                command.Parameters.AddWithValue("@UsuPago", pago.UsuPago.Id);
-                command.Parameters.AddWithValue("@Detalle", pago.Detalle);
-                command.Parameters.AddWithValue("@Concepto", pago.Concepto.Id);
-                connection.Open();
-                res = Convert.ToInt32(command.ExecuteScalar());
-                connection.Close();
+                var query = @"
+                INSERT INTO Pago (IdContrato, Fecha, Monto, Detalle, Concepto, Nro, usuPago) 
+                VALUES (@IdContrato, @Fecha, @Monto, @Detalle, 1, @Nro, @usuPago); 
+                SELECT LAST_INSERT_ID();";
+
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@IdContrato", pago.Contrato.Id);
+                    command.Parameters.AddWithValue("@Fecha", DateTime.Now);
+                    command.Parameters.AddWithValue("@Monto", pago.Monto);
+                    command.Parameters.AddWithValue("@Detalle", pago.Detalle);
+                    command.Parameters.AddWithValue("@Nro", ObtenerCantidadPagosPorContrato(pago.Contrato.Id) + 1);
+                    command.Parameters.AddWithValue("@usuPago", pago.UsuPago.Id);
+
+                    connection.Open();
+                    res = Convert.ToInt32(command.ExecuteScalar());
+                }
             }
+        }
+        catch (MySqlException ex) when (ex.Number == 1062) // Código de error para duplicados
+        {
+            _logger.LogError($"Error al guardar el pago: {ex.Message}");
+            throw new Exception("Ya existe un pago con este número para este contrato.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error al guardar el pago: {ex.Message}");
+            throw;
         }
         return res;
     }
 
-    public int AltaMulta(int idContrato, string detalle, DateTime fecha)
+    public int AltaMulta(int idContrato, string detalle, DateTime fecha, int userId)
     {
         int res = -1;
         Decimal monto = 0;
         var contrato = new RepositorioContrato(_loggerContrato, _loggerInmueble, _connectionString).ObtenerPorId(idContrato);
 
-        
+
 
         DateTime? fechaFin = contrato.FechaFin;
 
-        monto = fechaFin.HasValue ? (fechaFin.Value - DateTime.Now).Days *1500 : 0;
+        monto = CalcularMulta(contrato);
 
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
         {
             // Consulta SQL con parámetros
-            var query = $@"INSERT INTO Pago (IdContrato, Fecha, Monto, Detalle, Concepto)
-                       VALUES (@IdContrato, @Fecha, @Monto, @Detalle, 2); 
+            var query = $@"INSERT INTO Pago (IdContrato, Fecha, Monto, Detalle, Concepto, UsuPago)
+                       VALUES (@IdContrato, @Fecha, @Monto, @Detalle, 2, @UsuPago); 
                        SELECT LAST_INSERT_ID();";
 
             using (MySqlCommand command = new MySqlCommand(query, connection))
@@ -267,6 +284,7 @@ public class RepositorioPago
                 command.Parameters.AddWithValue("@Fecha", fecha);
                 command.Parameters.AddWithValue("@Monto", monto);
                 command.Parameters.AddWithValue("@Detalle", detalle);
+                command.Parameters.AddWithValue("@UsuPago", userId);
 
                 // Abrir la conexión y ejecutar el comando
                 connection.Open();
@@ -277,14 +295,47 @@ public class RepositorioPago
         return res;
     }
 
+    public decimal CalcularMulta(Contrato contrato)
+    {
+        // Verificar que la fecha de finalización esté establecida
+        if (contrato.FechaFin == null)
+            throw new InvalidOperationException("La fecha de terminación no está establecida.");
+
+        // Calcular la duración original del contrato
+        TimeSpan duracionOriginal = contrato.FechaFin - contrato.FechaInicio;
+
+        // Calcular la mitad de la duración del contrato
+        DateTime mitadDuracion = contrato.FechaInicio.AddDays(duracionOriginal.TotalDays / 2);
+
+        // Obtener la fecha actual
+        DateTime fechaActual = DateTime.Now;
+
+        if (duracionOriginal.TotalDays < 60) // Menos de 60 días
+        {
+            // Si es menor a dos meses, solo se cobrará un mes de alquiler
+            return contrato.Inmu.Precio; // Pagar un mes de alquiler
+        }
+        // Calcular la multa según si se ha cumplido menos de la mitad del contrato
+        decimal multa = 0;
+        if (fechaActual < mitadDuracion)
+        {
+            multa = 2 * contrato.Inmu.Precio; // Dos meses de alquiler
+        }
+        else
+        {
+            multa = contrato.Inmu.Precio; // Un mes de alquiler
+        }
+
+        return multa;
+    }
 
 
-    public int Anular(int id)
+    public int Anular(int id, int usuAnulacion)
     {
         var res = -1;
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
         {
-            var sql = @$"UPDATE pago SET Estado = 0 WHERE Id = {id};";
+            var sql = @$"UPDATE pago SET Estado = 0, UsuAnulacion = {usuAnulacion}, FechaAnulacion = NOW() WHERE Id = {id};";
             using (MySqlCommand command = new MySqlCommand(sql, connection))
             {
                 connection.Open();
@@ -312,6 +363,49 @@ public class RepositorioPago
     }
 
 
+    public int Editar(Pago pago)
+    {
+        int res = -1;
+        using (MySqlConnection connection = new MySqlConnection(_connectionString))
+        {
+            var query = @"UPDATE pago SET
+             IdContrato = @IdContrato, Fecha = @Fecha, Monto = @Monto,
+              Detalle = @Detalle  WHERE Id = @Id;";
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@IdContrato", pago.Contrato.Id);
+                command.Parameters.AddWithValue("@Fecha", pago.Fecha);
+                command.Parameters.AddWithValue("@Monto", pago.Monto);
+                command.Parameters.AddWithValue("@Detalle", pago.Detalle);
+                command.Parameters.AddWithValue("@Id", pago.Id);
+
+                connection.Open();
+                res = command.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
+        return res;
+    }
+
+    public int ObtenerCantidadPagosPorContrato(int contratoId)
+    {
+        using (var connection = new MySqlConnection(_connectionString))
+        {
+            connection.Open();
+            var query = "SELECT COUNT(*) FROM Pago WHERE IdContrato = @IdContrato";
+            using (var command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@IdContrato", contratoId);
+                return Convert.ToInt32(command.ExecuteScalar());
+            }
+        }
+    }
+
+    internal object ObtenerPorId(int? id)
+    {
+        throw new NotImplementedException();
+    }
 }
+
 
 

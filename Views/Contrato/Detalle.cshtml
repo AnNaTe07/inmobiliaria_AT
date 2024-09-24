@@ -2,12 +2,13 @@
 
 @{
     ViewData["Title"] = "Detalle de Contrato";
+    bool isAdmin = User.IsInRole("Administrador");
     int id = Model == null ? 0 : Model.Id;
 }
 
 <head>
     <div class="d-flex justify-content-between align-items-center">
-        <h4 class="mb-0">@Model.DireccionInmueble.ToUpper(): Contrato #@Model.Id </h4>
+        <h4 class="mb-0">#@Model.Id : @Model.DireccionInmueble.ToUpper() - @Model.Prop.NombreCompleto </h4>
 
         <div class="icoEditar">
             <form action="@Url.Action("Editar", new { id = Model.Id })" method="get" style="display: inline;">
@@ -51,48 +52,46 @@
             <span asp-validation-for="FechaFin" class="text-danger"></span>
         </div>
         <div class="form-group col-md-6 form-group-spacing">
-            <label asp-for="Monto" class="control-label"></label>
-            <input asp-for="Monto" class="form-control" readonly />
-            <span asp-validation-for="Monto" class="text-danger"></span>
+            <label asp-for="Inmu.Precio" class="control-label"></label>
+            <input asp-for="Inmu.Precio" class="form-control" readonly />
+            <span asp-validation-for="Inmu.Precio" class="text-danger"></span>
         </div>
     </div>
     <div class="row">
 
-        <div class="form-group col-md-6 form-group-spacing">
-            <label asp-for="Tipo" class="control-label"></label>
-            <input asp-for="Tipo" class="form-control" readonly>
-            <span asp-validation-for="Tipo" class="text-danger"></span>
-        </div>
-        <div class="form-group col-md-6 form-group-spacing">
+        <div class="form-group col-md-12 form-group-spacing">
             <label asp-for="Descripcion" class="control-label"></label>
             <input asp-for="Descripcion" class="form-control" readonly>
             <span asp-validation-for="Descripcion" class="text-danger"></span>
         </div>
-        
-        <div class="form-group col-md-6 form-group-spacing">
-            <label class="control-label">Vencimiento</label>
-            <input value="@ViewBag.MesesYDiasRestantes" class="form-control" readonly>
-            <span asp-validation-for="Plazo" class="text-danger"></span>
-        </div>
 
-        <div class="form-group col-md-6 form-group-spacing">
-            <label asp-for="PorcentajeActualizacion" class="control-label">% actualización</label>
-            <input asp-for="PorcentajeActualizacion" class="form-control" readonly>
-            <span asp-validation-for="PorcentajeActualizacion" class="text-danger"></span>
-        </div>
-        <div class="form-group col-md-6 form-group-spacing">
-            <label asp-for="PeriodoActualizacion" class="control-label">Periodo actualización (Meses)</label>
-            <input asp-for="PeriodoActualizacion" class="form-control" readonly>
-            <span asp-validation-for="PeriodoActualizacion" class="text-danger"></span>
-        </div>
-        <div class="form-group col-md-6 form-group-spacing">
+        <div class="form-group col-md-12 form-group-spacing">
             <label asp-for="Observaciones" class="control-label"></label>
             <input asp-for="Observaciones" class="form-control" readonly>
             <span asp-validation-for="Observaciones" class="text-danger"></span>
         </div>
 
-        <div class="form-group-spacing">
-            <a asp-action="Index" title="Volver">
+        <!------------------------------------------- SOLO PARA ADMINISTRADORES ------------------------------->
+        @if (isAdmin)
+        {
+            <div class="form-group col-md-6 form-group-spacing">
+                <label asp-for="UsuCreacion" class="control-label">Usuario que creó Contrato</label>
+                <input asp-for="UsuCreacion.NombreCompleto" class="form-control" readonly>
+                <span asp-validation-for="UsuCreacion.NombreCompleto" class="text-danger"></span>
+            </div>
+            @if (Model.UsuAnulacion != null)
+            {
+                <div class="form-group col-md-6 form-group-spacing">
+                    <label asp-for="UsuAnulacion" class="control-label">Usuario de Anulación</label>
+                    <input asp-for="UsuAnulacion.NombreCompleto" class="form-control" readonly>
+                    <span asp-validation-for="UsuAnulacion.NombreCompleto" class="text-danger"></span>
+                </div>
+            }
+
+        }
+
+        <div class="form-group-spacing mt-8">
+            <a asp-action="Index" class="btn btn-dark mb-3" title="Volver">
                 <i class="fa-solid fa-undo"></i>
             </a>
         </div>

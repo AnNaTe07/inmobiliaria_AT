@@ -87,7 +87,7 @@ else
                 <div class="image-container" style="width: 200px; display: inline-block;">
                     <img src="@Model.Avatar" alt="Avatar" class="img-thumbnail"
                         style="max-width: 100%; max-height: 200px;" />
-                    <button type="submit" class="btn btn-danger btn-sm" style="width: 100%;">Eliminar Avatar</button>
+                    <button type="submit" class="btn btn-danger btn-sm mb-3" style="width: 100%;">Eliminar Avatar</button>
                 </div>
             }
             else
@@ -95,9 +95,9 @@ else
                 <p>Sin avatar</p>
             }
         </form>
-        <div class="form-group-spacing volver mt-3">
-            <a asp-action="Index" title="Volver">
-                <i class="fa-solid fa-undo fa-lg"></i>
+        <div class="form-group-spacing ">
+            <a asp-action="Index" class="btn btn-dark mb-3" title="Volver">
+                <i class="fa-solid fa-undo"></i>
             </a>
         </div>
     </div>

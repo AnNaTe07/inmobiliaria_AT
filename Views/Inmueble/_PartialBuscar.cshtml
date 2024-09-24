@@ -53,20 +53,20 @@
             }
 
             </td> *@
-                <td>
-                    @if (isAdmin || IsEmple)
-                    {
-                        <form action="@Url.Action("Crear", "Contrato")" method="get">
-                            <input type="hidden" name="inmuebleId" value="@item.Id" />
-                            <input type="hidden" name="fechaInicio" value="@ViewBag.FechaInicio?.ToString("yyyy-MM-dd")" />
-                            <input type="hidden" name="fechaFin" value="@ViewBag.FechaFin?.ToString("yyyy-MM-dd")" />
-                            <button type="submit" class="btn btn-warning btn-custom" title="Nuevo contrato">
-                                <i class="fa-solid fa-file-contract fa-lg"></i>
-                            </button>
-                        </form>
+                @* <td>
+            @if (isAdmin || IsEmple)
+            {
+            <form action="@Url.Action("Crear", "Contrato")" method="get">
+            <input type="hidden" name="inmuebleId" value="@item.Id" />
+            <input type="hidden" name="fechaInicio" value="@ViewBag.FechaInicio?.ToString("yyyy-MM-dd")" />
+            <input type="hidden" name="fechaFin" value="@ViewBag.FechaFin?.ToString("yyyy-MM-dd")" />
+            <button type="submit" class="btn btn-warning btn-custom" title="Nuevo contrato">
+            <i class="fa-solid fa-file-contract fa-lg"></i>
+            </button>
+            </form>
 
-                    }
-                </td>
+            }
+            </td> *@
 
             </tr>
         }

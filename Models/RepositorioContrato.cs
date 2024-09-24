@@ -22,15 +22,15 @@ public class RepositorioContrato
     }
 
 
-// ------------ ESTADOS == 0: ANULADO, 1: ACTIVO, 2: VENCIDO, 3: RESCINDIDO, 4: RENOVADO  ---------------------
+    // ------------ EstadoS ==> 0: --, 1: ACTIVO, 2: VENCIDO, 3: RESCINDIDO, 4: RENOVADO  ---------------------
 
     public List<Contrato> ObtenerTodos()
     {
         List<Contrato> contratos = new List<Contrato>();
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
         {
-            var sql = $@"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Monto, Estado, Descripcion, Plazo, PorcentajeActualizacion, PeriodoActualizacion, Observaciones, Tipo FROM contrato
-            WHERE estado = 1 OR estado = 4;";
+            var sql = $@"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Estado, Descripcion, Observaciones, UsuarioCreacion, UsuarioAnulacion, Pagos FROM contrato
+            WHERE Estado = 1 OR Estado = 4;";
 
             using (MySqlCommand command = new MySqlCommand(sql, connection))
             {
@@ -45,7 +45,11 @@ public class RepositorioContrato
                     var inquilino = new RepositorioInquilino(_connectionString).ObtenerPorId(idInquilino);
                     var inmueble = new RepositorioInmueble(_loggerInmueble, _connectionString).ObtenerPorId(idInmueble);
                     var propietario = new RepositorioPropietario(_connectionString).ObtenerPorId(idPropietario);
-
+                    var creacion = new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32("UsuarioCreacion"));
+                    var pagos = reader.GetInt32("Pagos");
+                    var anulacion = reader.IsDBNull(reader.GetOrdinal("UsuarioAnulacion"))
+                    ? null
+                    : new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32("UsuarioAnulacion"));
 
                     if (inquilino == null || inmueble == null || propietario == null)
                     {
@@ -62,17 +66,15 @@ public class RepositorioContrato
                         Prop = propietario,
                         FechaInicio = reader.GetDateTime("FechaInicio"),
                         FechaFin = reader.GetDateTime("FechaFin"),
-                        Monto = reader.GetDecimal("Monto"),
-                        Estado = reader.GetBoolean("Estado"),
+                        Estado = reader.GetInt32("Estado"),
                         Descripcion = reader.GetString("Descripcion"),
-                        Plazo = reader.GetInt32("Plazo"),
-                        PorcentajeActualizacion = reader.GetDecimal("PorcentajeActualizacion"),
-                        PeriodoActualizacion = reader.GetInt32("PeriodoActualizacion"),
                         Observaciones = reader.GetString("Observaciones"),
-                        Tipo = (TipoContrato)Enum.Parse(typeof(TipoContrato), reader.GetString("Tipo"))
+                        UsuCreacion = creacion,
+                        UsuAnulacion = anulacion
                     };
 
                     contratos.Add(contrato);
+
                 }
                 connection.Close();
             }
@@ -81,13 +83,13 @@ public class RepositorioContrato
     }
 
 
-  public List<Contrato> ObtenerVencidos()
-    { //ESTADO DE VENCIDO = 2
+    public List<Contrato> ObtenerVencidos()
+    { //Estado DE VENCIDO = 2
         List<Contrato> contratos = new List<Contrato>();
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
         {
-            var sql = $@"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Monto, Estado, Descripcion, Plazo, PorcentajeActualizacion, PeriodoActualizacion, Observaciones, Tipo FROM contrato
-            WHERE estado = 2;";
+            var sql = $@"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Estado, Descripcion,Observaciones, UsuarioCreacion, UsuarioAnulacion, Pagos FROM contrato
+            WHERE Estado = 2 OR Estado = 3;";
 
             using (MySqlCommand command = new MySqlCommand(sql, connection))
             {
@@ -102,15 +104,17 @@ public class RepositorioContrato
                     var inquilino = new RepositorioInquilino(_connectionString).ObtenerPorId(idInquilino);
                     var inmueble = new RepositorioInmueble(_loggerInmueble, _connectionString).ObtenerPorId(idInmueble);
                     var propietario = new RepositorioPropietario(_connectionString).ObtenerPorId(idPropietario);
-
-
+                    var pagos = reader.GetInt32("Pagos");
+                    var creacion = new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32("UsuarioCreacion"));
+                    var anulacion = reader.IsDBNull(reader.GetOrdinal("UsuarioAnulacion"))
+                    ? null
+                    : new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32("UsuarioAnulacion"));
                     if (inquilino == null || inmueble == null || propietario == null)
                     {
                         Console.WriteLine("Datos incompletos: Inquilino: " + inquilino + ", Inmueble: " + inmueble + ", Propietario: " + propietario);
                         continue;
                     }
 
-                    // Crear el contrato
                     var contrato = new Contrato
                     {
                         Id = reader.GetInt32("Id"),
@@ -119,14 +123,13 @@ public class RepositorioContrato
                         Prop = propietario,
                         FechaInicio = reader.GetDateTime("FechaInicio"),
                         FechaFin = reader.GetDateTime("FechaFin"),
-                        Monto = reader.GetDecimal("Monto"),
-                        Estado = reader.GetBoolean("Estado"),
+                        Estado = reader.GetInt32("Estado"),
                         Descripcion = reader.GetString("Descripcion"),
-                        Plazo = reader.GetInt32("Plazo"),
-                        PorcentajeActualizacion = reader.GetDecimal("PorcentajeActualizacion"),
-                        PeriodoActualizacion = reader.GetInt32("PeriodoActualizacion"),
                         Observaciones = reader.GetString("Observaciones"),
-                        Tipo = (TipoContrato)Enum.Parse(typeof(TipoContrato), reader.GetString("Tipo"))
+                        UsuCreacion = creacion,
+                        UsuAnulacion = anulacion,
+                        Pagos = pagos
+
                     };
 
                     contratos.Add(contrato);
@@ -144,9 +147,9 @@ public class RepositorioContrato
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
         {
             var sql = $@"SELECT {nameof(Contrato.Id)},{nameof(Contrato.Inqui)},{nameof(Contrato.Inmu)}
-            ,{nameof(Contrato.FechaInicio)},{nameof(Contrato.FechaFin)},{nameof(Contrato.Monto)},{nameof(Contrato.Estado)}
-            ,{nameof(Contrato.Descripcion)},{nameof(Contrato.Plazo)},{nameof(Contrato.PorcentajeActualizacion)},
-            {nameof(Contrato.PeriodoActualizacion)},{nameof(Contrato.Observaciones)},{nameof(Contrato.Tipo)},{nameof(Contrato.Prop)} FROM contrato WHERE {nameof(Contrato.Id)} = {id};";
+            ,{nameof(Contrato.FechaInicio)},{nameof(Contrato.FechaFin)},{nameof(Contrato.Estado)}
+            ,{nameof(Contrato.Descripcion)},{nameof(Contrato.Observaciones)},
+            {nameof(Contrato.Prop)}, UsuarioCreacion, UsuarioAnulacion, Pagos FROM contrato WHERE {nameof(Contrato.Id)} = {id};";
             using (MySqlCommand command = new MySqlCommand(sql, connection))
             {
                 connection.Open();
@@ -163,9 +166,13 @@ public class RepositorioContrato
                     Inquilino inquilino = repositorioInquilino.ObtenerPorId(idInquilino);
                     Inmueble inmueble = repositorioInmueble.ObtenerPorId(Inmu);
                     Propietario propietario = repositorioPropietario.ObtenerPorId(Prop);
-                    if (inquilino == null || inmueble == null || propietario == null)
+                    var creacion = new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32("UsuarioCreacion"));
+                    int pagos = reader.GetInt32("Pagos");
+                    var anulacion = reader.IsDBNull(reader.GetOrdinal("UsuarioAnulacion"))
+                        ? null
+                        : new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32("UsuarioAnulacion")); if (inquilino == null || inmueble == null || propietario == null)
+
                     {
-                        // Manejar el caso en que alguno de los objetos sea null
                         return null;
 
                     }
@@ -179,15 +186,12 @@ public class RepositorioContrato
                             Prop = propietario,
                             FechaInicio = reader.GetDateTime(nameof(Contrato.FechaInicio)),
                             FechaFin = reader.GetDateTime(nameof(Contrato.FechaFin)),
-                            Monto = reader.GetDecimal(nameof(Contrato.Monto)),
-                            Estado = reader.GetBoolean(nameof(Contrato.Estado)),
+                            Estado = reader.GetInt32(nameof(Contrato.Estado)),
                             Descripcion = reader.GetString(nameof(Contrato.Descripcion)),
-                            Plazo = reader.GetInt32(nameof(Contrato.Plazo)),
-                            PorcentajeActualizacion = reader.GetDecimal(nameof(Contrato.PorcentajeActualizacion)),
-                            PeriodoActualizacion = reader.GetInt32(nameof(Contrato.PeriodoActualizacion)),
                             Observaciones = reader.GetString(nameof(Contrato.Observaciones)),
-                            Tipo = (TipoContrato)Enum.Parse(typeof(TipoContrato), reader.GetString(nameof(Contrato.Tipo)))
-
+                            UsuCreacion = creacion,
+                            UsuAnulacion = anulacion,
+                            Pagos = pagos
                         };
                     }
 
@@ -200,70 +204,53 @@ public class RepositorioContrato
 
 
     public int Alta(Contrato contrato)
-
     {
         var repo_Inm = new RepositorioInmueble(_loggerInmueble, _connectionString);
         var id_prop = repo_Inm.ObtenerPorId(contrato.Inmu.Id).IdPropietario;
         int res = -1;
 
-
         using (MySqlConnection conn = new MySqlConnection(_connectionString))
         {
             conn.Open();
-            //----HAGO UNA TRANSACCION POR LAS DUDAS QUE ALGUNA DE LAS CONSULTAS FALLE
             using (MySqlTransaction transaction = conn.BeginTransaction())
             {
                 try
                 {
                     var sql = $@"INSERT INTO contrato 
-                        ({nameof(Contrato.Inqui)}, {nameof(Contrato.Inmu)}, {nameof(Contrato.FechaInicio)}, 
-                        {nameof(Contrato.FechaFin)}, {nameof(Contrato.Monto)}, {nameof(Contrato.Estado)}, 
-                        {nameof(Contrato.Descripcion)}, {nameof(Contrato.Plazo)}, {nameof(Contrato.PorcentajeActualizacion)}, 
-                        {nameof(Contrato.PeriodoActualizacion)}, {nameof(Contrato.Observaciones)}, {nameof(Contrato.Tipo)}, {nameof(Contrato.Prop)}) 
-                        VALUES (@Inqui, @Inmu, @fechaInicio, @fechaFin, @monto, @estado, @descripcion, 
-                        @plazo, @porcentajeActualizacion, @periodoActualizacion, @observaciones, @tipo, @Prop); 
-                        SELECT LAST_INSERT_ID();";
+                    ({nameof(Contrato.Inqui)}, {nameof(Contrato.Inmu)}, {nameof(Contrato.FechaInicio)}, 
+                    {nameof(Contrato.FechaFin)}, {nameof(Contrato.Descripcion)},   
+                    {nameof(Contrato.Observaciones)}, {nameof(Contrato.Prop)}, UsuarioCreacion, Pagos) 
+                    VALUES (@Inqui, @Inmu, @fechaInicio, @fechaFin, @descripcion, 
+                    @observaciones, @Prop, @UsuarioCreacion, @Pagos); 
+                    SELECT LAST_INSERT_ID();";
+
                     using (MySqlCommand command = new MySqlCommand(sql, conn, transaction))
                     {
                         command.Parameters.AddWithValue("@Inqui", contrato.Inqui.Id);
                         command.Parameters.AddWithValue("@Inmu", contrato.Inmu.Id);
-                        //command.Parameters.AddWithValue("@Prop", contrato.Prop.Id);
                         command.Parameters.AddWithValue("@fechaInicio", contrato.FechaInicio);
                         command.Parameters.AddWithValue("@fechaFin", contrato.FechaFin);
-                        command.Parameters.AddWithValue("@monto", contrato.Monto);
-                        command.Parameters.AddWithValue("@estado", contrato.Estado);
                         command.Parameters.AddWithValue("@descripcion", contrato.Descripcion);
-                        command.Parameters.AddWithValue("@plazo", contrato.Plazo);
-                        command.Parameters.AddWithValue("@porcentajeActualizacion", contrato.PorcentajeActualizacion);
-                        command.Parameters.AddWithValue("@periodoActualizacion", contrato.PeriodoActualizacion);
                         command.Parameters.AddWithValue("@observaciones", contrato.Observaciones);
-                        command.Parameters.AddWithValue("@tipo", contrato.Tipo.ToString());
+                        command.Parameters.AddWithValue("@UsuarioCreacion", contrato.UsuCreacion.Id);
                         command.Parameters.AddWithValue("@Prop", id_prop);
+                        command.Parameters.AddWithValue("@Pagos", contrato.Pagos);
                         res = Convert.ToInt32(command.ExecuteScalar());
-                    }
-
-                    //CUANDO DOY DE ALTA UN CONTRATO, LE CAMBIO EL ESTADO AL INMUEBLE PARA Q NO FIGURE EN NUEVOS CONTRATOS
-                    var sqlEstado = $@"UPDATE inmueble SET estado = '0' WHERE id = @Inmu ";
-                    using (MySqlCommand command = new MySqlCommand(sqlEstado, conn, transaction)) //transaccion asegura que esta consulta sea parte de la misma
-                    {
-                        command.Parameters.AddWithValue("@Inmu", contrato.Inmu.Id);
-                        command.ExecuteNonQuery();
                     }
                     transaction.Commit();
                 }
                 catch
                 {
-                    //SI ALGUN COMANDO NO SE EJECUTA, HAGO UN ROLLBACK
                     transaction.Rollback();
                     throw;
-
                 }
             }
             conn.Close();
-
         }
         return res;
     }
+
+
 
 
     public int Baja(int id)
@@ -287,12 +274,6 @@ public class RepositorioContrato
                         res = command.ExecuteNonQuery();
 
                     }
-                    var sqlEstado = $@"UPDATE inmueble SET estado = '1' WHERE Id = @Inmu ";
-                    using (MySqlCommand command = new MySqlCommand(sqlEstado, conn, transaction)) //transaccion asegura que esta consulta sea parte de la misma
-                    {
-                        command.Parameters.AddWithValue("@Inmu", contrato.Inmu.Id);
-                        command.ExecuteNonQuery();
-                    }
                     transaction.Commit();
 
                 }
@@ -312,7 +293,7 @@ public class RepositorioContrato
     }
 
 
-    public int Anular(int id, String observ)
+    public int Anular(int id, String observ, int usuAnulacion)
     {
         int res = -1;
         var repoCont = new RepositorioContrato(_logger, _loggerInmueble, _connectionString);
@@ -326,19 +307,14 @@ public class RepositorioContrato
             {
                 try
                 {
-                    var sql = $@"UPDATE contrato SET estado = '3', observaciones = '{observ}' WHERE {nameof(Contrato.Id)} = @id;";
+                    var sql = $@"UPDATE contrato SET Estado = '3', observaciones = '{observ}', UsuarioAnulacion = '{usuAnulacion}' WHERE {nameof(Contrato.Id)} = @id;";
                     using (MySqlCommand command = new MySqlCommand(sql, conn, transaction))
                     {
                         command.Parameters.AddWithValue("@id", id);
                         res = command.ExecuteNonQuery();
 
                     }
-                    var sqlEstado = $@"UPDATE inmueble SET estado = '1' WHERE Id = @Inmu ";
-                    using (MySqlCommand command = new MySqlCommand(sqlEstado, conn, transaction)) //transaccion asegura que esta consulta sea parte de la misma
-                    {
-                        command.Parameters.AddWithValue("@Inmu", contrato.Inmu.Id);
-                        command.ExecuteNonQuery();
-                    }
+
                     transaction.Commit();
 
                 }
@@ -360,8 +336,10 @@ public class RepositorioContrato
 
     public int Modificar(Contrato contrato)
     {
-        var repo_Inm = new RepositorioInmueble(_loggerInmueble, _connectionString);
-        var id_prop = repo_Inm.ObtenerPorId(contrato.Inmu.Id).IdPropietario;
+
+        var Inm = new RepositorioInmueble(_loggerInmueble, _connectionString).ObtenerPorId(contrato.Inmu.Id);
+        var id_prop = Inm.IdPropietario;
+
 
         //OBTENGO EL ID DEL INMUEBLE QUE TIENE EL CONTRATO ANTES DE  MODIFICAR
         var repoCont = new RepositorioContrato(_logger, _loggerInmueble, _connectionString);
@@ -382,15 +360,11 @@ public class RepositorioContrato
                 {nameof(Contrato.Inmu)} = @Inmu,
                 {nameof(Contrato.FechaInicio)} = @fechaInicio,
                 {nameof(Contrato.FechaFin)} = @fechaFin,
-                {nameof(Contrato.Monto)} = @monto,
-                {nameof(Contrato.Estado)} = @estado,
                 {nameof(Contrato.Descripcion)} = @descripcion,
-                {nameof(Contrato.Plazo)} = @plazo,
-                {nameof(Contrato.PorcentajeActualizacion)} = @porcentajeActualizacion,
-                {nameof(Contrato.PeriodoActualizacion)} = @periodoActualizacion,
                 {nameof(Contrato.Observaciones)} = @observaciones,
-                {nameof(Contrato.Tipo)} = @tipo,
-                {nameof(Contrato.Prop)} = @Prop
+                {nameof(Contrato.Prop)} = @Prop,
+                {nameof(Contrato.Pagos)} = @Pagos
+
 
                     WHERE {nameof(Contrato.Id)} = @id;";
 
@@ -400,39 +374,15 @@ public class RepositorioContrato
                         command.Parameters.AddWithValue("@Inmu", contrato.Inmu.Id);
                         command.Parameters.AddWithValue("@fechaInicio", contrato.FechaInicio);
                         command.Parameters.AddWithValue("@fechaFin", contrato.FechaFin);
-                        command.Parameters.AddWithValue("@monto", contrato.Monto);
-                        command.Parameters.AddWithValue("@estado", contrato.Estado);
                         command.Parameters.AddWithValue("@descripcion", contrato.Descripcion);
-                        command.Parameters.AddWithValue("@plazo", contrato.Plazo);
-                        command.Parameters.AddWithValue("@porcentajeActualizacion", contrato.PorcentajeActualizacion);
-                        command.Parameters.AddWithValue("@periodoActualizacion", contrato.PeriodoActualizacion);
                         command.Parameters.AddWithValue("@observaciones", contrato.Observaciones);
-                        command.Parameters.AddWithValue("@tipo", contrato.Tipo.ToString());
                         command.Parameters.AddWithValue("@id", contrato.Id);
                         command.Parameters.AddWithValue("@Prop", id_prop);
+                        command.Parameters.AddWithValue("@Pagos", contrato.Pagos);
                         res = command.ExecuteNonQuery();
                     }
 
-                    var sqlEstado = $@"UPDATE inmueble SET estado = '0' WHERE id = @Inmu ";
 
-                    //transaccion asegura que esta consulta sea parte de la mismo
-                    using (MySqlCommand command = new MySqlCommand(sqlEstado, conn, transaction))
-                    {
-                        command.Parameters.AddWithValue("@Inmu", contrato.Inmu.Id);
-                        command.ExecuteNonQuery();
-                    }
-
-                    //SI QUIERO MODIFICAR EL INMUEBLE DEL CONTRATO, AL INMUEBLE QUE ESTABA ANTES, LO VUELVO A DEJAR DISPONIBLE PARA ALQUILAR
-                    if (id_inmu != contrato.Inmu.Id)
-                    {
-                        var inmuAnt = $@"UPDATE inmueble SET estado = '1' WHERE id = @Inmu ";
-                        using (MySqlCommand command = new MySqlCommand(inmuAnt, conn, transaction))
-                        {
-                            command.Parameters.AddWithValue("@Inmu", id_inmu);
-                            command.ExecuteNonQuery();
-                        }
-
-                    }
                     transaction.Commit();
 
                 }
@@ -451,77 +401,60 @@ public class RepositorioContrato
 
 
     public int Renovar(Contrato contrato)
+
     {
         var repo_Inm = new RepositorioInmueble(_loggerInmueble, _connectionString);
-        var id_prop = repo_Inm.ObtenerPorId(contrato.Inmu.Id).IdPropietario;
-
-        //OBTENGO EL ID DEL INMUEBLE QUE TIENE EL CONTRATO ANTES DE  MODIFICAR
-        var repoCont = new RepositorioContrato(_logger, _loggerInmueble, _connectionString);
-        Contrato cont = repoCont.ObtenerPorId(contrato.Id);
-        var id_inmu = cont.Inmu.Id;
-
         int res = -1;
-
         using (MySqlConnection conn = new MySqlConnection(_connectionString))
         {
             conn.Open();
+            //----HAGO UNA TRANSACCION POR LAS DUDAS QUE ALGUNA DE LAS CONSULTAS FALLE
             using (MySqlTransaction transaction = conn.BeginTransaction())
             {
                 try
                 {
-                    var query = $@"UPDATE contrato SET 
-                {nameof(Contrato.FechaInicio)} = @fechaInicio,
-                {nameof(Contrato.FechaFin)} = @fechaFin,
-                {nameof(Contrato.Monto)} = @monto,
-                {nameof(Contrato.Estado)} = 4,
-                {nameof(Contrato.Descripcion)} = @descripcion,
-                {nameof(Contrato.Plazo)} = @plazo,
-                {nameof(Contrato.PorcentajeActualizacion)} = @porcentajeActualizacion,
-                {nameof(Contrato.PeriodoActualizacion)} = @periodoActualizacion,
-                {nameof(Contrato.Observaciones)} = @observaciones,
-
-                    WHERE {nameof(Contrato.Id)} = @id;";
-
-                    using (MySqlCommand command = new MySqlCommand(query, conn, transaction))
+                    var sql = $@"INSERT INTO contrato 
+                    ({nameof(Contrato.Inqui)}, {nameof(Contrato.Inmu)}, {nameof(Contrato.FechaInicio)}, 
+                    {nameof(Contrato.FechaFin)}, {nameof(Contrato.Descripcion)},   
+                    {nameof(Contrato.Observaciones)}, {nameof(Contrato.Prop)}, UsuarioCreacion, Pagos) 
+                    VALUES (@Inqui, @Inmu, @fechaInicio, @fechaFin, @descripcion, 
+                    @observaciones, @Prop, @UsuarioCreacion, @Pagos); 
+                    SELECT LAST_INSERT_ID();";
+                    using (MySqlCommand command = new MySqlCommand(sql, conn, transaction))
                     {
-                      
+                        command.Parameters.AddWithValue("@Inqui", contrato.Inqui.Id);
+                        command.Parameters.AddWithValue("@Inmu", contrato.Inmu.Id);
                         command.Parameters.AddWithValue("@fechaInicio", contrato.FechaInicio);
                         command.Parameters.AddWithValue("@fechaFin", contrato.FechaFin);
-                        command.Parameters.AddWithValue("@monto", contrato.Monto);
                         command.Parameters.AddWithValue("@descripcion", contrato.Descripcion);
-                        command.Parameters.AddWithValue("@plazo", contrato.Plazo);
-                        command.Parameters.AddWithValue("@porcentajeActualizacion", contrato.PorcentajeActualizacion);
-                        command.Parameters.AddWithValue("@periodoActualizacion", contrato.PeriodoActualizacion);
                         command.Parameters.AddWithValue("@observaciones", contrato.Observaciones);
-                        res = command.ExecuteNonQuery();
+                        command.Parameters.AddWithValue("@Prop", contrato.Prop.Id);
+                        command.Parameters.AddWithValue("@UsuarioCreacion", contrato.UsuCreacion.Id);
+                        command.Parameters.AddWithValue("@Pagos", contrato.Pagos);
+                        res = Convert.ToInt32(command.ExecuteScalar());
                     }
 
-                    var sqlEstado = $@"UPDATE inmueble SET estado = '0' WHERE id = @Inmu ";
-
-                    //transaccion asegura que esta consulta sea parte de la mismo
-                    using (MySqlCommand command = new MySqlCommand(sqlEstado, conn, transaction))
+                    //CUANDO Renuevo UN CONTRATO, LE CAMBIO EL Estado A RENOVADO (||4||)
+                    var sqlEstado = $@"UPDATE contrato SET Estado = '4' WHERE id = @Id ";
+                    using (MySqlCommand command = new MySqlCommand(sqlEstado, conn, transaction)) //transaccion asegura que esta consulta sea parte de la misma
                     {
-                        command.Parameters.AddWithValue("@Inmu", contrato.Inmu.Id);
+                        command.Parameters.AddWithValue("@Id", contrato.Id);
                         command.ExecuteNonQuery();
-                    }            
+                    }
                     transaction.Commit();
-
                 }
                 catch
                 {
                     transaction.Rollback();
-                    conn.Close();
-
                     throw;
                 }
             }
+            conn.Close();
         }
         return res;
     }
 
-
-
-    //COMPARA FECHAS DE LOS CONTRATOS Y SI SE VENCE EL CONTRATO, CAMBIO EL ESTADO A 0
+    //COMPARA FECHAS DE LOS CONTRATOS Y SI SE VENCE EL CONTRATO, CAMBIO EL Estado A 0
     public void vigenciaContrato()
     {
 
@@ -541,19 +474,10 @@ public class RepositorioContrato
                         {
 
                             // BAJA LOGICA DEL CONTRATO DE ACUERDO A LA FECHA DE VENCIMIENTO Y LA ACTUAL
-                            var estadoContrato = $@"UPDATE contrato SET estado = '2' WHERE id = @id;";
-                            using (MySqlCommand command = new MySqlCommand(estadoContrato, conn, transaction))
+                            var EstadoContrato = $@"UPDATE contrato SET Estado = '2' WHERE id = @id;";
+                            using (MySqlCommand command = new MySqlCommand(EstadoContrato, conn, transaction))
                             {
                                 command.Parameters.AddWithValue("@id", item.Id);
-                                command.ExecuteNonQuery();
-                            }
-
-                            //EL INMUEBLE DEL CONTRATO VUELVE A QUEDAR DISPONIBLE
-                            var estadoInmueble = $@"UPDATE inmueble SET estado = '1' WHERE id = @Inmu;";
-                            using (MySqlCommand command = new MySqlCommand(estadoInmueble, conn, transaction))
-                            {
-
-                                command.Parameters.AddWithValue("@Inmu", item.Inmu.Id);
                                 command.ExecuteNonQuery();
                             }
 
@@ -579,8 +503,7 @@ public class RepositorioContrato
         List<Contrato> contratos = new List<Contrato>();
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
         {
-            var sql = @"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Monto, Estado, Descripcion, Plazo,
-                    PorcentajeActualizacion, PeriodoActualizacion, Observaciones, Tipo 
+            var sql = @"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Estado, Descripcion, Observaciones, UsuarioCreacion, UsuarioAnulacion
                     FROM contrato 
                     WHERE DATE(FechaFin) BETWEEN @desde AND @hasta;";
 
@@ -600,9 +523,12 @@ public class RepositorioContrato
                     var inquilino = new RepositorioInquilino(_connectionString).ObtenerPorId(idInquilino);
                     var inmueble = new RepositorioInmueble(_loggerInmueble, _connectionString).ObtenerPorId(idInmueble);
                     var propietario = new RepositorioPropietario(_connectionString).ObtenerPorId(idPropietario);
+                    var creacion = new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32("UsuarioCreacion"));
+                    var anulacion = reader.IsDBNull(reader.GetOrdinal("UsuarioAnulacion"))
+                    ? null
+                    : new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32("UsuarioAnulacion"));
 
 
-                    // Crear el contrato
                     var contrato = new Contrato
                     {
                         Id = reader.GetInt32("Id"),
@@ -611,14 +537,11 @@ public class RepositorioContrato
                         Prop = propietario,
                         FechaInicio = reader.GetDateTime("FechaInicio"),
                         FechaFin = reader.GetDateTime("FechaFin"),
-                        Monto = reader.GetDecimal("Monto"),
-                        Estado = reader.GetBoolean("Estado"),
+                        Estado = reader.GetInt32("Estado"),
                         Descripcion = reader.GetString("Descripcion"),
-                        Plazo = reader.GetInt32("Plazo"),
-                        PorcentajeActualizacion = reader.GetDecimal("PorcentajeActualizacion"),
-                        PeriodoActualizacion = reader.GetInt32("PeriodoActualizacion"),
                         Observaciones = reader.GetString("Observaciones"),
-                        Tipo = (TipoContrato)Enum.Parse(typeof(TipoContrato), reader.GetString("Tipo"))
+                        UsuCreacion = creacion,
+                        UsuAnulacion = anulacion
                     };
 
                     contratos.Add(contrato);
@@ -635,8 +558,8 @@ public class RepositorioContrato
         Contrato contrato = null;
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
         {
-            var sql = @"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Monto, Estado, Descripcion, Plazo,
-                    PorcentajeActualizacion, PeriodoActualizacion, Observaciones, Tipo 
+            var sql = @"SELECT Id, Inqui, Inmu, Prop, FechaInicio, FechaFin, Estado, Descripcion,
+                    PorcentajeActualizacion, PeriodoActualizacion, Observaciones, Tipo , UsuarioCreacion, UsuarioAnulacion
                     FROM contrato 
                     WHERE Id = @id AND DATE(FechaFin) BETWEEN @desde AND @hasta;";
 
@@ -658,7 +581,10 @@ public class RepositorioContrato
                     var inmueble = new RepositorioInmueble(_loggerInmueble, _connectionString).ObtenerPorId(idInmueble);
                     var propietario = new RepositorioPropietario(_connectionString).ObtenerPorId(idPropietario);
 
-
+                    var creacion = new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32("UsuarioCreacion"));
+                    var anulacion = reader.IsDBNull(reader.GetOrdinal("UsuarioAnulacion"))
+                    ? null
+                    : new RepositorioUsuario(_connectionString).ObtenerPorId(reader.GetInt32("UsuarioAnulacion"));
                     contrato = new Contrato
                     {
                         Id = reader.GetInt32("Id"),
@@ -667,14 +593,11 @@ public class RepositorioContrato
                         Prop = propietario,
                         FechaInicio = reader.GetDateTime("FechaInicio"),
                         FechaFin = reader.GetDateTime("FechaFin"),
-                        Monto = reader.GetDecimal("Monto"),
-                        Estado = reader.GetBoolean("Estado"),
+                        Estado = reader.GetInt32("Estado"),
                         Descripcion = reader.GetString("Descripcion"),
-                        Plazo = reader.GetInt32("Plazo"),
-                        PorcentajeActualizacion = reader.GetDecimal("PorcentajeActualizacion"),
-                        PeriodoActualizacion = reader.GetInt32("PeriodoActualizacion"),
                         Observaciones = reader.GetString("Observaciones"),
-                        Tipo = (TipoContrato)Enum.Parse(typeof(TipoContrato), reader.GetString("Tipo"))
+                        UsuCreacion = creacion,
+                        UsuAnulacion = anulacion
                     };
                 }
                 connection.Close();
@@ -683,6 +606,27 @@ public class RepositorioContrato
         return contrato;
     }
 
+    public bool disponiblePorFechas(int inmuebleId, DateTime fechaInicio, DateTime fechaFin)
+    {
+        using (var connection = new MySqlConnection(_connectionString))
+        {
+            connection.Open();
+            var query = @"SELECT COUNT(*) FROM contrato 
+                      WHERE Inmu = @InmuebleId 
+                      AND (FechaInicio < @FechaFin AND FechaFin > @FechaInicio)";
+
+            var command = new MySqlCommand(query, connection);
+            command.Parameters.AddWithValue("@InmuebleId", inmuebleId);
+            command.Parameters.AddWithValue("@FechaFin", fechaFin);
+            command.Parameters.AddWithValue("@FechaInicio", fechaInicio);
+
+            var result = command.ExecuteScalar();
+            int count = result != null ? Convert.ToInt32(result) : 0;
+
+            // Si el conteo es 0, significa que está disponible
+            return count == 0;
+        }
+    }
 
 
 

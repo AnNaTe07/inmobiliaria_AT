@@ -5,22 +5,20 @@
 
 }
 <div class="text-center">
-    <h1 class="display-4">Listado de contratos vencidos</h1>
+    <h1 class="display-4">Contratos No Vigentes y Anulados</h1>
 </div>
-<form id="filtrosForm" method="get" action="@Url.Action("Vencidos")">
+<form id="filtrosForm" method="get" action="@Url.Action("ListaVencidos")" class="p-4 border border-secondary rounded">
+    <div class="row g-3 align-items-end">
 
-    <div class="row">
-
-        <!-- Filtro por propietario -->
-        <div id="filtroPropietario" class="col-md-3">
-            <label for="propietarioId" class="form-label">Seleccionar Propietario:</label>
-            <select name="propietarioId" class="form-select select2 custom-border" asp-items="ViewBag.Propietarios">
-                <option value="">Seleccionar Propietario</option>
+        <!--- Filtro por inquilino ---->
+        <div id="filtroInquilino" class="col-md-3">
+            <label for="inquilinoId" class="form-label">Seleccionar Inquilino:</label>
+            <select name="inquilinoId" class="form-select select2 custom-border" asp-items="ViewBag.Inquilinos">
+                <option value="">Seleccionar Inquilino</option>
             </select>
-
         </div>
 
-        <!-- Filtro por inmueble -->
+        <!--- Filtro por inmueble --->
         <div id="filtroPropiedad" class="col-md-3">
             <label for="inmuebleId" class="form-label">Seleccionar Inmueble:</label>
             <select name="inmuebleId" class="form-select select2" asp-items="ViewBag.Inmuebles"
@@ -29,31 +27,33 @@
             </select>
         </div>
 
-
-        <!-- Filtro por fecha (Fecha Desde y Fecha Hasta) -->
-        <div id="filtroFecha" class="col-md-6 row">
-            <div class="col-md-6">
-                <label for="fechaDesde" class="form-label">Fecha Desde:</label>
-                <input type="date" name="fechaDesde" class="form-control"
-                    value="@ViewContext.HttpContext.Request.Query["fechaDesde"]" />
+        <!--- Filtro por fecha (Fecha Desde y Fecha Hasta) --->
+        <div id="filtroFecha" class="col-md-4">
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <label for="fechaDesde" class="form-label">Fecha Desde:</label>
+                    <input type="date" name="fechaDesde" class="form-control"
+                        value="@ViewContext.HttpContext.Request.Query["fechaDesde"]" />
+                </div>
+                <div class="col-md-6">
+                    <label for="fechaHasta" class="form-label">Fecha Hasta:</label>
+                    <input type="date" name="fechaHasta" class="form-control"
+                        value="@ViewContext.HttpContext.Request.Query["fechaHasta"]" />
+                </div>
             </div>
-
-            <div class="col-md-6">
-                <label for="fechaHasta" class="form-label">Fecha Hasta:</label>
-                <input type="date" name="fechaHasta" class="form-control"
-                    value="@ViewContext.HttpContext.Request.Query["fechaHasta"]" />
-            </div>
-
-
         </div>
-        <div class="col-md-12 mt-3">
-            <button type="submit" class="btn btn-primary ">Filtrar</button>
-            <button type="button" class="btn btn-secondary ms-2" onclick="limpiarFiltros()">
-                <i class="fas fa-times"></i> Limpiar Filtros
+
+        <!--- Botones en la misma fila- -->
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary me-2">Filtrar</button>
+            <button type="button" class="btn btn-secondary" onclick="limpiarFiltros()">
+                <i class="fas fa-times"></i> Limpiar
             </button>
         </div>
     </div>
 </form>
+
+
 
 
 <table class="table">
@@ -71,14 +71,8 @@
             Inquilino
 
         </th>
-
         <th>
-            @Html.DisplayNameFor(model => model.Tipo)
-
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Plazo)
-
+            Estado
         </th>
 
 
@@ -117,50 +111,48 @@
                     </td>
 
                     <td>
-                        @Html.DisplayFor(modelItem => item.Tipo)
 
+
+                        <span class="badge @(item.Estado == 2 ? "bg-danger" : "bg-warning")">
+                            @(item.Estado == 2 ? "Anulado" : "No vigente")
+                        </span>
                     </td>
 
+                    @*-------- ICONOS -------------*@
                     <td>
-                        @Html.DisplayFor(modelItem => item.Plazo)
-
-                    </td>
-                    <td></td>
-
-                    @*--------ICONOS PARA EDITAR, DETALLE Y ELIMINAR -------------*@
-                    <td>
-
-
-                        <a href="/Contrato/Detalle/@item.Id"></a>
                         <form action="@Url.Action("Detalle", new{id=item.Id})" method="get" style="display: inline;">
                             <button type="submit" class="btn btn-info btn-custom" title="Detalles">
                                 <i class="fa-solid fa-circle-info"></i>
                             </button>
-                        </form> @* AGREGAR @item.Tipo *@
-                        <div class="icoRenovar">
-                            <form action="@Url.Action("Renovar", new { id = item.Id })" method="get" style="display: inline;">
-                                <button type="submit" class="btn btn-warning btn-custom" title="Editar">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                            </form>
-                        </div>
+                        </form>
 
-                        <button type="submit" class="btn btn-danger btn-custom"
-                            onclick="eliminar(@item.Id, '@item.Inmu.Direccion', '@item.Prop.NombreCompleto', '@item.Inqui.NombreCompleto', '@item.Tipo', '@item.Plazo')"
-                            title="Eliminar">
-                            <i class="fas fa-trash"></i>
-                        </button>
+
+                        <form action="@Url.Action("ListadoPagos","Pago", new{id=item.Id})" method="get"
+                            style="display: inline;">
+                            <button type="submit" class="btn btn-primary btn-custom" title="Listado de pagos">
+                                <i class="fa-solid fa-dollar-sign"></i>
+                            </button>
+                        </form>
+
                     </td>
+
                 </tr>
             }
         }
         <td>
-            <button type="button" class="btn btn-ligth">
-                <a href="/Contrato/Editar" title="Agregar Contrato">
-                    <i class="fa-duotone fa-solid fa-plus"></i>
+            <div class="form-group-spacing">
+
+
+                <a asp-action="Index" class="btn btn-secondary" title="Volver">
+                    <i class="fa-solid fa-undo"></i> Regresar
                 </a>
-            </button>
-            </tr>
+                <button type="button" class="btn btn-ligth">
+                    <a href="/Contrato/Editar" title="Agregar Contrato">
+                        <i class="fa-duotone fa-solid fa-plus"></i>
+                    </a>
+                </button>
+            </div>
+
 
 
 
@@ -191,7 +183,7 @@
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <!-- Enlace para redirigir a la vista Multa -->
+
                     <a id="link_abonar_multa" class="btn btn-warning btn-custom" href="#" title="Abonar multa">
                         Abonar Multa
                     </a>
@@ -202,34 +194,6 @@
     </div>
 </div>
 
-<div class="modal fade" id="modal_eliminar_contrato" tabindex="-1" aria-labelledby="modal_eliminar_contratoLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modal_eliminar_contratoLabel">Confirmar Eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="post" asp-action="Eliminar" id="form_eliminar_contrato">
-                <div class="modal-body">
-                    <input type="hidden" name="Id" value="" id="contrato_eliminar_id">
-                    <input type="hidden" name="Id" value="" id="contrato_eliminar_id">
-                    <p>
-                        <span id="contrato_eliminar_direccion"></span><br>
-                        <span id="contrato_eliminar_propietario"></span><br>
-                        <span id="contrato_eliminar_inquilino"></span><br>
-                        <span id="contrato_eliminar_tipo"></span><br>
-                        <span id="contrato_eliminar_plazo"></span>
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger"> Confirmar</i></button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 
 @if (TempData["SuccessMessage"] != null)
@@ -248,32 +212,23 @@
         </div>
     </div>
 }
-@Html.Partial("../Pago/Nuevo", new inmobiliaria_AT.Models.Pago())
 
 @section Scripts {
     <script>
 
         document.addEventListener('DOMContentLoaded', function () {
-            // Seleccionamos el enlace que abrirá la URL
             var abonarMultaLink = document.getElementById('link_abonar_multa');
 
-            // Escuchar el evento de clic en el botón "Confirmar Anulación"
             abonarMultaLink.addEventListener('click', function (event) {
-                // Prevenir la acción por defecto del enlace
                 event.preventDefault();
 
-                // Obtener el ID del contrato desde el campo oculto
                 var contratoId = document.getElementById('contrato_anular_id').value;
 
-                // Verificar si el contratoId tiene un valor válido
                 if (contratoId) {
-                    // Generar la URL usando el ID del contrato
                     var url = '@Url.Action("Multa", "Pago", new { idContrato = "__id__" })'.replace('__id__', contratoId);
 
-                    // Redirigir a la nueva URL
                     window.location.href = url;
                 } else {
-                    // Si no se encuentra el contrato, puedes mostrar un mensaje de error o hacer algo más
                     alert("Error: no se encontró el ID del contrato.");
                 }
             });
@@ -281,7 +236,7 @@
 
         function limpiarFiltros() {
             // resetea los valores de los selects
-            document.querySelector("select[name='propietarioId']").value = "";
+            document.querySelector("select[name='inquilinoId']").value = "";
             document.querySelector("select[name='inmuebleId']").value = "";
 
             // Resetea los campos de fecha
@@ -292,7 +247,7 @@
             $('.select2').val(null).trigger('change'); // Limpia el valor de los select2
             // Envia el formulario para restablecer los filtros
             // Redirige a la URL sin parámetros
-            var url = '@Url.Action("Index")';
+            var url = '@Url.Action("ListaVencidos")';
             window.location.href = url;
         }
     </script>
@@ -309,7 +264,6 @@
     <!-- Bootstrap 5 CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../css/contrato.css">
-    <script src="../js/nuevoPago.js"></script>
     <script src="../js/contrato.js"></script>
 
 }

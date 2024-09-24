@@ -1,57 +1,126 @@
 @model inmobiliaria_AT.Models.Pago
 
-<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="paymentModalLabel">Nuevo Pago</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <h4>Nuevo pago</h4>
-                <form action="@Url.Action("Nuevo", "Pago")" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <input type="hidden" name="Id" id="Id" value="0">
-                    <div class="row">
-                        <div class="form-group col-md-6 form-group-spacing">
-                            <label for="Fecha" class="control-label">Fecha</label>
-                            <input readonly type="date" id="Fecha" name="Fecha" class="form-control">
-                        </div>
-                        <div class="form-group col-md-6 form-group-spacing">
-                            <label for="Monto" class="control-label">Monto</label>
-                            <input type="number" id="Monto" name="Monto" class="form-control">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-md-6 form-group-spacing">
-                            <label asp-for="Contrato.Id" class="control-label">Contrato</label>
-                            <select asp-for="Contrato.Id" id="Contrato_Id" class="form-control"
-                                data-url="@Url.Action("ObtenerTodos", "Contrato")"></select>
+@{
+    ViewData["Title"] = "Nuevo Pago";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2>@ViewData["Title"]</h2>
+                </div>
+                <div class="card-body">
+
+                    <form asp-action="Nuevo" method="post">
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Contrato.Id" class="form-label">Contrato</label>
+                            <select asp-for="Contrato.Id"
+                                asp-items="@(ViewBag.Contratos ?? new SelectList(Enumerable.Empty<SelectListItem>()))"
+                                class="form-control select2" id="contratoSelect">
+                                <option value="">Seleccione un contrato</option>
+                            </select>
                             <span asp-validation-for="Contrato.Id" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-md-6 form-group-spacing">
-                            <label asp-for="Concepto.Id" class="control-label">Concepto</label>
-                            <select asp-for="Concepto.Id" id="Concepto_Id" class="form-control"
-                                asp-items="ViewBag.Concepto"></select>
-                            <span asp-validation-for="Concepto.Id" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-md-12 form-group-spacing">
-                            <label for="Detalle" class="control-label">Detalle</label>
-                            <input type="text" id="Detalle" name="Detalle" class="form-control">
-                        </div>
-                    </div>
-                    <div class="form-group col-md-6 form-group-spacing">
-                        <input type="submit" value="Guardar" class="btn btn-success" />
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <div class="form-group mb-3">
+                            <label asp-for="Monto" class="form-label">Monto</label>
+                            <input id="montoContrato" class="form-control" type="number" step="0.01" name="Monto"
+                                value="">
+
+                            <input type="hidden" id="importeHidden" name="Importe" value="" />
+                            <span asp-validation-for="Monto" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Detalle" class="form-label">Detalle</label>
+                            <textarea asp-for="Detalle" class="form-control"></textarea>
+                            <span asp-validation-for="Detalle" class="text-danger"></span>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success">Guardar Pago</button>
+                            <a href="@Url.Action("Index", "Pago")" class="btn btn-dark">cancelar</a>
+
+                        </div>
+
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function cargarImporteInicial() {
+        var contratoIdInicial = $('#contratoSelect').val();
+        if (contratoIdInicial) {
+            $.ajax({
+                url: '@Url.Action("ObtenerPorIdJSON", "Pago")',
+                type: 'GET',
+                data: { id: contratoIdInicial },
+                success: function (data) {
+                    if (data && data.precio) {
+                        $('#montoContrato').val(data.precio);
+                        $('#importeHidden').val(data.precio);
+                    } else {
+                        $('#montoContrato').val('');
+                        $('#importeHidden').val('');
+                    }
+                },
+                error: function () {
+                    alert('Error al cargar los detalles del contrato.');
+                }
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        $('.select2').select2({
+            placeholder: "Seleccione una opción",
+            allowClear: true,
+            width: '100%'
+        });
+
+        $('#contratoSelect').on('change', function () {
+            var contratoId = $('#contratoSelect').val();
+            if (contratoId) {
+                $.ajax({
+                    url: '@Url.Action("ObtenerPorIdJSON", "Pago")',
+                    type: 'GET',
+                    data: { id: contratoId },
+                    success: function (data) {
+                        console.log(data); // Muestra la respuesta
+                        if (data && data.precio) {
+                            $('#montoContrato').val(data.precio);
+                            $('#importeHidden').val(data.precio);
+                        } else {
+                            $('#montoContrato').val('');
+                            $('#importeHidden').val('');
+                        }
+                    },
+
+                    error: function () {
+                        alert('Error al cargar los detalles del contrato.');
+                    }
+                });
+            } else {
+                $('#montoContrato').val(''); // Limpia el campo si no hay contrato seleccionado
+                $('#importeHidden').val('');
+            }
+        });
+    });
+    cargarImporteInicial();
+
+</script>
+
+<!-- Scripts de validación -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>

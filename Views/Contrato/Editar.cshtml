@@ -1,134 +1,220 @@
 @model inmobiliaria_AT.Models.Contrato
 
 @{
-    ViewData["Title"] = "Editar contratp";
+    ViewData["Title"] = "Contrato";
+    if (Model != null)
+    {
+        ViewData["Title"] += ": " + Model.DireccionInmueble + " - " + Model.Inqui.NombreCompleto;
+    }
     int id = Model == null ? 0 : Model.Id;
 }
 
-<h4>Contrato</h4>
-<hr>
-<div class="row">
-    <div class="col-md-12">
-        <form asp-action="Guardar">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" name="Id" value="@id">
-            <div class="row">
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="Inqui" class="control-label">Inquilino</label>
-                    <select asp-for="Inqui.Id" class="form-control" asp-items="ViewBag.Inquilinos"></select>
-                    <span asp-validation-for="Inqui" class="text-danger"></span>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2>@ViewData["Title"]</h2>
                 </div>
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="Inmu" class="control-label">Inmueble</label>
-                    @*-----EL asp-for en el select asigna el id del inmueble a la opcion y el ViewBag recibe la lista de
-                    inmuebles desde el controlador*@
-                    <select asp-for="Inmu.Id" class="form-control" asp-items="ViewBag.Inmuebles"></select>
-                    <span asp-validation-for="Inmu" class="text-danger"></span>
+                <div class="card-body">
+                    <form asp-action="Guardar" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input type="hidden" name="Id" value="@id">
+
+                        <div class="row mb-3 align-items-end">
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label asp-for="FechaInicio" class="form-label">Fecha de Inicio</label>
+                                    <input asp-for="FechaInicio" id="fechaInicio" class="form-control" type="date">
+                                    <span asp-validation-for="FechaInicio" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label asp-for="FechaFin" class="form-label">Fecha de Finalización</label>
+                                    <input asp-for="FechaFin" id="fechaFin" class="form-control" type="date">
+                                    <span asp-validation-for="FechaFin" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button id="buscarInmueblesBtn" type="button" class="btn btn-primary w-100" disabled>
+                                    Buscar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="Inmu" class="form-label inmu">Inmueble</label>
+                                    <select asp-for="Inmu.Id" id="inmuebleSelect" class="form-select select2" disabled>
+                                        <option value="">Seleccione un inmueble</option>
+                                    </select>
+                                    <input type="hidden" name="Inmu.Id" id="inmuId" value="@Model?.Inmu?.Id">
+
+                                    <span id="selectOptionInmueble" asp-validation-for="Inmu"
+                                        class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Monto  es readonly pq el precio se modifica desde el inmueble -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Inmu.Precio" class="form-label">Monto</label>
+                                    <input asp-for="Inmu.Precio" required id="montoInmueble" class="form-control"
+                                        type="number" step="0.01" readonly />
+                                    <span asp-validation-for="Inmu.Precio" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Inqui.Id" class="form-label">Inquilino</label>
+                                    <select asp-for="Inqui.Id" asp-items="ViewBag.Inquilinos"
+                                        class="form-select select2">
+                                        <option value="">Seleccione un inquilino</option>
+
+                                    </select>
+
+                                    <span asp-validation-for="Inqui.Id" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Observaciones" class="form-label">Observaciones</label>
+                                    <input asp-for="Observaciones" class="form-control">
+                                    <span asp-validation-for="Observaciones" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Descripcion" class="form-label">Descripción</label>
+                                    <input asp-for="Descripcion" class="form-control">
+                                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mb-3">
+                            <button type="submit" class="btn btn-success " disabled>Guardar Contrato</button>
+                            <a asp-action="Index" class="btn btn-dark" title="Volver"> Cancelar</a>
+                            
+                        </div>
+
+                    </form>
+
+
                 </div>
-                 @*<div class="form-group col-md-6 form-group-spacing">
-                   <label asp-for="Inmu.IdPropietario" class="control-label">Popietario</label>
-                    <input type="hidden" asp-for="Inmu.IdPropietario" />
-                    <span asp-validation-for="Inmu.IdPropietario" class="text-danger"></span>
-                </div>*@
             </div>
-            <div class="row">
-                
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="FechaInicio" class="control-label"> Fecha de inicio</label>
-                    <input asp-for="FechaInicio" class="form-control">
-                    <span asp-validation-for="FechaInicio" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="FechaFin" class="control-label">Fecha de finalización</label>
-                    <input asp-for="FechaFin" class="form-control">
-                    <span asp-validation-for="FechaFin" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="row">
-
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="Monto" class="control-label">Monto</label>
-                    <input asp-for="Monto" class="form-control">
-                    <span asp-validation-for="Monto" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="Tipo" class="control-label">Tipo de contrato</label>
-
-                    <select asp-for="Tipo" class="form-control">
-                        <option value="compraventa">Compraventa</option>
-                        <option value="arrendamiento">Arrendamiento</option>
-                        <option value="permuta">Permuta</option>
-                    </select>
-                    <span asp-validation-for="Tipo" class="text-danger"></span>
-                </div>
-
-            </div>
-
-
-            <div class="row">
-
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="Plazo" class="control-label">Plazo</label>
-                    <input asp-for="Plazo" class="form-control">
-                    <span asp-validation-for="Plazo" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="PorcentajeActualizacion" class="control-label">Porcentaje de actualización</label>
-                    <input asp-for="PorcentajeActualizacion" class="form-control">
-                    <span asp-validation-for="PorcentajeActualizacion" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="row">
-
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="PeriodoActualizacion" class="control-label">Periodo de actualización (Meses)</label>
-                    <input asp-for="PeriodoActualizacion" class="form-control">
-                    <span asp-validation-for="PeriodoActualizacion" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="Observaciones" class="control-label">Observaciones</label>
-                    <input asp-for="Observaciones" class="form-control">
-                    <span asp-validation-for="Observaciones" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="row">
-                @*<div class="form-group col-md-6 form-group-spacing">
-                <label asp-for="Estado" class="control-label">Estado</label>
-                <input asp-for="Estado" class="form-control">
-                <span asp-validation-for="Estado" class="text-danger"></span>
-                </div>*@
-
-                <div class="form-group col-md-12 form-group-spacing">
-                    <label asp-for="Descripcion" class="control-label">Descripción</label>
-                    <input asp-for="Descripcion" class="form-control">
-                    <span asp-validation-for="Descripcion" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="form-group col-md-6 form-group-spacing">
-                <input type="submit" value="Guardar" class="btn btn-success" />
-            </div>
-        </form>
-        <div class="form-group-spacing">
-            <a asp-action="Index" title="Volver">
-                <i class="fa-solid fa-undo"></i>
-            </a>
         </div>
     </div>
 </div>
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>@TempData["SuccessMessage"]</p>
-                </div>
-            </div>
-        </div>
-    </div>
-}
+<script>
+    $(document).ready(function () {
+
+        $('.select2').select2({
+            placeholder: "Seleccione una opción",
+            allowClear: true,
+            width: '100%',
+            minimumResultsForSearch: 0
+        });
+
+        // habilita/deshabilita el boton de busqueda
+        function habilitarBotonBuscar() {
+            var fechaInicio = $('#fechaInicio').val();
+            var fechaFin = $('#fechaFin').val();
+
+            console.log("FechaInicio: " + fechaInicio);
+            console.log("FechaFin: " + fechaFin);
+
+            if (fechaInicio && fechaFin) {
+                $('#buscarInmueblesBtn').prop('disabled', false);
+
+            } else {
+                $('#buscarInmueblesBtn').prop('disabled', true);
+            }
+        }
+
+        // verifica las fechas cada vez que se cambian
+        $('#fechaInicio, #fechaFin').on('input change', function () {
+            habilitarBotonBuscar();  // Habilitar o deshabilitar el botn
+        });
+        $('#fechaInicio, #fechaFin, #inmuebleSelect, select[name="Inqui.Id"], #montoInmueble, input[name="Observaciones"], input[name="Descripcion"]').on('input change keyup select2:select', function () {
+            habilitarBotonGuardar();  // Habilitar o deshabilitar el botón
+        });
+        // boton de buscar inmuebles
+        $('#buscarInmueblesBtn').click(function () {
+            var fechaInicio = $('#fechaInicio').val();
+            var fechaFin = $('#fechaFin').val();
+
+            if (fechaInicio && fechaFin) {
+                $.ajax({
+                    url: '@Url.Action("ObtenerInmueblesPorFechas", "Contrato")',
+                    type: 'GET',
+                    data: { fechaInicio: fechaInicio, fechaFin: fechaFin },
+                    success: function (data) {
+                        var $inmuebleSelect = $('#inmuebleSelect');
+                        //  var $montoSelect = $('#montoInmueble');
+                        $inmuebleSelect.empty();
+
+                        $inmuebleSelect.append('<option value="">Seleccione un inmueble</option>');
+
+                        $.each(data, function (index, item) {
+                            // Agrega el atributo data-precio al option
+                            $inmuebleSelect.append('<option value="' + item.value + '" data-precio="' + item.precio + '">' + item.text + '</option>');
+                        });
+
+                        // Habilita select de inmuebles y los otros campos
+                        $inmuebleSelect.prop('disabled', false);
+                        $('input:not(#fechaInicio, #fechaFin), select:not(#Inqui)').prop('disabled', false);
+                        //$('#montoInmueble').prop('disabled', false);
+
+                    },
+                    error: function () {
+                        alert('Error al cargar los inmuebles.');
+                    }
+                });
+            }
+        });
+
+        $('#inmuebleSelect').on('select2:select', function (e) {
+            habilitarBotonGuardar();
+            var precioInmueble = $(this).find('option:selected').data('precio'); // Obtener el precio del inmueble seleccionado
+            if (precioInmueble) {
+                $('#montoInmueble').val(precioInmueble); // Actualiza el valor del input con el precio
+            } else {
+                $('#montoInmueble').val(''); // Limpia el campo si no hay selección
+            }
+        });
+
+    });
+    function habilitarBotonGuardar() {
+        var fechaInicio = $('#fechaInicio').val();
+        var fechaFin = $('#fechaFin').val();
+        var inmuebleId = $('#inmuebleSelect').val();
+        var inquilinoId = $('select[name="Inqui.Id"]').val();
+        var montoInmueble = $('#montoInmueble').val();
+        var observaciones = $('input[name="Observaciones"]').val();
+        var descripcion = $('input[name="Descripcion"]').val();
+        var contratoId = $('input[name="Id"]').val(); // Obtener el ID del contrato
+
+        // Habilitar el boton si el contrato ya existe o si todos los campos requeridos tienen valor
+        var habilitar = contratoId > 0 || (fechaInicio && fechaFin && inmuebleId && inquilinoId && montoInmueble && observaciones && descripcion);
+        $('button[type="submit"]').prop('disabled', !habilitar);
+    }
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+<link rel="stylesheet" href="../../css/contrato.css">

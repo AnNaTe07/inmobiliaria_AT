@@ -8,100 +8,102 @@
 <hr>
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="Renovar">
+        <form asp-action="Renovar" method="post">
+
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <!-- Id del contrato -->
             <input type="hidden" name="Id" value="@Model.Id">
+
             <div class="row">
-                <!-- ID del contrato -->
                 <div class="form-group col-md-6 form-group-spacing">
-                    <label>Id del Contrato</label>
-                    <input class="form-control" value="@Model.Id" readonly />
+                    <label asp-for="Inqui">Inquilino</label>
+                    <input class="form-control" value="@Model.Inqui?.NombreCompleto" readonly name="Inqui" />
+                    <input type="hidden" name="Inqui.Id" value="@Model.Inqui?.Id" />
+                    <span asp-validation-for="Inqui" class="text-danger"></span>
                 </div>
 
-                <!-- Inquilino (solo lectura) -->
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label>Inquilino</label>
-                    <input class="form-control" value="@ViewBag.Inquilino.NombreCompleto" readonly />
-                </div>
-
-                <!-- Inmueble (solo lectura) -->
+                <!-- Inmueble -->
                 <div class="form-group col-md-6 form-group-spacing">
                     <label>Dirección del Inmueble</label>
-                    <input class="form-control" value="@ViewBag.Inmueble.Direccion" readonly />
+                    <input class="form-control" value="@Model.Inmu?.Direccion" readonly name="Inmu" />
+                    <input type="hidden" name="Inmu.Id" value="@Model.Inmu?.Id" />
+                    <span asp-validation-for="Inmu" class="text-danger"></span>
                 </div>
             </div>
 
             <div class="row">
-                <!-- Fecha de inicio (solo lectura, con la fecha actual) -->
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="FechaInicio" class="control-label">Fecha de renovación</label>
-                    <input asp-for="FechaInicio" class="form-control" readonly />
-                    <span asp-validation-for="FechaInicio" class="text-danger"></span>
+
+                <div class="col-md-5">
+                    <div class="form-group">
+                        <label asp-for="FechaInicio" class="form-label">Fecha de renovación</label>
+                        <input type="text" id="fechaInicioDisplay" class="form-control" readonly
+                            value="@Model.FechaFin" />
+                        <input type="hidden" name="FechaInicio" value="@Model.FechaFin" />
+                        <span asp-validation-for="FechaInicio" class="text-danger"></span>
+                    </div>
                 </div>
 
-                <!-- Fecha de finalización (editable) -->
-                <div class="form-group col-md-6 form-group-spacing">
+                <!-- Fecha de finalización  -->
+                <div class="form-group col-md-3 form-group-spacing">
                     <label asp-for="FechaFin" class="control-label">Fecha de finalización</label>
                     <input asp-for="FechaFin" class="form-control" />
                     <span asp-validation-for="FechaFin" class="text-danger"></span>
                 </div>
-            </div>
 
-
-            <!-- Campos editables: Plazo, Monto, Descripción, Observaciones, etc. -->
-            <div class="row">
+                <!-- (readonly no se envía) -->
                 <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="Plazo" class="control-label">Plazo</label>
-                    <input asp-for="Plazo" class="form-control" />
-                    <span asp-validation-for="Plazo" class="text-danger"></span>
-                </div>
-
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="Monto" class="control-label">Monto</label>
-                    <input asp-for="Monto" class="form-control" />
-                    <span asp-validation-for="Monto" class="text-danger"></span>
+                    <label asp-for="Inmu.Precio" class="control-label">Monto</label>
+                    <input class="form-control" value="@ViewBag.Inmueble?.Precio" readonly />
                 </div>
             </div>
 
             <div class="row">
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="PorcentajeActualizacion" class="control-label">Porcentaje de actualización</label>
-                    <input asp-for="PorcentajeActualizacion" class="form-control" />
-                    <span asp-validation-for="PorcentajeActualizacion" class="text-danger"></span>
+                <!-- Uso del inmueble  -->
+                <div class="form-group col-md-3 form-group-spacing">
+                    <label asp-for="Inmu.Uso" class="control-label">Uso del inmueble</label>
+                    <input class="form-control" value="@ViewBag.Inmueble?.Uso" readonly />
                 </div>
 
-                <div class="form-group col-md-6 form-group-spacing">
-                    <label asp-for="PeriodoActualizacion" class="control-label">Periodo de actualización (Meses)</label>
-                    <input asp-for="PeriodoActualizacion" class="form-control" />
-                    <span asp-validation-for="PeriodoActualizacion" class="text-danger"></span>
+                <div class="form-group col-md-3 form-group-spacing">
+                    <label asp-for="Inmu.TipoDescripcion" class="control-label">Tipo del inmueble</label>
+                    <input class="form-control" value="@ViewBag.Inmueble?.TipoDescripcion" readonly />
+                </div>
+
+                <div class="form-group col-md-3 form-group-spacing">
+                    <label asp-for="Inmu.Ambientes" class="control-label">Ambientes</label>
+                    <input class="form-control" value="@ViewBag.Inmueble?.Ambientes" readonly />
+                </div>
+
+                <div class="form-group col-md-3 form-group-spacing">
+                    <label asp-for="Inmu.Superficie" class="control-label">Superficie</label>
+                    <input class="form-control" value="@ViewBag.Inmueble?.Superficie" readonly />
                 </div>
             </div>
 
-            <!-- Descripción y Observaciones (editables) -->
             <div class="row">
-                <div class="form-group col-md-6 form-group-spacing">
+                <div class="form-group col-md-12 form-group-spacing">
                     <label asp-for="Descripcion" class="control-label">Descripción</label>
                     <input asp-for="Descripcion" class="form-control" />
                     <span asp-validation-for="Descripcion" class="text-danger"></span>
                 </div>
+            </div>
 
-                <div class="form-group col-md-6 form-group-spacing">
+            <div class="row">
+                <div class="form-group col-md-12 form-group-spacing">
                     <label asp-for="Observaciones" class="control-label">Observaciones</label>
                     <input asp-for="Observaciones" class="form-control" />
                     <span asp-validation-for="Observaciones" class="text-danger"></span>
                 </div>
             </div>
 
-            <!-- Botón de guardar -->
             <div class="form-group col-md-6 form-group-spacing">
                 <input type="submit" value="Guardar" class="btn btn-success" />
             </div>
         </form>
 
-        <!-- Botón de volver -->
-        <div class="form-group-spacing">
-            <a asp-action="ListaVencidos" title="Volver" class="btn btn-secondary">
-                <i class="fa-solid fa-undo"></i> Volver
+        <div class="form-group-spacing mt-8">
+            <a asp-action="Index" class="btn btn-dark mb-3" title="Volver">
+                <i class="fa-solid fa-undo"></i>
             </a>
         </div>
     </div>

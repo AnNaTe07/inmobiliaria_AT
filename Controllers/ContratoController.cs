@@ -1,4 +1,5 @@
 using inmobiliaria_AT.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace inmobiliaria_AT.Controllers;
@@ -10,72 +11,53 @@ public class ContratoController : Controller
     private readonly RepositorioPropietario _repoProp;
     private readonly RepositorioInmueble _repoInmueble;
     private readonly RepositorioInquilino _repoInquilino;
-    public ContratoController(ILogger<ContratoController> logger, RepositorioContrato repo, RepositorioPropietario repoProp, RepositorioInmueble repoInmueble, RepositorioInquilino repoInquilino)
+    private readonly RepositorioUsuario _repoUsuario;
+    public ContratoController(ILogger<ContratoController> logger, RepositorioContrato repo, RepositorioUsuario repoUsuario, RepositorioPropietario repoProp, RepositorioInmueble repoInmueble, RepositorioInquilino repoInquilino)
     {
         _logger = logger;
         _repo = repo;
         _repoInmueble = repoInmueble;
         _repoProp = repoProp;
         _repoInquilino = repoInquilino;
-
+        _repoUsuario = repoUsuario;
         _repo.vigenciaContrato();
 
     }
-
-    /* public IActionResult Index()
-      {
-          var propietarios = _repoProp.ObtenerTodos();
-          var inmuebles = _repoInmueble.ObtenerTodos();
-          var contratos = _repo.ObtenerTodos();
-          ViewBag.Propietarios = new SelectList(propietarios, "Id", "NombreCompleto");
-          ViewBag.Inmuebles = new SelectList(inmuebles, "Id", "Direccion");
-          return View(contratos);
-      }
-
-  
-
-  
-    public IActionResult Index(int? propietarioId, int? inmuebleId)
+    [Authorize(Policy = "AdminEmpleado")]
+    public IActionResult ObtenerPorId(int id)
     {
-        //obtiene todos los propietarios e inmuebles para cargar en los selects
-        var propietarios = _repoProp.ObtenerTodos();
-        var inmuebles = _repoInmueble.ObtenerTodos();
-
-        // obtiene todos los contratos y luego filtrarlos segun los parametros recibidos
-        var contratos = _repo.ObtenerTodos();
-
-        //aplica los filtros si hay valores seleccionados
-        if (propietarioId.HasValue)
+        var contrato = _repo.ObtenerPorId(id); // Obtener el contrato desde el repositorio
+        if (contrato == null)
         {
-            contratos = contratos.Where(c => c.Prop.Id == propietarioId.Value).ToList();
+            return NotFound(); // Devuelve 404 si no se encuentra el contrato
         }
-
-        if (inmuebleId.HasValue)
-        {
-            contratos = contratos.Where(c => c.Inmu.Id == inmuebleId.Value).ToList();
-        }
-
-        // Envia la lista filtrada a la vista
-        ViewBag.Propietarios = new SelectList(propietarios, "Id", "NombreCompleto");
-        ViewBag.Inmuebles = new SelectList(inmuebles, "Id", "Direccion");
-
-        return View(contratos);
+        return Json(contrato); // Devuelve el contrato como JSON
     }
 
-*/
-    public IActionResult Index(int? propietarioId, int? inmuebleId, DateTime? fechaDesde, DateTime? fechaHasta)
+    [Authorize(Policy = "AdminEmpleado")]
+
+    [HttpGet("ObtenerTodos")]
+    public IActionResult ObtenerTodos()
+    {
+        var contratos = _repo.ObtenerTodos();
+
+        return Json(contratos);
+    }
+    [Authorize(Policy = "AdminEmpleado")]
+
+    public IActionResult Index(int? inquilinoId, int? inmuebleId, DateTime? fechaDesde, DateTime? fechaHasta)
     {
         // Obtiene todos los propietarios e inmuebles para cargar en los selects
         var propietarios = _repoProp.ObtenerTodos();
         var inmuebles = _repoInmueble.ObtenerTodos();
-
+        var inquilinos = _repoInquilino.ObtenerTodos();
         // pbtiene todos los contratos
         var contratos = _repo.ObtenerTodos();
 
         // aplica los filtros solo si se selecciona alguna opción
-        if (propietarioId.HasValue)
+        if (inquilinoId.HasValue)
         {
-            contratos = contratos.Where(c => c.Prop.Id == propietarioId.Value).ToList();
+            contratos = contratos.Where(c => c.Inqui.Id == inquilinoId.Value).ToList();
         }
 
         if (inmuebleId.HasValue)
@@ -103,24 +85,27 @@ public class ContratoController : Controller
         // Envia la lista filtrada a la vista
         ViewBag.Propietarios = new SelectList(propietarios, "Id", "NombreCompleto");
         ViewBag.Inmuebles = new SelectList(inmuebles, "Id", "Direccion");
+        ViewBag.Inquilinos = new SelectList(inquilinos, "Id", "NombreCompleto");
+
 
         return View(contratos);
     }
+    [Authorize(Policy = "AdminEmpleado")]
 
-
-    public IActionResult ListaVencidos(int? propietarioId, int? inmuebleId, DateTime? fechaDesde, DateTime? fechaHasta)
+    public IActionResult ListaVencidos(int? inquilinoId, int? inmuebleId, DateTime? fechaDesde, DateTime? fechaHasta)
     {
         // Obtiene todos los propietarios e inmuebles para cargar en los selects
         var propietarios = _repoProp.ObtenerTodos();
         var inmuebles = _repoInmueble.ObtenerTodos();
+        var inquilinos = _repoInquilino.ObtenerTodos();
 
         // pbtiene todos los contratos
         var contratos = _repo.ObtenerVencidos();
 
         // aplica los filtros solo si se selecciona alguna opción
-        if (propietarioId.HasValue)
+        if (inquilinoId.HasValue)
         {
-            contratos = contratos.Where(c => c.Prop.Id == propietarioId.Value).ToList();
+            contratos = contratos.Where(c => c.Inqui.Id == inquilinoId.Value).ToList();
         }
 
         if (inmuebleId.HasValue)
@@ -148,11 +133,11 @@ public class ContratoController : Controller
         // Envia la lista filtrada a la vista
         ViewBag.Propietarios = new SelectList(propietarios, "Id", "NombreCompleto");
         ViewBag.Inmuebles = new SelectList(inmuebles, "Id", "Direccion");
+        ViewBag.Inquilinos = new SelectList(inquilinos, "Id", "NombreCompleto");
 
         return View(contratos);
     }
-
-
+    [Authorize(Policy = "AdminEmpleado")]
 
     public IActionResult Editar(int id)
     {
@@ -161,16 +146,16 @@ public class ContratoController : Controller
         var propietarios = _repoProp.ObtenerTodos();
         var inmuebles = _repoInmueble.ObtenerDisponiblesTotales();
         var inquilinos = _repoInquilino.ObtenerTodos();
-
         if (id > 0)
         {
-            //Obtengo el inmueble que esta en el contrato 
 
             Contrato cont = _repo.ObtenerPorId(id);
+
             Inmueble inmuContra = _repoInmueble.ObtenerPorId(cont.Inmu.Id);
 
             //Agrego el inmueble que ya tiene el contrato, porque si no solo traigo los no alguilados
             inmuebles.Add(inmuContra);
+            ViewBag.Contrato = cont;
 
         }
 
@@ -186,47 +171,89 @@ public class ContratoController : Controller
         {
 
             var contrato = _repo.ObtenerPorId(id);
+            contrato.CalcularCantidadPagos();
+
+
+            // Guardar los cambios en la base de datos
+            _repo.Modificar(contrato);
             return View(contrato);
         }
     }
 
+    [Authorize(Policy = "AdminEmpleado")]
 
-    public IActionResult Renovar(int id, Contrato contratoActualizado)
-{
-    // Si el contratoActualizado tiene valores (es decir, viene de un formulario POST)
-    if (contratoActualizado != null && contratoActualizado.Id != 0)
+    [HttpGet]
+    public IActionResult Renovar(int id)
     {
-        // Aquí debes validar si el contrato está correctamente actualizado
-        if (ModelState.IsValid)
+        // Obtén el contrato usando el ID
+        Contrato contrato = _repo.ObtenerPorId(id);
+        contrato.CalcularCantidadPagos();
+
+        if (contrato == null)
         {
-            _repo.Renovar(contratoActualizado);
-            TempData["SuccessMessage"] = "Contrato renovado correctamente.";
-            return RedirectToAction("Index"); // Redirige a la lista de contratos
+            return NotFound();
         }
-        // Si la validación falla, volvemos a cargar el formulario
-        return View(contratoActualizado);
+
+        // Obtén el inquilino y el inmueble asociados al contrato
+        var inquilino = _repoInquilino.ObtenerPorId(contrato.Inqui.Id);
+        Inmueble inmueble = _repoInmueble.ObtenerPorId(contrato.Inmu.Id);
+
+        // Pasa los datos a la vista usando ViewBag
+        ViewBag.Inmueble = inmueble;
+        ViewBag.Inquilino = inquilino;
+        ViewBag.Contrato = contrato;
+
+        return View(contrato);
     }
-    // Si es la primera vez que se carga el formulario (GET)
-    Contrato contrato = _repo.ObtenerPorId(id);
-    if (contrato == null)
+
+    [Authorize(Policy = "AdminEmpleado")]
+
+    [HttpPost]
+    public IActionResult Renovar(Contrato contratoRenovado)
     {
-        return NotFound();
+        var usuarioActual = _repoUsuario.ObtenerPorId(Int32.Parse(User.FindFirst("UserId")?.Value));
+        contratoRenovado.CalcularCantidadPagos();
+
+
+        try
+        {
+            Contrato contratoOriginal = _repo.ObtenerPorId(contratoRenovado.Id);
+            if (contratoOriginal == null)
+            {
+                return NotFound();
+            }
+
+            contratoRenovado.UsuCreacion = usuarioActual;
+            contratoRenovado.Inqui = contratoOriginal.Inqui;
+            contratoRenovado.Inmu = contratoOriginal.Inmu;
+            contratoRenovado.Prop = contratoOriginal.Prop;
+            _logger.LogInformation("Renovando contrato: Dirección Inmueble: {Direccion}, Propietario: {Propietario}, Inquilino: {Inquilino}, Fecha Fin: {FechaFin}, Fecha Inicio: {FechaInicio}, Descripción: {Descripcion}, Observaciones: {Observaciones}, Usuario de Creación: {UsuarioCreacion}",
+            contratoRenovado.Inmu?.Direccion,
+            contratoRenovado.Prop?.NombreCompleto,
+            contratoRenovado.Inqui?.NombreCompleto,
+            contratoRenovado.FechaFin,
+            contratoRenovado.FechaInicio,
+            contratoRenovado.Descripcion,
+            contratoRenovado.Observaciones,
+            contratoRenovado.UsuCreacion?.NombreCompleto);
+
+            _repo.Renovar(contratoRenovado);
+
+            TempData["SuccessMessage"] = "Contrato renovado correctamente.";
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", "Ocurrió un error al intentar renovar el contrato.");
+            _logger.LogError(ex, "Error al renovar el contrato.");
+        }
+
+        return View(contratoRenovado);
     }
 
-    // Obtengo el inquilino asociado al contrato
-    var inquilino = _repoInquilino.ObtenerPorId(contrato.Inqui.Id);
-  
-    // Obtengo el inmueble asociado al contrato
-    Inmueble inmueble = _repoInmueble.ObtenerPorId(contrato.Inmu.Id);
-   
-    // Paso los datos a la vista usando ViewBag
-    ViewBag.Inmueble = inmueble;
-    ViewBag.Inquilino = inquilino;
-    ViewBag.Contrato = contrato;
 
-    return View(contrato); // Muestra la vista con el contrato sin guardar aún.
-}
 
+    [Authorize(Policy = "AdminEmpleado")]
 
     public IActionResult Detalle(int id)
     {
@@ -258,12 +285,16 @@ public class ContratoController : Controller
         }
     }
 
-
-
+    [Authorize(Policy = "AdminEmpleado")]
 
     [HttpPost]
     public IActionResult Guardar(Contrato contrato)
     {
+        var usuarioActual = _repoUsuario.ObtenerPorId(Int32.Parse(User.FindFirst("UserId")?.Value));
+        contrato.UsuCreacion = usuarioActual;
+        contrato.CalcularCantidadPagos();
+
+
         if (contrato.Id == 0)
         {
             _repo.Alta(contrato);
@@ -271,6 +302,7 @@ public class ContratoController : Controller
         }
         else
         {
+
             _repo.Modificar(contrato);
             TempData["SuccessMessage"] = "Contrato modificado correctamente.";
         }
@@ -278,7 +310,7 @@ public class ContratoController : Controller
 
 
     }
-
+    [Authorize(Policy = "Administrador")]
 
     public IActionResult Eliminar(int id)
     {
@@ -286,16 +318,18 @@ public class ContratoController : Controller
         TempData["SuccessMessage"] = "Datos de contrato eliminados correctamente.";
         return RedirectToAction(nameof(Index));
     }
-
+    [Authorize(Policy = "AdminEmpleado")]
 
     public IActionResult Anular(int id, String observ)
     {
 
-        _repo.Anular(id, observ);
+        var usuarioActual = _repoUsuario.ObtenerPorId(Int32.Parse(User.FindFirst("UserId")?.Value));
+
+        _repo.Anular(id, observ, usuarioActual.Id);
         TempData["SuccessMessage"] = "Contrato anulado correctamente.";
         return RedirectToAction(nameof(Index));
     }
-
+    [Authorize(Policy = "AdminEmpleado")]
 
     private string CalcularMesesYDiasRestantes(DateTime fechaActual, DateTime fechaFin)
     {
@@ -330,7 +364,86 @@ public class ContratoController : Controller
 
 
     }
+    [Authorize(Policy = "AdminEmpleado")]
 
+    [HttpGet("ObtenerPorIdJSON")]
+    public IActionResult ObtenerPorIdJSON(int id)
+    {
+        var contrato = _repo.ObtenerPorId(id);
+        if (contrato == null)
+        {
+            return NotFound();
+        }
+
+        // Devuelve solo lo necesario
+        var resultado = new
+        {
+            Id = contrato.Id,
+            Precio = contrato.Inmu?.Precio // Asumiendo que Inmu no es null
+        };
+
+        return Json(resultado);
+    }
+    [Authorize(Policy = "AdminEmpleado")]
+
+    [HttpGet("ObtenerInmueblesDisponibles")]
+    public IActionResult ObtenerInmueblesDisponibles(DateTime? fechaInicio, DateTime? fechaFin)
+    {
+        // Obtiene todos los inmuebles y contratos
+        var inmuebles = _repoInmueble.ObtenerTodos();
+        var contratos = _repo.ObtenerTodos();
+
+        // Filtra inmuebles basados en el rango de fechas
+        var inmueblesNoDisponibles = contratos
+            .Where(c => (fechaInicio.HasValue && c.FechaInicio <= fechaFin) || (fechaFin.HasValue && c.FechaFin >= fechaInicio))
+            .Select(c => c.Inmu)
+            .Distinct()
+            .ToList();
+
+        var inmueblesDisponibles = inmuebles
+            .Except(inmueblesNoDisponibles, new InmuebleEqualityComparer())
+            .ToList();
+
+        return Json(inmueblesDisponibles);
+    }
+    [Authorize(Policy = "AdminEmpleado")]
+
+    // Comparador de igualdad para Inmueble
+    public class InmuebleEqualityComparer : IEqualityComparer<Inmueble>
+    {
+        public bool Equals(Inmueble x, Inmueble y)
+        {
+            return x.Id == y.Id;
+        }
+
+        public int GetHashCode(Inmueble obj)
+        {
+            return obj.Id.GetHashCode();
+        }
+    }
+
+    [Authorize(Policy = "AdminEmpleado")]
+
+    public JsonResult ObtenerInmueblesPorFechas(DateTime fechaInicio, DateTime fechaFin)
+    {
+        Console.WriteLine($"Fecha Inicio: {fechaInicio}, Fecha Fin: {fechaFin}");
+
+        // Filtrar inmuebles entre fechaInicio y fechaFin
+        var inmueblesDisponibles = _repoInmueble.ObtenerTodos()
+            .Where(i =>
+                !_repo.ObtenerTodos().Any(c =>
+                    c.Inmu.Id == i.Id &&
+                    ((c.FechaInicio <= fechaFin && c.FechaFin >= fechaInicio) ||
+                     (c.FechaInicio >= fechaInicio && c.FechaFin <= fechaFin))
+                )
+            )
+            .Select(i => new { value = i.Id, text = i.Direccion, precio = i.Precio }) // Asegúrate de que i.Precio esté definido
+            .ToList();
+
+        Console.WriteLine($"Inmuebles encontrados: {inmueblesDisponibles.Count}");
+
+        return Json(inmueblesDisponibles);
+    }
 
 
 }

@@ -1,0 +1,117 @@
+@using System.Globalization
+@model inmobiliaria_AT.Models.Pago
+
+@{
+    ViewData["Title"] = "Editar Pago " + Model.Id;
+    int? id = Model == null ? 0 : Model.Id;
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2>@ViewData["Title"]</h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h5>Número de Pago: @ViewBag.NumeroPago</h5>
+                    </div>
+
+                    <form asp-action="Editar" method="post">
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Contrato" class="form-label">Contrato</label>
+                            <select asp-for="Contrato.Id"
+                                asp-items="@(ViewBag.Contratos ?? new SelectList(Enumerable.Empty<SelectListItem>()))"
+                                class="form-control select2" id="contratoSelect">
+                                <option value="@Model.Contrato.Id" selected>@Model.Contrato.DireccionInmueble -
+                                    @Model.Contrato.Inqui.NombreCompleto</option>
+
+                            </select>
+
+                            <span asp-validation-for="Contrato.Id" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Monto" class="form-label">Monto</label>
+                            <input asp-for="Monto" id="montoContrato" class="form-control" />
+                            <span asp-validation-for="Monto" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Fecha" class="form-label">Fecha</label>
+                            <input type="date" asp-for="Fecha" class="form-control" readonly />
+                            <span asp-validation-for="Fecha" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Detalle" class="form-label">Detalle</label>
+                            <textarea asp-for="Detalle" class="form-control"></textarea>
+                            <span asp-validation-for="Detalle" class="text-danger"></span>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                            <a asp-action="Index" class="btn btn-dark" title="Volver">
+                                <i class="fa-solid fa-undo"></i> Cancelar
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $('.select2').select2({
+            placeholder: "Seleccione una opción",
+            allowClear: true,
+            width: '100%',
+            minimumResultsForSearch: 0
+        });
+
+        // Obtiene el id del contrato seleccionado
+        $('#contratoSelect').on('change', function () {
+            var contratoId = $(this).val(); // asigna el id del contrato seleccionado
+            obtenerMonto(contratoId); // Llama a la funcion para obtener el monto
+        });
+    });
+
+    function obtenerMonto(contratoId) {
+        if (contratoId) {
+            $.ajax({
+                url: '@Url.Action("ObtenerPorIdJSON", "Pago")',
+                type: 'GET',
+                data: { id: contratoId },
+                success: function (data) {
+                    if (data && data.precio) {
+                        $('#montoContrato').val(data.precio); // Actualiza el campo con el precio
+                    } else {
+                        $('#montoContrato').val(''); // Limpia el campo si no hay monto
+                    }
+                },
+                error: function () {
+                    alert('Error al obtener el monto del contrato.');
+                }
+            });
+        } else {
+            $('#montoContrato').val(''); // Limpia el campo si no hay contrato seleccionado
+        }
+    }
+</script>
+
+<!-- Scripts de validación -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+<link rel="stylesheet" href="../../css/pago.css">

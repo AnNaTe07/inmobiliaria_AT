@@ -198,7 +198,6 @@ namespace inmobiliaria_AT.Controllers
 
         [Authorize(Policy = "AdminEmpleado")]
         [HttpGet]
-
         public IActionResult ListaPorPropietario()
         {
             // Obtener la lista de propietarios
@@ -308,6 +307,7 @@ namespace inmobiliaria_AT.Controllers
                 return Json(new { success = false });
             }
         }
+        [Authorize(Policy = "AdminEmpleado")]
 
         public IActionResult ObtenerInmueblesTodos(string filtro)
         {
@@ -349,12 +349,15 @@ namespace inmobiliaria_AT.Controllers
             return PartialView("_InmueblesPartial", inmuebles);
         }
 
+        [Authorize(Policy = "AdminEmpleado")]
 
         public IActionResult verificarDisponibilidad(int inmuebleId, DateTime fechaInicio, DateTime fechaFin)
         {
             bool isAvailable = _repoContrato.disponiblePorFechas(inmuebleId, fechaInicio, fechaFin);
             return Json(isAvailable); // Retornar JSON para uso en JavaScript si es necesario
         }
+        [Authorize(Policy = "AdminEmpleado")]
+
         [HttpGet]
         public IActionResult BuscarInmuebles()
         {   // Obtengo los tipos de inmueble
@@ -379,6 +382,7 @@ namespace inmobiliaria_AT.Controllers
             // Pasar un modelo vacío o nulo al cargar la vista de búsqueda
             return View(new List<Inmueble>());
         }
+        [Authorize(Policy = "AdminEmpleado")]
         [HttpPost]
         public IActionResult BuscarInmuebles(string uso, string tipo, int? ambientes, decimal? precioMinimo, decimal? precioMaximo, DateTime? fechaInicio, DateTime? fechaFin)
         {
