@@ -123,6 +123,44 @@
         </div>
     </div>
 </div>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Mensaje</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@TempData["SuccessMessage"]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="modal fade" id="modal_error_message" tabindex="-1" aria-labelledby="modalErrorMessageLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Error</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@TempData["ErrorMessage"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @section Scripts {
     <script>
@@ -132,5 +170,22 @@
             document.querySelector("#usuario_eliminar_apellido").innerText = apellido;
             $("#modal_eliminar_usuario").modal("show");
         }
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const successMessage = '@TempData["SuccessMessage"]';
+            if (successMessage) {
+                const modalExito = new bootstrap.Modal(document.getElementById('modal_success_message'));
+                modalExito.show();
+            }
+
+            const errorMessage = '@TempData["ErrorMessage"]';
+            if (errorMessage) {
+                const modalError = new bootstrap.Modal(document.getElementById('modal_error_message'));
+                modalError.show();
+            }
+        });
+
     </script>
 }

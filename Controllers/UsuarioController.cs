@@ -123,6 +123,7 @@ public class UsuarioController : Controller
 
             if (id > 0)
             {
+                Console.WriteLine("Success: Usuario creado exitosamente.");
                 TempData["SuccessMessage"] = "Usuario creado exitosamente.";
                 return RedirectToAction("Index");
             }
@@ -381,6 +382,7 @@ public class UsuarioController : Controller
     public IActionResult Eliminar(int id)
     {
         _repositorioUsuario.Baja(id);
+        TempData["SuccessMessage"] = "Datos de usuario eliminados correctamente.";
         return RedirectToAction("Index");
     }
 
