@@ -37,8 +37,8 @@
                     <div class="form-group">
                         <label asp-for="FechaInicio" class="form-label">Fecha de renovación</label>
                         <input type="text" id="fechaInicioDisplay" class="form-control" readonly
-                            value="@Model.FechaFin" />
-                        <input type="hidden" name="FechaInicio" value="@Model.FechaFin" />
+                            value="@Model.FechaFin.ToString("dd/MM/yyyy")" />
+                        <input type="hidden" name="FechaInicio" value="@Model.FechaFin.ToString("yyyy-MM-dd")" />
                         <span asp-validation-for="FechaInicio" class="text-danger"></span>
                     </div>
                 </div>
@@ -46,7 +46,7 @@
                 <!-- Fecha de finalización  -->
                 <div class="form-group col-md-3 form-group-spacing">
                     <label asp-for="FechaFin" class="control-label">Fecha de finalización</label>
-                    <input asp-for="FechaFin" class="form-control" />
+                    <input asp-for="FechaFin" class="form-control" type="date" min="@Model.FechaFin.AddDays(1).ToString("yyyy-MM-dd")">
                     <span asp-validation-for="FechaFin" class="text-danger"></span>
                 </div>
 

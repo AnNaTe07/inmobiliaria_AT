@@ -47,7 +47,7 @@
         <div class="col-md-2 d-flex align-items-end">
             <button type="submit" class="btn btn-primary me-2">Filtrar</button>
             <button type="button" class="btn btn-secondary" onclick="limpiarFiltros()">
-                <i class="fas fa-times"></i> Limpiar
+             Limpiar
             </button>
         </div>
     </div>
@@ -114,7 +114,7 @@
 
 
                         <span class="badge @(item.Estado == 2 ? "bg-danger" : "bg-warning")">
-                            @(item.Estado == 2 ? "Anulado" : "No vigente")
+                            @(item.Estado == 3 ? "Anulado" : "No vigente")
                         </span>
                     </td>
 

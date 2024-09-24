@@ -45,13 +45,11 @@ public class ContratoController : Controller
     }
     [Authorize(Policy = "AdminEmpleado")]
 
-    public IActionResult Index(int? inquilinoId, int? inmuebleId, DateTime? fechaDesde, DateTime? fechaHasta)
+    public IActionResult Index(int? inquilinoId, int? inmuebleId, DateTime? fechaDesde, DateTime? fechaHasta, int? duracionContrato)
     {
-        // Obtiene todos los propietarios e inmuebles para cargar en los selects
         var propietarios = _repoProp.ObtenerTodos();
         var inmuebles = _repoInmueble.ObtenerTodos();
         var inquilinos = _repoInquilino.ObtenerTodos();
-        // pbtiene todos los contratos
         var contratos = _repo.ObtenerTodos();
 
         // aplica los filtros solo si se selecciona alguna opción
@@ -82,6 +80,32 @@ public class ContratoController : Controller
             contratos = contratos.Where(c => c.FechaFin.Date <= fechaHasta.Value.Date).ToList();
         }
 
+       if (duracionContrato.HasValue)
+    {
+        // Definir los rangos para los filtros de duración
+        int rangoInferior = 0;
+        int rangoSuperior = 0;
+
+        switch (duracionContrato.Value)
+        {
+            case 30:
+                rangoInferior = 28; // dias aproximados para un mes
+                rangoSuperior = 32;
+                break;
+            case 60:
+                rangoInferior = 58; // Dias aproximados para dos meses
+                rangoSuperior = 62;
+                break;
+            case 90:
+                rangoInferior = 88; // dias aproximados para tres meses
+                rangoSuperior = 92;
+                break;
+        }
+
+        // Filtra los contratos donde la duracion en dias este dentro del rango seleccionado
+        contratos = contratos.Where(c => (c.FechaFin - c.FechaInicio).TotalDays >= rangoInferior 
+                                         && (c.FechaFin - c.FechaInicio).TotalDays <= rangoSuperior).ToList();
+    }
         // Envia la lista filtrada a la vista
         ViewBag.Propietarios = new SelectList(propietarios, "Id", "NombreCompleto");
         ViewBag.Inmuebles = new SelectList(inmuebles, "Id", "Direccion");
@@ -322,7 +346,7 @@ public class ContratoController : Controller
 
     public IActionResult Anular(int id, String observ)
     {
-
+        observ = observ + "Fecha de Anulación: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
         var usuarioActual = _repoUsuario.ObtenerPorId(Int32.Parse(User.FindFirst("UserId")?.Value));
 
         _repo.Anular(id, observ, usuarioActual.Id);

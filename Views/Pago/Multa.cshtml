@@ -8,7 +8,7 @@
     var multa = ViewBag.Multa;
 }
 
-<h4>@Model.DireccionInmueble.ToUpper(): Multa por anulación de contrato #@Model.Id</h4>
+<h4>Anulación Contrato #@id: @Model.DireccionInmueble.ToUpper() - @Model.Inqui.NombreCompleto </h4>
 <hr>
 <div class="col-md-12">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -16,8 +16,8 @@
     <div class="row">
 
         <div class="form-group col-md-6 form-group-spacing">
-            <label class="control-label">ID</label>
-            <input type="text" class="form-control" value="@id" readonly>
+            <label class="control-label">Inquilino</label>
+            <input type="text" class="form-control" value="@Model.Inqui.NombreCompleto" readonly>
         </div>
         <div class="form-group col-md-6 form-group-spacing">
             <label>Contrato</label>
@@ -48,19 +48,38 @@
             <label class="control-label">Concepto</label>
             <input type="text" class="form-control" value="Multa por rescisión de contrato" readonly>
         </div>
-    </div>
 
-    <div class="form-group-spacing mt-8">
-        <a asp-action="Index" class="btn btn-dark mb-3" title="Volver">
-            <i class="fa-solid fa-undo"></i>
-        </a>
+
+        @if (ViewBag.PagosAdeudados > 0)
+        {
+            <div class="form-group col-md-3 form-group-spacing">
+                <label class="control-label">Meses Adeudados</label>
+                <input type="text" class="form-control text-danger" value="@ViewBag.PagosAdeudados" readonly>
+            </div>
+
+            <div class="form-group col-md-3 form-group-spacing">
+                <label class="control-label">Importe Adeudado</label>
+                <input type="text" class="form-control text-danger" value="$@ViewBag.ImporteAdeudado" readonly>
+            </div>
+        }
+        <div class=" col-md-3 form-group-spacing">
+            <label class="control-label"><strong>Total Multa</strong></label>
+            <input type="text" class="form-control text-danger" value="$@(ViewBag.ImporteAdeudado + multa )" readonly>
+        </div>
     </div>
+   <div class="text-center mb-5">
+    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#confirmarAnulacionModal">
+        Abonar
+    </button>
+    <a href="@Url.Action("Index", "Contrato")" class="btn btn-dark" title="Cancelar">
+        Cancelar
+    </a>
 </div>
 
-<!-- Botón que abre el modal de confirmación de anulación -->
-<button type="button" class="btn btn-warning" data-toggle="modal" data-target="#confirmarAnulacionModal">
-    Abonar
-</button>
+
+
+</div>
+
 
 <!-- Modal de confirmación de anulación -->
 <div class="modal fade" id="confirmarAnulacionModal" tabindex="-1" role="dialog"

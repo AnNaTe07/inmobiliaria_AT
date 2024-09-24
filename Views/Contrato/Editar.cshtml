@@ -29,23 +29,28 @@
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <label asp-for="FechaInicio" class="form-label">Fecha de Inicio</label>
-                                    <input asp-for="FechaInicio" id="fechaInicio" class="form-control" type="date">
+                                    <input asp-for="FechaInicio" id="fechaInicio" class="form-control" type="date"
+                                        min="@DateTime.Now.ToString("yyyy-MM-dd")">
                                     <span asp-validation-for="FechaInicio" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <label asp-for="FechaFin" class="form-label">Fecha de Finalización</label>
-                                    <input asp-for="FechaFin" id="fechaFin" class="form-control" type="date">
+                                    <input asp-for="FechaFin" id="fechaFin" class="form-control" type="date"
+                                        min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")">
                                     <span asp-validation-for="FechaFin" class="text-danger"></span>
                                 </div>
                             </div>
+
                             <div class="col-md-2">
                                 <button id="buscarInmueblesBtn" type="button" class="btn btn-primary w-100" disabled>
                                     Buscar
                                 </button>
                             </div>
                         </div>
+                                                            <span id="fechaFinError" style="color: red;"></span>
+
                         <div class="row mb-3">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -106,7 +111,7 @@
                         <div class="text-center mb-3">
                             <button type="submit" class="btn btn-success " disabled>Guardar Contrato</button>
                             <a asp-action="Index" class="btn btn-dark" title="Volver"> Cancelar</a>
-                            
+
                         </div>
 
                     </form>
@@ -146,15 +151,28 @@
 
         // verifica las fechas cada vez que se cambian
         $('#fechaInicio, #fechaFin').on('input change', function () {
+
+            validateDates();
+
             habilitarBotonBuscar();  // Habilitar o deshabilitar el botn
         });
         $('#fechaInicio, #fechaFin, #inmuebleSelect, select[name="Inqui.Id"], #montoInmueble, input[name="Observaciones"], input[name="Descripcion"]').on('input change keyup select2:select', function () {
             habilitarBotonGuardar();  // Habilitar o deshabilitar el botón
         });
+
+
+
+
         // boton de buscar inmuebles
         $('#buscarInmueblesBtn').click(function () {
             var fechaInicio = $('#fechaInicio').val();
             var fechaFin = $('#fechaFin').val();
+
+            if (!validateDates()) {
+                console.log("Las fechas no son válidas");  // Añadir un log para comprobar si entra en esta parte del código
+                $('#fechaFinError').text("Corregir Fechas: la fecha de fin no puede ser anterior a la de inicio.");
+                return; // Evitar la búsqueda si las fechas son inválidas
+            }
 
             if (fechaInicio && fechaFin) {
                 $.ajax({
@@ -197,6 +215,20 @@
         });
 
     });
+    function validateDates() {
+        var inicio = $('#fechaInicio').val();
+        var fin = $('#fechaFin').val();
+        var isValid = true;
+
+        if (new Date(inicio) > new Date(fin)) {
+            $('#fechaFinError').text("La fecha de fin no puede ser anterior a la fecha de inicio.");
+            isValid = false;
+        } else {
+            $('#fechaFinError').text("");
+        }
+
+        return isValid;
+    }
     function habilitarBotonGuardar() {
         var fechaInicio = $('#fechaInicio').val();
         var fechaFin = $('#fechaFin').val();
@@ -207,10 +239,13 @@
         var descripcion = $('input[name="Descripcion"]').val();
         var contratoId = $('input[name="Id"]').val(); // Obtener el ID del contrato
 
-        // Habilitar el boton si el contrato ya existe o si todos los campos requeridos tienen valor
-        var habilitar = contratoId > 0 || (fechaInicio && fechaFin && inmuebleId && inquilinoId && montoInmueble && observaciones && descripcion);
+        // Verifica si las fechas son validas
+        var fechasValidas = validateDates();
+
+        var habilitar = contratoId > 0 || (fechaInicio && fechaFin && inmuebleId && inquilinoId && montoInmueble && observaciones && descripcion && fechasValidas);
         $('button[type="submit"]').prop('disabled', !habilitar);
     }
+
 </script>
 
 

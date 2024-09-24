@@ -43,12 +43,22 @@
                 </div>
             </div>
         </div>
+        <!-- Filtro por duración del contrato -->
+        <div id="filtroDuracion" class="col-md-3">
+            <label for="duracionContrato" class="form-label">Duración del Contrato:</label>
+            <select name="duracionContrato" class="form-select select2">
+                <option value="">Seleccionar Duración</option>
+                <option value="30">30 días</option>
+                <option value="60">60 días</option>
+                <option value="90">90 días</option>
+            </select>
+        </div>
 
-        <!-- Botones en la misma fila -->
+        <!-- Botones  -->
         <div class="col-md-2 d-flex align-items-end">
             <button type="submit" class="btn btn-primary me-2">Filtrar</button>
             <button type="button" class="btn btn-secondary" onclick="limpiarFiltros()">
-                <i class="fas fa-times"></i> Limpiar
+                 Limpiar
             </button>
         </div>
     </div>
@@ -57,7 +67,7 @@
 
 
 <div class="col-md-12 mt-3">
-    <a href="@Url.Action("ListaVencidos", "Contrato")" class="btn btn-primary">Contratos Vencidos</a>
+    <a href="@Url.Action("ListaVencidos", "Contrato")" class="btn btn-primary">No Vigentes</a>
     <a href="@Url.Action("Editar", "Contrato")" class="btn btn-success">Nuevo Contrato</a>
 
 </div>
@@ -112,14 +122,8 @@
                     <td>
                         @(item.Observaciones)
                     </td>
-
-                    <td>
-
-
-                    </td>
-
-
-                    <td></td>
+ 
+        
                     @if (IsEmple || isAdmin)
                     {
                         <td>

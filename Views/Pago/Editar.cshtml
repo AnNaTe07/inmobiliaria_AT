@@ -18,30 +18,27 @@
                     <h2>@ViewData["Title"]</h2>
                 </div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <h5>Número de Pago: @ViewBag.NumeroPago</h5>
-                    </div>
+                  
 
                     <form asp-action="Editar" method="post">
                         <input type="hidden" asp-for="Id" />
 
+                       
                         <div class="form-group mb-3">
                             <label asp-for="Contrato" class="form-label">Contrato</label>
-                            <select asp-for="Contrato.Id"
-                                asp-items="@(ViewBag.Contratos ?? new SelectList(Enumerable.Empty<SelectListItem>()))"
-                                class="form-control select2" id="contratoSelect">
-                                <option value="@Model.Contrato.Id" selected>@Model.Contrato.DireccionInmueble -
-                                    @Model.Contrato.Inqui.NombreCompleto</option>
-
-                            </select>
-
+                            <input type="text" class="form-control" id="contratoInput"
+                                value="@Model.Contrato.Id - @Model.Contrato.DireccionInmueble - @Model.Contrato.Inqui.NombreCompleto"
+                                readonly />
+                            <input type="hidden" asp-for="Contrato.Id" value="@Model.Contrato.Id" />
                             <span asp-validation-for="Contrato.Id" class="text-danger"></span>
                         </div>
 
                         <div class="form-group mb-3">
                             <label asp-for="Monto" class="form-label">Monto</label>
-                            <input asp-for="Monto" id="montoContrato" class="form-control" />
+                            <input asp-for="Monto" id="montoContrato" class="form-control" readonly />
                             <span asp-validation-for="Monto" class="text-danger"></span>
+                            <input type="hidden" asp-for="Monto" value="" />
+
                         </div>
 
                         <div class="form-group mb-3">

@@ -474,7 +474,7 @@ public class RepositorioContrato
                         {
 
                             // BAJA LOGICA DEL CONTRATO DE ACUERDO A LA FECHA DE VENCIMIENTO Y LA ACTUAL
-                            var EstadoContrato = $@"UPDATE contrato SET Estado = '2' WHERE id = @id;";
+                            var EstadoContrato = $@"UPDATE contrato SET Estado = '2' WHERE id = @id AND Estado != 4;";
                             using (MySqlCommand command = new MySqlCommand(EstadoContrato, conn, transaction))
                             {
                                 command.Parameters.AddWithValue("@id", item.Id);

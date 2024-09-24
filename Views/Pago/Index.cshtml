@@ -70,7 +70,7 @@
         <div class="col-md-2 d-flex align-items-center">
             <button type="submit" class="btn btn-primary me-2">Filtrar</button>
             <button type="button" class="btn btn-secondary" onclick="limpiarFiltros()">
-                <i class="fas fa-times"></i> Limpiar
+                Limpiar
             </button>
         </div>
     </div>
@@ -163,6 +163,22 @@
     </tbody>
 </table>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="modal fade" id="modal_success_message" tabindex="-1" aria-labelledby="modalSuccessMessageLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@TempData["SuccessMessage"]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 <div class="modal fade" id="modal_anular_pago" tabindex="-1" aria-labelledby="modal_anular_pagoLabel"
     aria-hidden="true">

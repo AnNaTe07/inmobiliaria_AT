@@ -10,6 +10,7 @@ $(document).ready(function () {
 });
 
 function anular(id, direccion, propietario, inquilino) {
+
   document.querySelector("#contrato_anular_id").value = id;
   document.querySelector("#contrato_anular_direccion").innerText =
     "Dirección: " + direccion;
@@ -30,17 +31,22 @@ function eliminar(id, direccion, propietario, inquilino) {
     "Inquilino: " + inquilino;
 
   $("#modal_eliminar_contrato").modal("show");
+
+    document.querySelector("#contrato_anular_id").value = id;
+    document.querySelector("#contrato_anular_direccion").innerText = "Dirección: " + direccion;
+    document.querySelector("#contrato_anular_inquilino").innerText = "Inquilino: " + inquilino;
+   
+    $("#modal_anular_contrato").modal("show");
 }
 
 function filtrar() {
   var tipoFiltro = document.getElementById("tipoFiltro").value;
-
-  // Mostrar los filtros según la opción seleccionada
-  if (tipoFiltro === "Inquilino") {
-    document.getElementById("filtroInquilino").style.display = "block";
-  } else if (tipoFiltro === "Propiedad") {
-    document.getElementById("filtroPropiedad").style.display = "block";
-  }
+    // Mostrar los filtros según la opción seleccionada
+    if (tipoFiltro === "Inquilino") {
+        document.getElementById("filtroInquilino").style.display = "block";
+    } else if (tipoFiltro === "Propiedad") {
+        document.getElementById("filtroPropiedad").style.display = "block";
+    }
 }
 
 $(document).ready(function () {

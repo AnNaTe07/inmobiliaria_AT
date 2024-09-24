@@ -267,8 +267,9 @@ public class RepositorioPago
 
 
         DateTime? fechaFin = contrato.FechaFin;
-
-        monto = CalcularMulta(contrato);
+        var pagosAdeudados = CalcularPagosAdeudados(contrato);
+        var importeAdeudado = pagosAdeudados * contrato.Inmu.Precio;
+        monto = CalcularMulta(contrato) + importeAdeudado;
 
         using (MySqlConnection connection = new MySqlConnection(_connectionString))
         {
@@ -328,6 +329,43 @@ public class RepositorioPago
 
         return multa;
     }
+
+    public int CalcularPagosAdeudados(Contrato contrato)
+    {
+        // Calcular la duración total del contrato en días
+        double duracionTotalDias = (contrato.FechaFin - contrato.FechaInicio).TotalDays;
+
+        // Si la duración total es menor o igual a 30 días, el pago debe ser 1
+        if (duracionTotalDias <= 30)
+        {
+            return 1;
+        }
+
+        // Calcular los meses desde la fecha de inicio hasta la fecha actual
+        int mesesTranscurridos = (DateTime.Now.Year - contrato.FechaInicio.Year) * 12 + DateTime.Now.Month - contrato.FechaInicio.Month;
+        // Si el contrato está activo, ajustar por días
+        if (DateTime.Now < contrato.FechaFin)
+        {
+            // Ajustar solo el mes actual si hay menos de 30 días restantes
+            if ((contrato.FechaFin - DateTime.Now).TotalDays < 30)
+            {
+                mesesTranscurridos--;
+            }
+        }
+        // Asegurarse de contar el mes de inicio del contrato
+        if (contrato.FechaInicio.Day > 1)
+        {
+            mesesTranscurridos++;
+        }
+
+        int pagosAbonados = ObtenerCantidadPagosPorContrato(contrato.Id);
+
+        int pagosAdeudados = mesesTranscurridos - pagosAbonados;
+
+        return Math.Max(pagosAdeudados, 0);
+    }
+
+
 
 
     public int Anular(int id, int usuAnulacion)

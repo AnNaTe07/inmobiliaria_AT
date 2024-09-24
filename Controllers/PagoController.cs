@@ -285,8 +285,12 @@ public class PagoController : Controller
         if (contrato != null)
         {
             DateTime? fechaFin = contrato.FechaFin;
-
+            var pagosAdeudados = _repo.CalcularPagosAdeudados(contrato);
+            var importeAdeudado = pagosAdeudados * contrato.Inmu.Precio;
             tiempoRestante = fechaFin.HasValue ? (fechaFin.Value - DateTime.Now).Days : 0;
+
+            ViewBag.PagosAdeudados = pagosAdeudados;
+            ViewBag.ImporteAdeudado = importeAdeudado;
             ViewBag.TiempoRestante = tiempoRestante;
             ViewBag.Multa = _repo.CalcularMulta(contrato);
             ViewBag.Contrato = contrato;
