@@ -306,6 +306,15 @@ public class UsuarioController : Controller
             _repositorioUsuario.Editar(user);
             // Console.WriteLine("Usuario actualizado exitosamente.");
 
+            // Actualizar el claim del nombre y apellido
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            claimsIdentity.RemoveClaim(claimsIdentity.FindFirst(ClaimTypes.Name)); // Remover el claim viejo
+            claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, user.Nombre + " " + user.Apellido)); // Agregar el nuevo claim
+
+            // Volver a firmar al usuario con los nuevos claims
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+
             TempData["SuccessMessage"] = "Datos de Usuario actualizado correctamente.";
             // Redirigir según el rol del usuario
             if (User.IsInRole("Administrador"))
