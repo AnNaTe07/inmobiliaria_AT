@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-09-2024 a las 17:38:55
+-- Tiempo de generación: 25-09-2024 a las 02:13:16
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -75,19 +75,18 @@ CREATE TABLE `contrato` (
 INSERT INTO `contrato` (`Id`, `Inqui`, `Inmu`, `Prop`, `FechaInicio`, `FechaFin`, `Estado`, `Pagos`, `Observaciones`, `Descripcion`, `UsuarioCreacion`, `UsuarioAnulacion`) VALUES
 (1, 3, 5, 2, '2024-09-18 00:00:00', '2024-09-27 00:00:00', 3, 2, 'Contrato anulado por rescisión en la fecha 22/09/2024 a 4 dias del vencimiento.', 'LOLOLO', 1, 1),
 (2, 4, 6, 4, '2024-09-21 00:00:00', '2024-09-22 00:00:00', 2, 5, 'afdasfd', 'sdfsdf', 6, NULL),
-(3, 2, 5, 2, '2024-10-18 00:00:00', '2024-09-27 00:00:00', 3, 1, 'Contrato anulado por rescisión en la fecha 24/09/2024 a 2 dias del vencimiento.', 'eed', 8, 7),
-(4, 2, 5, 2, '2024-09-12 00:00:00', '2024-09-19 00:00:00', 2, 3, 'fgfg', 'fgfgf', 1, NULL),
+(3, 2, 5, 2, '2024-10-18 00:00:00', '2024-10-27 00:00:00', 3, 1, 'Contrato anulado por rescisión en la fecha 24/09/2024 a 2 dias del vencimiento.', 'eed', 8, 7),
+(4, 2, 5, 2, '2024-09-12 00:00:00', '2024-09-17 00:00:00', 2, 3, 'fgfg', 'fgfgf', 1, NULL),
 (5, 6, 7, 3, '2024-09-22 00:00:00', '2024-12-13 00:00:00', 1, 4, 'nuevo  3', 'nuevo', 1, NULL),
 (6, 3, 2, 2, '2024-09-06 00:00:00', '2024-09-10 00:00:00', 2, 8, '324', '23', 1, NULL),
-(7, 4, 7, 3, '2024-09-18 00:00:00', '2024-09-13 00:00:00', 2, 1, 'sdf', 'df', 1, NULL),
-(8, 1, 5, 2, '2024-08-31 00:00:00', '2024-09-19 00:00:00', 2, 3, 'asd', 'asdasd', 1, NULL),
-(11, 2, 5, 2, '2024-09-27 00:00:00', '2024-09-27 00:00:00', 4, 2, 'sdfsdfdf ', 'ee', 1, NULL),
-(12, 2, 5, 2, '2024-09-27 00:00:00', '2024-11-29 00:00:00', 1, 3, 'sdfsdfdf ', 'ee', 1, NULL),
-(13, 3, 5, 2, '2024-09-06 00:00:00', '2024-09-26 00:00:00', 4, 12, 'sdsj', '33333', 1, NULL),
+(7, 4, 7, 3, '2024-09-01 00:00:00', '2024-09-20 00:00:00', 2, 1, 'sdf', 'df', 1, NULL),
+(8, 1, 5, 2, '2024-08-31 00:00:00', '2024-09-03 00:00:00', 2, 3, 'asd', 'asdasd', 1, NULL),
+(11, 2, 5, 2, '2025-09-28 00:00:00', '2026-02-26 00:00:00', 4, 2, 'sdfsdfdf ', 'ee', 1, NULL),
+(12, 2, 5, 2, '2025-02-27 00:00:00', '2025-03-29 00:00:00', 1, 3, 'sdfsdfdf ', 'ee', 1, NULL),
+(13, 3, 5, 2, '2026-05-15 00:00:00', '2026-09-26 00:00:00', 4, 12, 'sdsj', '33333', 1, NULL),
 (15, 2, 4, 4, '2024-09-20 00:00:00', '2025-02-26 00:00:00', 3, 6, 'Contrato anulado por rescisión en la fecha 24/09/2024 a 154 dias del vencimiento.', 'd fds sd dsf', 1, 7),
 (16, 2, 2, 2, '2024-09-28 00:00:00', '2026-02-20 00:00:00', 1, 17, 'Ultimo contrato', 'Ultimo', 1, NULL),
-(17, 3, 5, 2, '2024-09-26 00:00:00', '2024-09-26 00:00:00', 1, 1, 'sdsjsdsfsdf', '33333', 1, NULL),
-(18, 6, 4, 4, '2024-11-01 00:00:00', '2024-12-04 00:00:00', 1, 2, 'aa', 'pp', 7, NULL);
+(18, 6, 4, 4, '2024-07-01 00:00:00', '2024-09-01 00:00:00', 1, 2, 'aa', 'pp', 7, NULL);
 
 -- --------------------------------------------------------
 
@@ -190,7 +189,7 @@ INSERT INTO `pago` (`Id`, `IdContrato`, `Fecha`, `Monto`, `Estado`, `usuPago`, `
 (67, 16, '2024-09-22 05:31:32', 333333, 1, 1, NULL, NULL, 'Primer pago', 1, 1),
 (68, 16, '2024-09-22 05:33:40', 333333, 1, 1, NULL, NULL, 'segundo ', 2, 1),
 (69, 13, '2024-09-22 16:11:57', 999999, 1, 1, NULL, NULL, 'sd', 1, 1),
-(71, 5, '2024-09-22 17:19:07', 4567, 1, 1, NULL, NULL, 'c', 2, 1),
+(71, 5, '2024-09-22 17:19:07', 4567, 0, 1, 8, '2024-09-24 16:40:49', 'c', 2, 1),
 (72, 15, '2024-09-24 12:16:36', 1555554, 1, 7, NULL, NULL, 'Multa por rescisión de contrato a 154 dias del vencimiento.', 0, 2),
 (73, 3, '2024-09-24 12:25:27', 999999, 1, 7, NULL, NULL, 'Multa por rescisión de contrato a 2 dias del vencimiento.', 0, 2);
 
@@ -284,7 +283,8 @@ INSERT INTO `usuario` (`Id`, `Nombre`, `Apellido`, `Email`, `Clave`, `Avatar`, `
 (8, 'Juana', 'La Loca', 'juana@email.com', 'JwMaYN0Gjajb0BN8mYHCJ56UCICDtVQvTtDFccgqfqk=', '/images/avatars/7-c9edf105-a414-4528-aa94-9cc7d8b16abc.jpg', 1, 'FZQ9ANPubPjlZFQ2pZVf/g==', 1),
 (9, 'Josefa', 'Perez', 'josefa@email.com', 'YTV5I21GmtKwhJdRWhc0g9fECrHHw55gotM/gMvkbBk=', '/images/avatars/4-0df948a5-a258-4c23-ab99-be380b33babb.jpg', 2, 'x0No1QHYPixM8/BJm962CA==', 1),
 (10, 'Pedro', 'Perez', 'pedro@email.com', 'mV1kbE13++oUTmprY0Og3v0sMwbTKhPfnGWW7weWbP0=', '/images/avatars/6-b4abe71e-861d-4339-a17c-07eeabd6423d.jpg', 1, 'w/ysqaSj96oG46/58Bv+jw==', 1),
-(11, 'ji', 'ji', 'ji@hu', '2Fwdlxq5c/tMNWZ6LVIcWAMxadkX/hTr35g71P872Y0=', '', 2, 'mJJaJHEyjWS0Il12FYJibg==', 0);
+(11, 'ji', 'ji', 'ji@hu', '2Fwdlxq5c/tMNWZ6LVIcWAMxadkX/hTr35g71P872Y0=', '', 2, 'mJJaJHEyjWS0Il12FYJibg==', 0),
+(12, 'Ulises', 'Moya', 'ulises@mail.com', 'gfkOwNMUNowg+L+EVL50KBqoTEU0+0DjzCYMISKOj7U=', NULL, 2, 'uhaDvP3AhL2TZ6w8P7plGw==', 1);
 
 --
 -- Índices para tablas volcadas
@@ -383,7 +383,7 @@ ALTER TABLE `inmueble`
 -- AUTO_INCREMENT de la tabla `inquilino`
 --
 ALTER TABLE `inquilino`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `pago`
@@ -395,7 +395,7 @@ ALTER TABLE `pago`
 -- AUTO_INCREMENT de la tabla `propietario`
 --
 ALTER TABLE `propietario`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo`
@@ -407,7 +407,7 @@ ALTER TABLE `tipo`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- Restricciones para tablas volcadas
