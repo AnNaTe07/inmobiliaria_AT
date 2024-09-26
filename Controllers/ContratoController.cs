@@ -26,12 +26,12 @@ public class ContratoController : Controller
     [Authorize(Policy = "AdminEmpleado")]
     public IActionResult ObtenerPorId(int id)
     {
-        var contrato = _repo.ObtenerPorId(id); // Obtener el contrato desde el repositorio
+        var contrato = _repo.ObtenerPorId(id); 
         if (contrato == null)
         {
-            return NotFound(); // Devuelve 404 si no se encuentra el contrato
+            return NotFound(); 
         }
-        return Json(contrato); // Devuelve el contrato como JSON
+        return Json(contrato); 
     }
 
     [Authorize(Policy = "AdminEmpleado")]
@@ -390,6 +390,8 @@ public class ContratoController : Controller
     }
     [Authorize(Policy = "AdminEmpleado")]
 
+
+
     [HttpGet("ObtenerPorIdJSON")]
     public IActionResult ObtenerPorIdJSON(int id)
     {
@@ -409,6 +411,8 @@ public class ContratoController : Controller
         return Json(resultado);
     }
     [Authorize(Policy = "AdminEmpleado")]
+
+
 
     [HttpGet("ObtenerInmueblesDisponibles")]
     public IActionResult ObtenerInmueblesDisponibles(DateTime? fechaInicio, DateTime? fechaFin)
@@ -430,6 +434,8 @@ public class ContratoController : Controller
 
         return Json(inmueblesDisponibles);
     }
+
+
     [Authorize(Policy = "AdminEmpleado")]
 
     // Comparador de igualdad para Inmueble
@@ -453,7 +459,7 @@ public class ContratoController : Controller
         Console.WriteLine($"Fecha Inicio: {fechaInicio}, Fecha Fin: {fechaFin}");
 
         // Filtrar inmuebles entre fechaInicio y fechaFin
-        var inmueblesDisponibles = _repoInmueble.ObtenerTodos()
+        var inmueblesDisponibles = _repoInmueble.ObtenerDisponiblesTotales()
             .Where(i =>
                 !_repo.ObtenerTodos().Any(c =>
                     c.Inmu.Id == i.Id &&
