@@ -105,3 +105,78 @@ cargar un nuevo pago a ese contrato desde la pantalla del listado.
 ● Dadas dos fechas posibles de un contrato (inicio y fin), listar todos
 los inmuebles que no estén ocupados en algún contrato entre esas
 fechas.
+
+# Proyecto Inmobiliaria
+
+Sistema web para la gestión integral de alquileres en una agencia inmobiliaria. Permite administrar inmuebles, contratos, propietarios, inquilinos, pagos y usuarios con distintos roles, siguiendo reglas de negocio reales del rubro.
+
+---
+
+## Descripción general
+
+El sistema informatiza el proceso de alquiler de inmuebles, contemplando:
+
+- Registro y administración de propietarios e inmuebles
+- Búsqueda de inmuebles disponibles por fecha y características
+- Generación de contratos de alquiler con control de fechas y ocupación
+- Gestión de pagos mensuales asociados a contratos
+- Cálculo y registro de multas por finalización anticipada de contrato
+- Renovación de contratos vencidos
+- Gestión de usuarios con roles (administrador y empleado)
+- Auditoría de acciones (quién creó, editó o anuló cada entidad)
+- Generación de informes detallados
+
+---
+
+## Entidades principales
+
+- **Propietario:** dueño de uno o más inmuebles
+- **Inmueble:** propiedad en alquiler (con tipo, uso, ambientes, precio, etc.)
+- **Inquilino:** persona que contrata un alquiler
+- **Contrato:** vincula un inmueble con un inquilino por un periodo y monto determinado
+- **Pago:** registro mensual con control de estado y detalle
+- **Usuario:** con roles y acceso diferenciado
+
+---
+
+## Tecnologías
+
+- JavaScript (frontend y backend)
+- Node.js con Express.js (backend)
+- Bootstrap (frontend)
+- MySQL (base de datos)
+- Visual Studio Code (IDE recomendado)
+- Modelo MVC
+- Autenticación con JWT
+
+---
+
+##  Roles de usuario
+
+- **Administrador:** gestión completa de todas las entidades, incluyendo usuarios y eliminaciones
+- **Empleado:** acceso restringido, puede gestionar su perfil y operar entidades según permisos
+
+---
+
+##  Funcionalidades destacadas
+
+- ABM de usuarios, propietarios, inquilinos, inmuebles, contratos y pagos
+- Cálculo automático de multa por terminación anticipada de contrato
+- Anulación lógica de pagos (soft delete)
+- Filtrado y búsquedas por estado, fechas y relaciones
+- Renovación de contratos de forma asistida
+- Sistema de autenticación seguro con JWT
+- Auditoría visible solo para administradores (quién creó/editó/anuló)
+- Generación de informes útiles para el negocio
+
+---
+
+## Informes incluidos
+
+- Inmuebles por disponibilidad o propietario
+- Contratos vigentes o por inmueble
+- Contratos próximos a finalizar (30, 60, 90 días)
+- Pagos por contrato
+- Inmuebles disponibles entre dos fechas
+
+---
