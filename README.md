@@ -141,13 +141,18 @@ El sistema informatiza el proceso de alquiler de inmuebles, contemplando:
 
 ## Tecnologías
 
-- JavaScript (frontend y backend)
-- Node.js con Express.js (backend)
-- Bootstrap (frontend)
-- MySQL (base de datos)
-- Visual Studio Code (IDE recomendado)
-- Modelo MVC
-- Autenticación con JWT
+- C# y .NET (backend)
+- ASP.NET MVC con estructura de Controllers, Models y Views
+- HTML, CSS y Razor para las vistas del frontend
+- JavaScript (vanilla) para manejo del DOM, fechas, eventos y validaciones
+- jQuery para simplificar la manipulación del DOM y realizar llamadas AJAX
+- Bootstrap (CSS y JS) para estilos responsivos y componentes interactivos como modales
+- MySQL para la base de datos relacional
+- Archivo SQL (`inmobiliaria.sql`) para la creación de tablas y carga de datos
+- Autenticación con JWT (manejo de sesiones y seguridad)
+- Comunicación frontend-backend mediante AJAX (consumo de endpoints en ASP.NET MVC)
+- Archivos de configuración (`appsettings.json`) para diferentes entornos
+- Auditoría de acciones de usuarios (registro de creación, modificación y anulación)
 
 ---
 
